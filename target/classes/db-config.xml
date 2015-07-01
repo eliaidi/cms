@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<context:property-placeholder location="classpath:db.properties" />
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${db.driverClass}"></property>
+		<property name="jdbcUrl" value="${db.jdbcUrl}"></property>
+		<property name="user" value="${db.user}"></property>
+		<property name="password" value="${db.password}"></property>
+		<property name="acquireIncrement" value="${db.acquireIncrement}"></property>
+		<property name="acquireRetryAttempts" value="${db.acquireRetryAttempts}"></property>
+		<property name="acquireRetryDelay" value="${db.acquireRetryDelay}"></property>
+		<property name="initialPoolSize" value="${db.initialPoolSize}"></property>
+		<property name="minPoolSize" value="${db.minPoolSize}"></property>
+		<property name="maxPoolSize" value="${db.maxPoolSize}"></property>
+		<property name="maxIdleTime" value="${db.maxIdleTime}"></property>
+		<property name="testConnectionOnCheckin" value="${db.testConnectionOnCheckin}"></property>
+		<property name="testConnectionOnCheckout" value="${db.testConnectionOnCheckout}"></property>
+		<property name="idleConnectionTestPeriod" value="${db.idleConnectionTestPeriod}"></property>
+		<property name="preferredTestQuery" value="${db.preferredTestQuery}"></property>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:hibernate-cfg.xml"></property>
+		<property name="packagesToScan" value="com.wk.cms.model"></property>
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<aop:config>
+		<aop:pointcut expression="execution(public * com.wk.cms..service..*+.*(..))" id="pointCut"/>
+		<aop:advisor advice-ref="advice" pointcut-ref="pointCut"/>
+	</aop:config>
+	
+	<tx:advice id="advice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="get*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="*" read-only="false" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
+	
+</beans>

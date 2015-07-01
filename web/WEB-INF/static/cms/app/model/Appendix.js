@@ -16,7 +16,16 @@ Ext.define('MyCms.model.Appendix', {
         		v = Ext.Date.format(new Date(v),this.dateFormat);
         	}
         	return v;
-        } }
+        } },
+        {
+        	name:'url',
+        	convert:function(v,r){
+        		if(r){
+        			v = "file/app/"+r.get("id");
+        		}
+        		return v;
+        	}
+        }
     ],
     statics:{
     	TypeMapping:{

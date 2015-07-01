@@ -16,6 +16,7 @@ Ext.define('MyCms.view.appendix.Window',{
 			title:'添加附件',
 			flex:2,
 			border:true,
+			margin:'5px 5px',
 			layout:'anchor',
 			defaults:{
 				anchor: '100%',
@@ -54,6 +55,7 @@ Ext.define('MyCms.view.appendix.Window',{
 		me.showPanel = Ext.create('Ext.tab.Panel',{
 			flex:3,
 			border:true,
+			margin:'5px 5px',
 			items:me.getAppendixGrids()
 		});
 		
@@ -65,6 +67,7 @@ Ext.define('MyCms.view.appendix.Window',{
 			items:[me.addPanel,{
 				xtype:'panel',
 				flex:3,
+				margin:'5px 5px',
 				title:'已添加附件',
 				layout:{
 					type: 'hbox',
@@ -74,9 +77,10 @@ Ext.define('MyCms.view.appendix.Window',{
 					xtype:'form',
 					flex:2,
 					layout:'anchor',
+					margin:'5px 5px',
 					defaults:{
 						xtype:'textfield',
-						anchor:'100%'
+						anchor:'95%'
 					},
 					items:[{
 						name:'id',
@@ -93,6 +97,22 @@ Ext.define('MyCms.view.appendix.Window',{
 						fieldLabel:'大小（Byte）',
 						name:'fileSize',
 						readOnly:true
+					},{
+						xtype:'container',
+						layout:'hbox',
+						items:[{
+							xtype:'textfield',
+							fieldLabel:'附件地址',
+							name:'url',
+							flex:2,
+							readOnly:true
+						},{
+							xtype:'button',
+							flex:1,
+							text:'插入到正文',
+							handler:'insertApp2Doc',
+							scope:me
+						}]
 					},{
 						fieldLabel:'创建人',
 						name:'crUser',
@@ -129,6 +149,15 @@ Ext.define('MyCms.view.appendix.Window',{
 	
 		me.on('beforedestroy','onDestroy',me);
 		me.callParent();
+	},
+	insertApp2Doc:function(_this){
+		var me = this;
+		
+		var urlValue = _this.up('form').getForm().findField('url').getValue();
+		if(!Ext.isEmpty(urlValue)){
+			var conField = me.view.down('form').getForm().findField('content');
+			conField.setValue(conField.getValue()+'<img src="'+urlValue+'" />');
+		}
 	},
 	updateApp:function(_this){
 		var me = this;

@@ -79,7 +79,7 @@ Ext.define('MyCms.view.document.Window',{
     	var me = this;
     	
     	if(me.document){
-    		me.form.getForm().loadRecord(me.channel);
+    		me.form.getForm().loadRecord(me.document);
     	}else{
     		me.form.getForm().reset();
     	}

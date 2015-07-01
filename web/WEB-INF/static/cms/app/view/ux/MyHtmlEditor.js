@@ -13,7 +13,7 @@ Ext.define('MyCms.view.ux.MyHtmlEditor',{
         this.toolbar = Ext.widget(this.getToolbarCfg());
         this.toolbar.insert(5,{
         	xtype:'button',
-        	tooltip:'上传图片',
+        	tooltip:'添加图片',
         	cls: baseCSSPrefix + 'btn-icon',
             iconCls: baseCSSPrefix + 'edit-uploadPic',
             handler: 'showAdd',

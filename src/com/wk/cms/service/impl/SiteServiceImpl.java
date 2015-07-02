@@ -7,11 +7,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.dao.ISiteDao;
 import com.wk.cms.model.Site;
 import com.wk.cms.service.ISiteService;
+import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
+import com.wk.cms.utils.FileUtils;
 
 @Service
 public class SiteServiceImpl implements ISiteService {
@@ -65,6 +69,28 @@ public class SiteServiceImpl implements ISiteService {
 		
 		siteDao.deleteById(siteId);
 		
+	}
+	@Override
+	public void imp(MultipartFile file) throws ServiceException {
+		
+		if(file==null||file.isEmpty()){
+			throw new ServiceException("文件上传失败！！");
+		}
+		
+		try {
+			String[] siteNames = FileUtils.parseTxt2Arr(file);
+			
+			if(!CommonUtils.isEmpty(siteNames)){
+				for(String siteName : siteNames){
+					if(StringUtils.hasLength(siteName)){
+						save(new Site(null,siteName,siteName,null,null,new Date(),null,null));
+					}
+					
+				}
+			}
+		} catch (FileParseException e) {
+			throw new ServiceException("解析文件失败！",e);
+		}
 	}
 
 }

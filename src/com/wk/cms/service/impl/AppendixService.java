@@ -2,6 +2,8 @@ package com.wk.cms.service.impl;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import com.wk.cms.model.Document;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
-import com.wk.cms.util.MyBlob;
+import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
 
 @Service
@@ -89,6 +91,14 @@ public class AppendixService implements IAppendixService{
 		
 		appendix.setDocument(document);
 		appendixDao.save(appendix);
+	}
+	@Override
+	public List<Appendix> findByDocId(String documentId) throws ServiceException {
+		
+		if(!StringUtils.hasLength(documentId)){
+			throw new ServiceException("参数错误！documentId必须传入！");
+		}
+		return appendixDao.findByDocId(documentId);
 	}
 
 }

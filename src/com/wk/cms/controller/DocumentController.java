@@ -6,12 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.Document;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Controller
@@ -23,6 +25,24 @@ public class DocumentController {
 	
 	@Autowired
 	private IAppendixService appendixService;
+	
+	@RequestMapping("/view")
+	public ModelAndView view( String documentId){
+		
+		ModelAndView mav = new ModelAndView();
+		try {
+			Document document = documentService.findById(documentId);
+			document.setAppendixs(CommonUtils.list2Set(appendixService.findByDocId(documentId)));
+			mav.addObject("obj", document);
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			mav.addObject("error", e);
+			mav.setViewName("error");
+			return mav;
+		}
+		mav.setViewName("document/document-view");
+		return mav;
+	}
 	@RequestMapping("/list")
 	public @ResponseBody PageInfo list(String channelId, PageInfo pageInfo,String query) throws ServiceException{
 		

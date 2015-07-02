@@ -7,13 +7,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.dao.IChannelDao;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.ISiteService;
+import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.FileUtils;
 
 @Service
 public class ChannelServiceImpl implements IChannelService {
@@ -112,6 +115,34 @@ public class ChannelServiceImpl implements IChannelService {
 		}
 		
 		channelDao.deleteById(channelId);
+	}
+	@Override
+	public void imp(MultipartFile file, String parentId, String siteId) throws ServiceException {
+		
+		try {
+			String[] chnlNames = FileUtils.parseTxt2Arr(file);
+			
+			for(String chnlName : chnlNames){
+				if(StringUtils.hasLength(chnlName)){
+					save(new Channel(null, chnlName, chnlName, null, null, null, null, null, null), parentId, siteId);
+				}
+			}
+		} catch (FileParseException e) {
+			throw new ServiceException("解析文件失败！", e);
+		}
+			
+	}
+	@Override
+	public void deleteMulti(String ids) throws ServiceException {
+		
+		if(!StringUtils.hasLength(ids)){
+			throw new ServiceException("参数错误！ids必须传入！");
+		}
+		
+		String[] idArr = ids.split(",");
+		for(String id : idArr){
+			deleteById(id);
+		}
 	}
 
 }

@@ -77,7 +77,11 @@ public class DocumentService implements IDocumentService {
 		if(!StringUtils.hasLength(id)){
 			throw new ServiceException("id不能为空！");
 		}
-		return documentDao.findById(id);
+		Document document = documentDao.findById(id);
+		if(document==null){
+			throw new ServiceException("未找到ID为【"+id+"】的文档对象！！！");
+		}
+		return document;
 	}
 	@Override
 	public void deleteById(String id) throws ServiceException {

@@ -2,6 +2,8 @@ package com.wk.cms.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.wk.cms.model.Channel;
 import com.wk.cms.service.exception.ServiceException;
 
@@ -54,4 +56,8 @@ public interface IChannelService {
 	 * @throws ServiceException
 	 */
 	Channel findByName(String name) throws ServiceException;
+
+	void imp(MultipartFile file, String parentId, String siteId) throws ServiceException;
+
+	void deleteMulti(String ids) throws ServiceException;
 }

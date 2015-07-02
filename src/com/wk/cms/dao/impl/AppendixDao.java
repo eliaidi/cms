@@ -2,6 +2,7 @@ package com.wk.cms.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,13 @@ public class AppendixDao implements IAppendixDao {
 	public Appendix findById(String id) {
 		
 		return hibernateTemplate.get(Appendix.class, id);
+	}
+
+	@Override
+	public List<Appendix> findByDocId(String documentId) {
+		
+		List<Appendix> appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? order by a.type", documentId);
+		return appendixs;
 	}
 
 }

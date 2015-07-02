@@ -24,7 +24,8 @@ Ext.define('MyCms.view.desktop.Desktop', {
         'MyCms.view.site.Window',
         'MyCms.view.site.Module',
         'MyCms.view.channel.Module',
-        'MyCms.view.document.Module'
+        'MyCms.view.document.Module',
+        'MyCms.view.ux.ImpWindow'
     ],
     init: function() {
     	var me = this;
@@ -95,7 +96,8 @@ Ext.define('MyCms.view.desktop.Desktop', {
             contextMenuItems: [
                 { text: '刷新', handler: 'doRefresh',scope:me },
                 { text: '设置', handler: 'onSettings',scope:me },
-                { text: '新增站点', handler: 'addSite',scope:me }
+                { text: '新增站点', handler: 'addSite',scope:me },
+                { text: '导入站点', handler: 'impSite',scope:me }
             ],
 
             shortcuts: Ext.create('Ext.data.Store', {
@@ -181,6 +183,14 @@ Ext.define('MyCms.view.desktop.Desktop', {
 	    if (win) {
 	        me.desktop.restoreWindow(win);
 	    }
+    },
+    impSite:function(){
+    	var win = Ext.create('MyCms.view.ux.ImpWindow',{
+    		view:me,
+    		url:site_imp,
+    		title:'批量导入站点'
+    	});
+    	win.show();
     },
     modifySite:function(record){
     	var me = this, module = me.desktop.app.getModule('site-module'),

@@ -1,6 +1,8 @@
 package com.wk.cms.service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,5 +22,7 @@ public interface IAppendixService {
 	void attachTo(String appIds, String id) throws ServiceException;
 
 	void attachTo(Appendix appendix, Document document);
+
+	List<Appendix> findByDocId(String documentId) throws ServiceException;
 
 }

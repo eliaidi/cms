@@ -2,6 +2,8 @@ package com.wk.cms.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.wk.cms.model.Site;
 import com.wk.cms.service.exception.ServiceException;
 
@@ -22,4 +24,6 @@ public interface ISiteService {
 	Site findById(String siteId) throws ServiceException;
 
 	void deleteById(String siteId) throws ServiceException;
+
+	void imp(MultipartFile file) throws ServiceException;
 }

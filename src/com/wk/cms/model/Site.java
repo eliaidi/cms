@@ -17,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"channels","documents"})
 public class Site {
 
+	public Site() {
+		super();
+	}
 	@Id
 	private String id;
 	private String name;
@@ -70,6 +73,18 @@ public class Site {
 	}
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
+	}
+	public Site(String id, String name, String descr, String url, User crUser,
+			Date crTime, Set<Channel> channels, Set<Document> documents) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.descr = descr;
+		this.url = url;
+		this.crUser = crUser;
+		this.crTime = crTime;
+		this.channels = channels;
+		this.documents = documents;
 	}
 	
 }

@@ -48,6 +48,14 @@ public class Document {
 		this.id = id;
 	}
 	
+	public Set<Appendix> getAppendixs() {
+		return appendixs;
+	}
+	
+	public void setAppendixs(Set<Appendix> appendixs) {
+		this.appendixs = appendixs;
+	}
+	
 	public Integer getStatus() {
 		return status;
 	}

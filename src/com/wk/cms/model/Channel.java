@@ -18,6 +18,25 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"children","documents"})
 public class Channel {
 
+	public Channel() {
+		super();
+	}
+
+	public Channel(String id, String name, String descr, Site site,
+			Channel parent, Set<Channel> children, Set<Document> documents,
+			User crUser, Date crTime) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.descr = descr;
+		this.site = site;
+		this.parent = parent;
+		this.children = children;
+		this.documents = documents;
+		this.crUser = crUser;
+		this.crTime = crTime;
+	}
+
 	@Id
 	private String id;
 	private String name;

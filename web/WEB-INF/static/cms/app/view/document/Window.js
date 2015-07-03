@@ -6,12 +6,13 @@ Ext.define('MyCms.view.document.Window',{
 	width : 896,
 	height : 690,
 	border: false,
-    uses: [
+    requires: [
         'Ext.Window',
         'Ext.form.Panel',
         'MyCms.view.document.Form',
         'MyCms.model.Document',
-        'MyCms.view.appendix.Window'
+        'MyCms.view.appendix.Window',
+        'MyCms.view.ux.RemoteDocWin'
     ],
 
     initComponent : function(){
@@ -31,6 +32,13 @@ Ext.define('MyCms.view.document.Window',{
     			width:237,
 	            handler:'onAppendixMgt',
 	            scope:me
+    		},{
+    			xtype:'button',
+    			text: '加载远程文档',
+    			margin:'5px 10px',
+    			width:237,
+	            handler:'loadRemoteDoc',
+	            scope:me
     		}],
     		buttons:[{
     			text:'确定',
@@ -48,7 +56,19 @@ Ext.define('MyCms.view.document.Window',{
     		me.form.getForm().loadRecord(me.document);
     	}
     	
+    	me.on('remoteComplete',me.remoteDocComplete);
+    	
     	this.callParent();
+    },
+    remoteDocComplete:function(me,doc){
+    	me.form.getForm().loadRecord(new MyCms.model.Document(doc));
+    },
+    loadRemoteDoc:function(){
+    	var me = this;
+    	var win = Ext.create('MyCms.view.ux.RemoteDocWin',{
+    		view:me
+    	});
+    	win.show();
     },
     onAppendixMgt:function(){
     	var me = this;

@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -20,7 +22,11 @@ public class Document {
 	@Id
 	private String id;
 	private String title;
+	
+	@Column(length=1000)
 	private String abst;
+	
+	@Lob
 	private String content;
 	private String author;
 	private Integer status;
@@ -41,6 +47,14 @@ public class Document {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date crTime;
+	
+	public Document(){
+		
+	}
+	public Document(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
 	public String getId() {
 		return id;
 	}

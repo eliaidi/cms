@@ -24,7 +24,7 @@ public class CommonAdvice {
 	public @ResponseBody
 	Message handle(Exception e) {
 
-		LOGGER.error("exception occurred", e);
+		LOGGER.error(e.getMessage(), e);
 		return new Message(false, e.getMessage(), e);
 	}
 

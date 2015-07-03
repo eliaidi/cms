@@ -15,6 +15,7 @@ var document_list = RootPath+'/document/list';
 var document_save = RootPath+'/document/save';
 var document_delete = RootPath+'/document/delete';
 var document_deleteMuti = RootPath+'/document/deleteMuti';
+var document_remote = RootPath+'/document/remote';
 
 var appendix_list = RootPath+'/appendix/list';
 var appendix_save = RootPath+'/appendix/save';

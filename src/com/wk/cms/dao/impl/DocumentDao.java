@@ -1,5 +1,7 @@
 package com.wk.cms.dao.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +35,21 @@ public class DocumentDao implements IDocumentDao {
 		c.add(Restrictions.eq("channel.id", channelId));
 		
 		if(StringUtils.hasLength(query)){
+			System.err.println(query);
+			try {
+				System.err.println(URLDecoder.decode(query, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				System.err.println(new String(query.getBytes("UTF-8"),"GBK"));
+				System.err.println(new String(query.getBytes("GBK"),"UTF-8"));
+				System.err.println(new String(query.getBytes("ISO-8859-1"),"UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			c.add(Restrictions.or(Restrictions.like("title", query,MatchMode.ANYWHERE),
 					Restrictions.like("abst", query,MatchMode.ANYWHERE),
 					Restrictions.like("content", query,MatchMode.ANYWHERE)));

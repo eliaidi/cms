@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.wk.cms.controller.vo.Message;
+import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Document;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
@@ -73,6 +74,13 @@ public class DocumentController {
 		documentService.deleteByIds(ids);
 		
 		return new Message(true, "删除成功！", null);
+	}
+	
+	@RequestMapping("/remote")
+	public @ResponseBody Message remote(String url) throws ParseException, ServiceException{
+		
+		Document document = documentService.loadRemoteDoc(url);
+		return new Message(true, "加载成功！", document);
 	}
 }
 

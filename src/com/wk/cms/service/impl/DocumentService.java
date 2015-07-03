@@ -1,19 +1,30 @@
 package com.wk.cms.service.impl;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.http.HttpConnection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IDocumentDao;
+import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Service
@@ -112,5 +123,24 @@ public class DocumentService implements IDocumentService {
 		}
 		return documentDao.findByIds(ids);
 	}
+	@Override
+	public Document loadRemoteDoc(String url) throws  ParseException, ServiceException {
+		
+		if(!StringUtils.hasLength(url)){
+			throw new ServiceException("参数错误！url必须传入");
+		}
+		return CommonUtils.loadRemoteDoc(url);
+		
+	}
+	
+	/*public static void main(String[] args) {
+		
+		try {
+			new DocumentService().loadRemoteDoc("http://news.163.com/15/0703/10/ATJEVLGV000146BE.html");
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}*/
 
 }

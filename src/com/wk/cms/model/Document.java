@@ -13,7 +13,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wk.cms.mvc.validation.group.Add;
+import com.wk.cms.mvc.validation.group.Modify;
 
 @Entity
 @JsonIgnoreProperties({"appendixs"})
@@ -21,9 +25,12 @@ public class Document {
 
 	@Id
 	private String id;
+	
+	@NotEmpty(message="{doc.title.null}")
 	private String title;
 	
 	@Column(length=1000)
+	@NotEmpty(message="{doc.content.null}")
 	private String abst;
 	
 	@Lob

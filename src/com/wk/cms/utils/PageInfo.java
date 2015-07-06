@@ -2,9 +2,14 @@ package com.wk.cms.utils;
 
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class PageInfo {
 
+	@NotEmpty
 	private Integer start;
+	
+	@NotEmpty
 	private Integer limit;
 	private List<?> list;
 	private Long totalCount;

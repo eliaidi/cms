@@ -53,14 +53,15 @@ public class AppendixService implements IAppendixService{
 			appendix.setCrUser(null);
 			
 			appendixDao.save(appendix);
+			
 		}else{
 			
 			Appendix persistApp = findById(appendix.getId());
-			BeanUtils.copyProperties(appendix, persistApp, new String[]{"id","document","type","fileExt","content","fileSize","crUser","crTime"});
-			
+//			BeanUtils.copyProperties(persistApp, appendix, new String[]{"addition","fileName"});
+			persistApp.setAddition(appendix.getAddition());
+			persistApp.setFileName(appendix.getFileName());
 			appendixDao.save(persistApp);
 		}
-		
 		
 	}
 	@Override
@@ -99,6 +100,14 @@ public class AppendixService implements IAppendixService{
 			throw new ServiceException("参数错误！documentId必须传入！");
 		}
 		return appendixDao.findByDocId(documentId);
+	}
+	@Override
+	public void delete(String id) throws ServiceException {
+		
+		if(!StringUtils.hasLength(id)){
+			throw new ServiceException("参数错误！id必须传入");
+		}
+		appendixDao.delete(id);
 	}
 
 }

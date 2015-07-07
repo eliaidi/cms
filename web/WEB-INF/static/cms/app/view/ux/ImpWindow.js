@@ -32,7 +32,7 @@ Ext.define('MyCms.view.ux.ImpWindow',{
     			},
     			scope:me
     		}]
-		})
+		});
 		me.callParent();
 	},
 	doImp:function(){

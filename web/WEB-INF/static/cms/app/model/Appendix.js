@@ -3,6 +3,9 @@ Ext.define('MyCms.model.Appendix', {
     fields: [
         { name: 'id' },
         { name: 'document' },
+        { name: 'fileName' },
+        { name: 'fileExt' },
+        { name: 'fileSize',type:'int' },
         { name: 'type',type:'int',convert:function(v){
         	if(v){
         		v = MyCms.model.Appendix.TypeMapping[v];

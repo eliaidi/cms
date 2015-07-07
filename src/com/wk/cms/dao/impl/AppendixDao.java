@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -48,11 +49,18 @@ public class AppendixDao implements IAppendixDao {
 		return hibernateTemplate.get(Appendix.class, id);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Appendix> findByDocId(String documentId) {
 		
 		List<Appendix> appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? order by a.type", documentId);
 		return appendixs;
+	}
+
+	@Override
+	public void delete(String id) {
+		hibernateTemplate.bulkUpdate("delete from Appendix a where a.id=?", id);
+		
 	}
 
 }

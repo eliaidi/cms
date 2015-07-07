@@ -5,7 +5,7 @@
 	id="WebApp_ID" version="3.0">
 	<display-name>cms</display-name>
 
-	<context-param>
+	<context-param> 
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:application-config.xml</param-value>
 	</context-param>

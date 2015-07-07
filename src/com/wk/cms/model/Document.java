@@ -16,8 +16,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.wk.cms.mvc.validation.group.Add;
-import com.wk.cms.mvc.validation.group.Modify;
 
 @Entity
 @JsonIgnoreProperties({"appendixs"})

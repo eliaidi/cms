@@ -42,4 +42,11 @@ public class AppendixController {
 		
 		return new Message(true, "保存成功！", appendix);
 	}
+	
+	@RequestMapping("/delete")
+	public @ResponseBody Message delete(String id) throws ServiceException{
+		
+		appendixService.delete(id);
+		return new Message(true, "删除成功！", null);
+	}
 }

@@ -19,3 +19,5 @@ var document_remote = RootPath+'/document/remote';
 
 var appendix_list = RootPath+'/appendix/list';
 var appendix_save = RootPath+'/appendix/save';
+var appendix_update = RootPath+'/appendix/update';
+var appendix_delete = RootPath+'/appendix/delete';

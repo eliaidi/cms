@@ -32,6 +32,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
     	
         me.callParent();
 
+        me.on('refresh','doRefresh',me);
         me.desktop.on('refresh','doRefresh',me);
         me.desktop.shortcutsView.on('itemcontextmenu','onItemMenu',me);
         me.desktop.shortcutsView.on('itemclick', me.onShortcutItemClick, me);
@@ -185,6 +186,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
 	    }
     },
     impSite:function(){
+    	var me = this;
     	var win = Ext.create('MyCms.view.ux.ImpWindow',{
     		view:me,
     		url:site_imp,

@@ -16,4 +16,6 @@ public interface IAppendixDao {
 
 	List<Appendix> findByDocId(String documentId);
 
+	void delete(String id);
+
 }

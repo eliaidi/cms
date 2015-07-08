@@ -1,9 +1,12 @@
 package com.wk.cms.controller;
 
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,6 +18,7 @@ import com.wk.cms.model.Document;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.service.exception.ValidationException;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
@@ -52,7 +56,10 @@ public class DocumentController {
 	}
 	
 	@RequestMapping("/save")
-	public @ResponseBody Message save( Document document,String channelId,String appIds) throws ServiceException{
+	public @ResponseBody Message save(@Valid Document document,String channelId,String appIds,BindingResult result ) throws ServiceException{
+		if(result.hasErrors()){
+			throw new ValidationException(result);
+		}
 		documentService.save(document,channelId);
 		
 		if(StringUtils.hasLength(appIds)){

@@ -28,10 +28,10 @@ public class Document {
 	private String title;
 	
 	@Column(length=1000)
-	@NotEmpty(message="{doc.content.null}")
 	private String abst;
 	
 	@Lob
+	@NotEmpty(message="{doc.content.null}")
 	private String content;
 	private String author;
 	private Integer status;

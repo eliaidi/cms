@@ -50,7 +50,7 @@ public class DocumentController {
 		return mav;
 	}
 	@RequestMapping("/list")
-	public @ResponseBody PageInfo list(String channelId, PageInfo pageInfo,String query) throws ServiceException{
+	public @ResponseBody PageInfo list(String channelId, PageInfo pageInfo, String query) throws ServiceException{
 		
 		return documentService.find(channelId,pageInfo,query);
 	}

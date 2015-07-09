@@ -101,8 +101,13 @@ Ext.define('MyCms.view.document.Grid', {
 		me.on('containercontextmenu', 'showCmpMenu', me);
 		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'refresh', me);
+		me.on('itemdblclick','openDoc',me);
 
 		me.callParent();
+	},
+	openDoc:function(_this,record){
+		
+		window.open(RootPath+'/document/view/'+record.get('id'));
 	},
 	showItemMenu : function(_this, record, item, index, e, eOpts) {
 		var me = this;

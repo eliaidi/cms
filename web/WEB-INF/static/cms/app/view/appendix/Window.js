@@ -372,7 +372,7 @@ Ext.define('MyCms.view.appendix.Window',{
 							items:[record.get('type')=='图片'?{
 								text:'预览',
 								handler:function(){
-									me.preview(record);
+									me.preview(record,e);
 								},
 								scope:me
 							}:{

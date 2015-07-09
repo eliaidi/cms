@@ -1,7 +1,5 @@
 package com.wk.cms.dao.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +9,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,6 +17,9 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IDocumentDao;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.annotations.ShowArea;
+import com.wk.cms.utils.CommonUtils;
+import com.wk.cms.utils.HibernateUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Repository
@@ -35,29 +37,15 @@ public class DocumentDao implements IDocumentDao {
 		c.add(Restrictions.eq("channel.id", channelId));
 		
 		if(StringUtils.hasLength(query)){
-			System.err.println(query);
-			try {
-				System.err.println(URLDecoder.decode(query, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				System.err.println(new String(query.getBytes("UTF-8"),"GBK"));
-				System.err.println(new String(query.getBytes("GBK"),"UTF-8"));
-				System.err.println(new String(query.getBytes("ISO-8859-1"),"UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			c.add(Restrictions.or(Restrictions.like("title", query,MatchMode.ANYWHERE),
 					Restrictions.like("abst", query,MatchMode.ANYWHERE),
 					Restrictions.like("content", query,MatchMode.ANYWHERE)));
 		}
 		Long count = (Long) c.setProjection(Projections.rowCount()).uniqueResult();
-		c.setProjection(null);
+		c.setProjection(HibernateUtils.getProjections(Document.class,ShowArea.LIST));
+		
 		c.addOrder(Order.desc("crTime"));
-		List<Document> documents = c.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).
+		List<Document> documents = c.setResultTransformer(Transformers.aliasToBean(Document.class)).
 				setFirstResult(pageInfo.getStart()).
 				setMaxResults(pageInfo.getLimit()).list();
 		
@@ -88,7 +76,9 @@ public class DocumentDao implements IDocumentDao {
 	@Override
 	public List<Document> findByIds(String ids) {
 		
-		return (List<Document>) hibernateTemplate.find("select d from Document d where d.id in ("+ids+")" );
+		List<String> fields = HibernateUtils.getShowFields(Document.class, ShowArea.LIST);
+		String fStr = CommonUtils.list2String(fields,",");
+		return (List<Document>) hibernateTemplate.find("select "+fStr+" from Document d where d.id in ("+ids+")" );
 	}
 
 }

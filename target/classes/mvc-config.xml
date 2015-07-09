@@ -10,8 +10,8 @@
 
 	<context:component-scan base-package="com.wk.cms.controller"></context:component-scan>
 
-	<mvc:annotation-driven validator="validator" />
-
+	<mvc:annotation-driven validator="validator"  />
+	
 	<mvc:default-servlet-handler />
 
 	<!-- mapping static resources -->

@@ -1,20 +1,13 @@
 package com.wk.cms.service.impl;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.http.HttpConnection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IDocumentDao;
@@ -132,15 +125,5 @@ public class DocumentService implements IDocumentService {
 		return CommonUtils.loadRemoteDoc(url);
 		
 	}
-	
-	/*public static void main(String[] args) {
-		
-		try {
-			new DocumentService().loadRemoteDoc("http://news.163.com/15/0703/10/ATJEVLGV000146BE.html");
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
 
 }

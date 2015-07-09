@@ -84,7 +84,9 @@ Ext.define('MyCms.view.channel.View', {
 			id : 'channel-item-menu',
 			items : [ {
 				text : '打开',
-				handler : 'open',
+				handler : function(){
+					me.openChannel(_this, record, item, index, e, eOpts);
+				},
 				scope : me
 			}, {
 				text : '修改',

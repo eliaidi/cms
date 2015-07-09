@@ -16,6 +16,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wk.cms.model.annotations.Show;
+import com.wk.cms.model.annotations.ShowArea;
 
 @Entity
 @JsonIgnoreProperties({"appendixs"})
@@ -32,6 +34,7 @@ public class Document {
 	
 	@Lob
 	@NotEmpty(message="{doc.content.null}")
+	@Show(ShowArea.Detail)
 	private String content;
 	private String author;
 	private Integer status;

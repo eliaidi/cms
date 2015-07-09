@@ -2,7 +2,9 @@ package com.wk.cms.controller;
 
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -53,6 +55,14 @@ public class DocumentController {
 	public @ResponseBody PageInfo list(String channelId, PageInfo pageInfo, String query) throws ServiceException{
 		
 		return documentService.find(channelId,pageInfo,query);
+	}
+	
+	@RequestMapping("/detail")
+	public @ResponseBody Message detail(String docId) throws ServiceException{
+		
+		Document document = documentService.findById(docId);
+		
+		return new Message(true, "加载成功！", document);
 	}
 	
 	@RequestMapping("/save")

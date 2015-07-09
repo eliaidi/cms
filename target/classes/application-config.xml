@@ -16,7 +16,7 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
-	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<aop:aspectj-autoproxy ></aop:aspectj-autoproxy>
 
 	<!--ehcache-->
     <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">

@@ -19,6 +19,10 @@ public class ValidationException extends ServiceException {
 		
 	}
 	
+	public ValidationException(String string) {
+		super(string);
+	}
+
 	@Override
 	public String getMessage() {
 		if(bindingResult==null)

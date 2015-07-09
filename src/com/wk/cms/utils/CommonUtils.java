@@ -2,6 +2,7 @@ package com.wk.cms.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.util.StringUtils;
 
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Document;
@@ -39,7 +41,7 @@ public class CommonUtils {
 		return set;
 	}
 
-	public static boolean isEmpty(String[] siteNames) {
+	public static boolean isEmpty(Object[] siteNames) {
 
 		if(siteNames==null||siteNames.length==0){
 			return true;
@@ -80,6 +82,19 @@ public class CommonUtils {
 			return new NeteaseDocParser(url);
 		}
 		throw new ParseException("暂不支持解析此网站("+host+")文档");
+	}
+
+	public static String list2String(List<String> fields, String str) {
+		
+		if(isEmpty(fields)) return null;
+		if(!StringUtils.hasLength(str)) str = ",";
+		
+		StringBuffer sb = new StringBuffer();
+		for(String f : fields){
+			sb.append(str+f);
+		}
+		sb.delete(0, str.length()-1);
+		return sb.toString();
 	}
 
 }

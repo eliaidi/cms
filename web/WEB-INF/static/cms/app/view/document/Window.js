@@ -53,12 +53,35 @@ Ext.define('MyCms.view.document.Window',{
     	
     	if(me.document){//编辑
     		me.title = '修改文档【'+me.document.get('title')+'】';
-    		me.form.getForm().loadRecord(me.document);
+    		me.loadDoc();
     	}
     	
     	me.on('remoteComplete',me.remoteDocComplete);
     	
     	this.callParent();
+    },
+    loadDoc:function(){
+    	var me = this;
+    	
+    	Ext.Ajax.request({
+			url : document_detail,
+			params : {
+				docId : me.document.get('id')
+			},
+			success : function(response, opts) {
+				var obj = Ext.decode(response.responseText);
+				if (!obj.success) {
+					Ext.Msg.alert('错误', obj.message);
+					return;
+				}
+				me.document = new MyCms.model.Document(obj.obj);
+				me.form.getForm().loadRecord(me.document);
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
     },
     remoteDocComplete:function(me,doc){
     	me.form.getForm().loadRecord(new MyCms.model.Document(doc));

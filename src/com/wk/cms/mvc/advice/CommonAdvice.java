@@ -1,4 +1,4 @@
-package com.wk.cms.controller.advice;
+package com.wk.cms.mvc.advice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;  

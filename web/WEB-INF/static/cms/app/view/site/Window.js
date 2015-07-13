@@ -1,6 +1,5 @@
 Ext.define('MyCms.view.site.Window',{
 	extend: 'Ext.Window',
-	
 	title : '新增站点',
 	layout: 'anchor',
 	width : 470,

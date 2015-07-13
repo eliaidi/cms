@@ -3,46 +3,17 @@ Ext.define('MyCms.view.channel.View', {
 	alias : 'channel.view',
 	requires : [ 'Ext.data.Store', 
 	             'MyCms.model.Channel',
-	             'MyCms.view.ux.ImpWindow'],
+	             'MyCms.view.ux.ImpWindow',
+	             'MyCms.view.channel.ImgView'],
 
 	initComponent : function() {
 		var me = this;
 
 		Ext.apply(me, {
 			layout : 'fit',
-			items : [ {
-				xtype : 'dataview',
-				tpl : [
-						'<tpl for=".">',
-						'<div class="thumb-wrap">',
-						'<div class="thumb">',
-						'<img src="' + RootPath
-								+ '/resources/images/forms.png" />', '</div>',
-						'<span>{name}</span>', '</div>', '</tpl>' ],
-
-				itemSelector : 'div.thumb-wrap',
-				multiSelect : true,
-				singleSelect : false,
-				cls : 'images-view',
-				scrollable : true,
-				store : new Ext.data.Store({
-					autoLoad : true,
-					model : 'MyCms.model.Channel',
-					proxy : {
-						type : 'ajax',
-						url : list_channel_by_siteid,
-						extraParams : me.parent ? {
-							parentId : me.parent.get('id')
-						} : (me.site ? {
-							siteId : me.site.get('id')
-						} : null),
-						reader : {
-							type : 'json',
-							rootProperty : 'channels'
-						}
-					}
-				})
-			} ]
+			items : [ Ext.create('MyCms.view.channel.ImgView',{
+				view:me
+			})]
 
 		});
 

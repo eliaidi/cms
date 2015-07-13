@@ -48,7 +48,8 @@ Ext.define('MyCms.view.site.Window',{
     		        	return;
     		        }
     		        me.site = new MyCms.model.Site(obj.obj);
-    		        me.form.getForm().loadRecord(me.site);
+    		        //me.form.getForm().loadRecord(me.site);
+    		        me.loadForm();
     		    },
     		    failure: function(response, opts) {
     		        console.log('server-side failure with status code ' + response.status);
@@ -57,6 +58,14 @@ Ext.define('MyCms.view.site.Window',{
     	}
     	
     	this.callParent();
+    },
+    loadForm:function(){
+    	var me = this;
+    	
+    	if(me.site){
+    		me.form.getForm().loadRecord(me.site);
+    	}
+    	
     },
     onOk : function(){
     	var me = this;

@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -22,9 +24,14 @@ public class Site {
 	}
 	@Id
 	private String id;
+	
+	@NotEmpty
 	private String name;
+	
+	@NotEmpty
 	private String descr;
 	private String url;
+	private String canPubSta;
 	
 	@ManyToOne
 	private User crUser;
@@ -54,6 +61,13 @@ public class Site {
 	}
 	public void setDescr(String descr) {
 		this.descr = descr;
+	}
+	
+	public String getCanPubSta() {
+		return canPubSta;
+	}
+	public void setCanPubSta(String canPubSta) {
+		this.canPubSta = canPubSta;
 	}
 	
 	public String getUrl() {

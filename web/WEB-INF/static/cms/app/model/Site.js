@@ -5,6 +5,15 @@ Ext.define('MyCms.model.Site', {
         { name: 'name' },
         { name: 'descr' },
         { name: 'crTime' },
-        { name: 'crUser' }
-    ]
+        { name: 'crUser' },
+        { name: 'canPubSta' }
+    ],
+    statics:{
+    	DefaultPubSta:{
+    		1:'新稿',
+    		2:'已编辑',
+    		3:'已审核',
+    		4:'已发布'
+    	}
+    }
 });

@@ -13,7 +13,7 @@ public class NotEmptyValidator implements Validator {
 		
 		if(class1.equals(String.class)){
 			if("".equals(value)){
-				throw new ValidationException("参数错误，字段值为空！");
+				throw new ValidationException("参数错误，字段值为空字符串！");
 			}
 		}
 	}

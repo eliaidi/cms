@@ -6,15 +6,11 @@ Ext.define('MyCms.view.site.Form',{
     defaults: {
         anchor: '100%'
     },
-
     defaultType: 'textfield',
 	initComponent:function(){
 		
 		var me = this;
-		
-		Ext.apply(me,{
-			
-			items:[{
+		var allFields = [{
 				fieldLabel: '站点名称',
 		        name: 'name',
 		        allowBlank: false
@@ -26,7 +22,29 @@ Ext.define('MyCms.view.site.Form',{
 				fieldLabel: '站点发布地址',
 		        name: 'url',
 		        allowBlank: false
-			}]
+			}];
+		var pubStaFields = [];
+		for(var k in MyCms.model.Document.StatusMapping){
+			pubStaFields.push({
+				 boxLabel  : MyCms.model.Document.StatusMapping[k],
+                 name      : 'canPubSta',
+                 inputValue: k,
+                 id        : 'status'+k,
+                 flex:1,
+                 checked:MyCms.model.Site.DefaultPubSta[k]
+			});
+		}
+		pubStaFields = {
+				xtype: 'fieldcontainer',
+	            fieldLabel: '可发布状态',
+	            defaultType: 'checkboxfield',
+	            layout:'hbox',
+	            items: pubStaFields
+		};
+		allFields.push(pubStaFields);
+		
+		Ext.apply(me,{
+			items:allFields
 		});
 		me.callParent();
 	}

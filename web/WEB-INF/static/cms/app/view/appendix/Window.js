@@ -4,7 +4,8 @@ Ext.define('MyCms.view.appendix.Window',{
 	      'Ext.tab.Panel',
 	      'MyCms.model.Appendix',
 	      'Ext.grid.plugin.CellEditing',
-	      'Ext.grid.plugin.RowEditing'],
+	      'Ext.grid.plugin.RowEditing',
+	      'Ext.resizer.Resizer'],
 	modal:true,
 	width:900,
 	height:615,
@@ -75,71 +76,6 @@ Ext.define('MyCms.view.appendix.Window',{
 	    	        align: 'stretch'
 				},
 				items:[me.showPanel]
-//				items:[me.showPanel,{
-//					xtype:'form',
-//					flex:2,
-//					layout:'anchor',
-//					margin:'5px 5px',
-//					defaults:{
-//						xtype:'textfield',
-//						anchor:'95%'
-//					},
-//					items:[{
-//						name:'id',
-//						xtype:'hidden'
-//					},{
-//						fieldLabel:'名称',
-//						name:'fileName',
-//						allowBlank:false
-//					},{
-//						xtype:'textarea',
-//						fieldLabel:'描述',
-//						name:'addition'
-//					},{
-//						fieldLabel:'大小（Byte）',
-//						name:'fileSize',
-//						readOnly:true
-//					},{
-//						xtype:'container',
-//						layout:'hbox',
-//						margin:'5px auto',
-//						items:[{
-//							xtype:'textfield',
-//							fieldLabel:'附件地址',
-//							name:'url',
-//							flex:2,
-//							readOnly:true
-//						},{
-//							xtype:'button',
-//							flex:1,
-//							text:'插入到正文',
-//							handler:'insertApp2Doc',
-//							scope:me
-//						}]
-//					},{
-//						fieldLabel:'创建人',
-//						name:'crUser',
-//						readOnly:true,
-//						disabled:true
-//					},{
-//						fieldLabel:'创建时间',
-//						name:'crTime',
-//						readOnly:true,
-//						disabled:true
-//					},{
-//						xtype:'container',
-//						layout:{
-//							type:'fit',
-//							align:'center'
-//						},
-//						items:[{
-//							xtype:'button',
-//							text:'保存',
-//							handler:'updateApp',
-//							scope:me
-//						}]
-//					}]
-//				}]
 			}],
 			buttons:[{
 				text:'确定',
@@ -257,10 +193,6 @@ Ext.define('MyCms.view.appendix.Window',{
 //			    },
 			    _type:t,
 				multiSelect : true,
-//				plugins:Ext.create('Ext.grid.plugin.RowEditing', {
-//			        clicksToMoveEditor: 2,
-//			        autoCancel: false
-//			    }),
 				plugins:Ext.create('Ext.grid.plugin.RowEditing',{
 					clicksToMoveEditor: 2
 //			        autoCancel: false
@@ -361,21 +293,10 @@ Ext.define('MyCms.view.appendix.Window',{
 							});
 						}
 					},
-					"itemclick":function(_this, record, item, index, e, eOpts){
-						var grid = this;
-						
-						//grid.up('tabpanel').ownerCt.down('form').loadRecord(record);
-					},
 					"itemcontextmenu":function( _this, record, item, index, e, eOpts){
 						
 						Ext.create('Ext.menu.Menu',{
-							items:[record.get('type')=='图片'?{
-								text:'预览',
-								handler:function(){
-									me.preview(record,e);
-								},
-								scope:me
-							}:{
+							items:[{
 								text:'下载附件',
 								handler:function(){
 									me.download(record);
@@ -392,6 +313,15 @@ Ext.define('MyCms.view.appendix.Window',{
 						
 						e.stopEvent();
 						e.stopPropagation();
+					},
+					"itemmouseenter":function(_this, record, item, index, e, eOpts){
+						me.preview(record, e);
+					},
+					"itemmouseleave":function(){
+						var appPreviewMenu = Ext.getCmp('app-preview-menu');
+						if(appPreviewMenu){
+							Ext.destroy(appPreviewMenu);
+						}
 					}
 				}
 			});
@@ -399,7 +329,20 @@ Ext.define('MyCms.view.appendix.Window',{
 		
 		return items;
 	},
-	preview:function(record){
+	preview:function(record,e){
+		var appPreviewMenu = Ext.getCmp('app-preview-menu');
+		if(!appPreviewMenu){
+			appPreviewMenu = Ext.create('Ext.menu.Menu',{
+				id:'app-preview-menu',
+				items:[{
+					xtype:'panel',
+					width:272,
+					height:212,
+					title:'图片-'+record.get('fileName'),
+					html:'<img id="picApp" src="'+RootPath+'/file/app/'+record.get('id')+'" width="272" />'
+				}]
+			}).showAt(e.getXY());
+		}
 		
 	},
 	download:function(record){

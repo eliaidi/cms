@@ -2,8 +2,6 @@ package com.wk.cms.service.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +29,10 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public PageInfo find(String channelId, PageInfo pageInfo, String query) throws ServiceException {
 		
-		if(!StringUtils.hasLength(channelId)){
-			throw new ServiceException("参数错误！channelId不能为空");
-		}
 		return documentDao.find(channelId,pageInfo,query);
 	}
 	@Override
 	public void save(Document document, String channelId) throws ServiceException {
-		
-		if(!StringUtils.hasLength(document.getTitle())||!StringUtils.hasLength(document.getContent())){
-			throw new ServiceException("参数错误！title和content不能为空");
-		}
 		
 		if(!StringUtils.hasLength(document.getId())){
 			
@@ -78,9 +69,6 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public Document findById(String id) throws ServiceException {
 		
-		if(!StringUtils.hasLength(id)){
-			throw new ServiceException("id不能为空！");
-		}
 		Document document = documentDao.findById(id);
 		if(document==null){
 			throw new ServiceException("未找到ID为【"+id+"】的文档对象！！！");
@@ -90,17 +78,10 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public void deleteById(String id) throws ServiceException {
 		
-		if(!StringUtils.hasLength(id)){
-			throw new ServiceException("参数错误！docId必须穿入");
-		}
 		documentDao.deleteById(id);
 	}
 	@Override
 	public void deleteByIds(String ids) throws ServiceException {
-		
-		if(!StringUtils.hasLength(ids)){
-			throw new ServiceException("参数错误！ids必须穿入");
-		}
 		
 		String[] idArr = ids.split(",");
 		for(String id : idArr){
@@ -111,17 +92,11 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public List<Document> findByIds(String ids) throws ServiceException {
 		
-		if(!StringUtils.hasLength(ids)){
-			throw new ServiceException("参数错误，ids必须穿入");
-		}
 		return documentDao.findByIds(ids);
 	}
 	@Override
 	public Document loadRemoteDoc(String url) throws  ParseException, ServiceException {
 		
-		if(!StringUtils.hasLength(url)){
-			throw new ServiceException("参数错误！url必须传入");
-		}
 		return CommonUtils.loadRemoteDoc(url);
 		
 	}

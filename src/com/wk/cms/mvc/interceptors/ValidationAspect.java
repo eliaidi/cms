@@ -3,7 +3,6 @@ package com.wk.cms.mvc.interceptors;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.aspectj.lang.JoinPoint;
@@ -22,50 +21,49 @@ import com.wk.cms.utils.CommonUtils;
 
 @Component
 @Aspect
-public class ValidationAspect  {
+public class ValidationAspect {
 
 	@Pointcut("execution( * com.wk.cms.service..*.*(..))")
-	private void t(){}
-	
+	private void t() {
+	}
+
 	@Before("t()")
-	public void validate(JoinPoint jp) throws ServiceException{
-		
+	public void validate(JoinPoint jp) throws ServiceException {
+
 		MethodSignature methodSignature = (MethodSignature) jp.getSignature();
 		Method method = methodSignature.getMethod();
-		
+
 		Annotation[][] annotations = method.getParameterAnnotations();
 		Object[] args = jp.getArgs();
 		Class<?>[] types = (Class<?>[]) method.getParameterTypes();
-		if(annotations!=null&&annotations.length>0){
-			for(int i=0;i<annotations.length;i++){
+		if (annotations != null && annotations.length > 0) {
+			for (int i = 0; i < annotations.length; i++) {
 				Annotation[] annos = annotations[i];
-				if(CommonUtils.isEmpty(annos)){
+				if (CommonUtils.isEmpty(annos)) {
 					continue;
 				}
-				
-				for(Annotation anno : annos){
+
+				for (Annotation anno : annos) {
 					Validator validator = getValidator(anno);
-					if(validator!=null){
+					if (validator != null) {
 						validator.validate(types[i], args[i]);
 					}
 				}
 			}
 		}
 	}
-	
+
 	private Validator getValidator(Annotation anno) {
-	
-		Class<?> aClass = anno.getClass();
-		if(aClass.equals(NotEmpty.class)){
+
+		Class<?>[] interfaces = anno.getClass().getInterfaces();
+		if (anno.getClass().equals(NotEmpty.class)
+				|| CommonUtils.contains(interfaces, NotEmpty.class)) {
 			return new NotEmptyValidator();
-		}else if(aClass.equals(NotNull.class)){
+		} else if (anno.getClass().equals(NotNull.class)
+				|| CommonUtils.contains(interfaces, NotNull.class)) {
 			return new NotNullValidator();
 		}
 		return null;
 	}
 
-	@PostConstruct
-	public void init(){
-		System.err.println(111);
-	}
 }

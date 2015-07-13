@@ -15,16 +15,16 @@ public interface IDocumentService {
 
 	PageInfo find(@NotEmpty String channelId,@NotNull PageInfo pageInfo, String query) throws ServiceException;
 
-	void save(Document document,@NotEmpty String channelId) throws ServiceException;
+	void save(@NotNull Document document, String channelId) throws ServiceException;
 
-	Document findById(String id) throws ServiceException;
+	Document findById(@NotEmpty String id) throws ServiceException;
 
-	void deleteById(String id) throws ServiceException;
+	void deleteById(@NotEmpty String id) throws ServiceException;
 
-	void deleteByIds(String ids) throws ServiceException;
+	void deleteByIds(@NotEmpty String ids) throws ServiceException;
 
-	List<Document> findByIds(String ids) throws ServiceException;
+	List<Document> findByIds(@NotEmpty String ids) throws ServiceException;
 
-	Document loadRemoteDoc(String url) throws  ParseException, ServiceException;
+	Document loadRemoteDoc(@NotEmpty String url) throws  ParseException, ServiceException;
 
 }

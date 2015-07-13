@@ -20,11 +20,6 @@ Ext.define('MyCms.view.document.Grid', {
 		width : 50,
 		sortable : false
 	}, {
-		text : "ID",
-		dataIndex : 'id',
-		flex : 1,
-		sortable : false
-	}, {
 		tdCls : 'x-grid-cell-topic',
 		text : "标题",
 		dataIndex : 'title',

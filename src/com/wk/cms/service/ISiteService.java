@@ -2,6 +2,8 @@ package com.wk.cms.service;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Site;
@@ -11,7 +13,7 @@ public interface ISiteService {
 
 	List<Site> findAll();
 
-	void save(Site site) throws ServiceException;
+	void save(@NotNull Site site) throws ServiceException;
 
 	Site findByName(String name);
 

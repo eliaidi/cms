@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -95,6 +96,18 @@ public class CommonUtils {
 		}
 		sb.delete(0, str.length()-1);
 		return sb.toString();
+	}
+
+	public static boolean contains(Object[] interfaces, Object class1) {
+		
+		if(isEmpty(interfaces)) return false;
+		
+		for(Object o : interfaces){
+			if(o.equals(class1)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

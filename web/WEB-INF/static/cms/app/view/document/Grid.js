@@ -2,7 +2,8 @@ Ext.define('MyCms.view.document.Grid', {
 	extend : 'Ext.grid.Panel',
 	uses : [ 'Ext.data.Store',
 	         'MyCms.model.Document',
-			 'Ext.ux.form.SearchField' ],
+			 'Ext.ux.form.SearchField',
+			 'MyCms.view.ux.MyMenu'],
 	border : true,
 	title : '文档列表',
 	loadMask : true,
@@ -111,7 +112,7 @@ Ext.define('MyCms.view.document.Grid', {
 		if (dMenu) {
 			Ext.destroy(dMenu);
 		}
-		dMenu = Ext.create('Ext.menu.Menu', {
+		dMenu = Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'document-item-menu',
 			items : [ {
 				text : '修改',
@@ -149,7 +150,7 @@ Ext.define('MyCms.view.document.Grid', {
 		if (dMenu) {
 			Ext.destroy(dMenu);
 		}
-		dMenu = Ext.create('Ext.menu.Menu', {
+		dMenu = Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'document-cmp-menu',
 			items : [ {
 				text : '刷新',

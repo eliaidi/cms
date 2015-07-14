@@ -5,7 +5,8 @@ Ext.define('MyCms.view.appendix.Window',{
 	      'MyCms.model.Appendix',
 	      'Ext.grid.plugin.CellEditing',
 	      'Ext.grid.plugin.RowEditing',
-	      'Ext.resizer.Resizer'],
+	      'Ext.resizer.Resizer',
+	      'MyCms.view.ux.MyMenu'],
 	modal:true,
 	width:900,
 	height:615,
@@ -295,7 +296,7 @@ Ext.define('MyCms.view.appendix.Window',{
 					},
 					"itemcontextmenu":function( _this, record, item, index, e, eOpts){
 						
-						Ext.create('Ext.menu.Menu',{
+						Ext.create('MyCms.view.ux.MyMenu',{
 							items:[{
 								text:'下载附件',
 								handler:function(){
@@ -332,7 +333,7 @@ Ext.define('MyCms.view.appendix.Window',{
 	preview:function(record,e){
 		var appPreviewMenu = Ext.getCmp('app-preview-menu');
 		if(!appPreviewMenu){
-			appPreviewMenu = Ext.create('Ext.menu.Menu',{
+			appPreviewMenu = Ext.create('MyCms.view.ux.MyMenu',{
 				id:'app-preview-menu',
 				items:[{
 					xtype:'panel',

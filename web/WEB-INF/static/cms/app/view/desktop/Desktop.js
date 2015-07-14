@@ -25,7 +25,8 @@ Ext.define('MyCms.view.desktop.Desktop', {
         'MyCms.view.site.Module',
         'MyCms.view.channel.Module',
         'MyCms.view.document.Module',
-        'MyCms.view.ux.ImpWindow'
+        'MyCms.view.ux.ImpWindow',
+        'MyCms.view.ux.MyMenu'
     ],
     init: function() {
     	var me = this;
@@ -35,7 +36,8 @@ Ext.define('MyCms.view.desktop.Desktop', {
         me.on('refresh','doRefresh',me);
         me.desktop.on('refresh','doRefresh',me);
         me.desktop.shortcutsView.on('itemcontextmenu','onItemMenu',me);
-        me.desktop.shortcutsView.on('itemclick', me.onShortcutItemClick, me);
+        me.desktop.shortcutsView.on('itemdblclick', me.onShortcutItemClick, me);
+        
     },
     onShortcutItemClick:function(dataView, record,item, index, e, eOpts){
     	var me = this, module = me.desktop.app.getModule(record.data.module),
@@ -47,12 +49,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
     },
     onItemMenu:function(_this, record, item, index, e, eOpts){
     	var me = this;
-    	var sMenu = Ext.getCmp('site-menu');
-    	if(sMenu){
-    		Ext.destroy(sMenu);
-    	}
-    	sMenu = Ext.create('Ext.menu.Menu',{
-    		id:'site-menu',
+    	var sMenu =  Ext.create('MyCms.view.ux.MyMenu',{
             items: [{
                 text: '修改',
                 handler:function(){
@@ -66,8 +63,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 },
                 scope:me
             }]
-    	});
-    	sMenu.showAt(e.getXY());
+    	}).showAt(e.getXY());
     	
     	e.stopEvent();
     	e.stopPropagation();

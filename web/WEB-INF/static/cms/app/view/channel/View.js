@@ -4,7 +4,8 @@ Ext.define('MyCms.view.channel.View', {
 	requires : [ 'Ext.data.Store', 
 	             'MyCms.model.Channel',
 	             'MyCms.view.ux.ImpWindow',
-	             'MyCms.view.channel.ImgView'],
+	             'MyCms.view.channel.ImgView',
+	             'MyCms.view.ux.MyMenu'],
 
 	initComponent : function() {
 		var me = this;
@@ -51,7 +52,7 @@ Ext.define('MyCms.view.channel.View', {
 		if (sMenu) {
 			Ext.destroy(sMenu);
 		}
-		Ext.create('Ext.menu.Menu', {
+		Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'channel-item-menu',
 			items : [ {
 				text : '打开',
@@ -112,11 +113,7 @@ Ext.define('MyCms.view.channel.View', {
 	},
 	showCmpMenu : function(_this, e, eOpts) {
 		var me = this;
-		var sMenu = Ext.getCmp('channel-view-menu');
-		if (sMenu) {
-			Ext.destroy(sMenu);
-		}
-		sMenu = Ext.create('Ext.menu.Menu', {
+		var sMenu =  Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'channel-view-menu',
 			items : [ {
 				text : '刷新',

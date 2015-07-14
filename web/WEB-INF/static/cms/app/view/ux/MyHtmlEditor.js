@@ -1,6 +1,6 @@
 Ext.define('MyCms.view.ux.MyHtmlEditor',{
 	extend:'Ext.form.field.HtmlEditor',
-	requires:['Ext.form.Panel','Ext.menu.Menu'],
+	requires:['Ext.form.Panel'],
 	initComponent:function(){
 		
 		var me = this;

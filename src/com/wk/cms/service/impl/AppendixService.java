@@ -3,7 +3,6 @@ package com.wk.cms.service.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import com.wk.cms.model.Document;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
 
@@ -37,7 +37,7 @@ public class AppendixService implements IAppendixService{
 		return appendixDao.find(documentId,type,pageInfo);
 	}
 	@Override
-	public void save(MultipartFile file, Appendix appendix) throws ServiceException, IOException {
+	public void save(MultipartFile file, Appendix appendix) throws ServiceException {
 		
 		if(!StringUtils.hasLength(appendix.getId())){
 			if(file.isEmpty()){
@@ -48,7 +48,11 @@ public class AppendixService implements IAppendixService{
 			appendix.setFileSize(file.getSize());
 			appendix.setFileName(fileName);
 			appendix.setFileExt(fileName.indexOf(".")>0?fileName.substring(fileName.lastIndexOf(".")+1):null);
-			appendix.setContent(new MyBlob(file.getBytes()));
+			try {
+				appendix.setContent(new MyBlob(file.getBytes()));
+			} catch (IOException e) {
+				throw new ServiceException("实例化BLOB失败！！", e);
+			}
 			appendix.setCrTime(new Date());
 			appendix.setCrUser(null);
 			
@@ -57,7 +61,6 @@ public class AppendixService implements IAppendixService{
 		}else{
 			
 			Appendix persistApp = findById(appendix.getId());
-//			BeanUtils.copyProperties(persistApp, appendix, new String[]{"addition","fileName"});
 			persistApp.setAddition(appendix.getAddition());
 			persistApp.setFileName(appendix.getFileName());
 			appendixDao.save(persistApp);
@@ -108,6 +111,28 @@ public class AppendixService implements IAppendixService{
 			throw new ServiceException("参数错误！id必须传入");
 		}
 		appendixDao.delete(id);
+	}
+	@Override
+	public void copy(Document document, Document newDoc) throws ServiceException {
+		
+		List<Appendix> appendixs = findByDocId(document.getId());
+		if(!CommonUtils.isEmpty(appendixs)){
+			for(Appendix appendix : appendixs){
+				copy(appendix,newDoc);
+			}
+		}
+	}
+	
+	@Override
+	public void copy(Appendix appendix, Document newDoc) throws ServiceException {
+		
+		Appendix newApp = new Appendix();
+		BeanUtils.copyProperties(appendix, newApp, new String[]{"id","crTime","crUser","document"});
+		
+		newApp.setDocument(newDoc);
+		newApp.setCrTime(new Date());
+		newApp.setCrUser(null);
+		appendixDao.save(newApp);
 	}
 
 }

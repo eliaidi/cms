@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @JsonIgnoreProperties({"channels","documents"})
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(region="site",usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Site {
 
 	public Site() {

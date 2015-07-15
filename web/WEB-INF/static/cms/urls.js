@@ -10,6 +10,8 @@ var channel_detail = RootPath+'/channel/detail';
 var channel_delete = RootPath+'/channel/delete';
 var channel_imp = RootPath+'/channel/imp';
 var channel_delete_multi = RootPath+'/channel/deleteMulti';
+var channel_copy = RootPath+'/channel/copy';
+var channel_cut = RootPath+'/channel/cut';
 
 var document_list = RootPath+'/document/list';
 var document_save = RootPath+'/document/save';

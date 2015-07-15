@@ -3,6 +3,8 @@ package com.wk.cms.service;
 import java.io.IOException;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Appendix;
@@ -25,5 +27,9 @@ public interface IAppendixService {
 	List<Appendix> findByDocId(String documentId) throws ServiceException;
 
 	void delete(String id) throws ServiceException;
+
+	void copy(@NotNull Document document, @NotNull Document newDoc) throws ServiceException;
+
+	void copy(@NotNull Appendix appendix,@NotNull Document newDoc) throws ServiceException;
 
 }

@@ -2,6 +2,9 @@ package com.wk.cms.dao;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.utils.PageInfo;
 
@@ -16,5 +19,9 @@ public interface IDocumentDao {
 	void deleteById(String id);
 
 	List<Document> findByIds(String ids);
+
+	List<Document> findAll( Channel channel);
+
+	void refresh(Channel channel);
 
 }

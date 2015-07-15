@@ -2,6 +2,9 @@ package com.wk.cms.service;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Channel;
@@ -32,7 +35,7 @@ public interface IChannelService {
 	 * @return
 	 * @throws ServiceException 
 	 */
-	Channel findById(String id) throws ServiceException;
+	Channel findById(@NotEmpty String id) ;
 
 	/**
 	 * 根据父栏目ID查询所有子栏目
@@ -40,7 +43,7 @@ public interface IChannelService {
 	 * @return
 	 * @throws ServiceException 
 	 */
-	List<Channel> findByParentId(String parentId) throws ServiceException;
+	List<Channel> findByParentId(@NotEmpty String parentId) throws ServiceException;
 
 	/**
 	 * 删除栏目
@@ -60,4 +63,14 @@ public interface IChannelService {
 	void imp(MultipartFile file, String parentId, String siteId) throws ServiceException;
 
 	void deleteMulti(String ids) throws ServiceException;
+
+	void copy(@NotNull String[] objIds, String parentId, String siteId) throws ServiceException;
+
+	void cut(@NotNull String[] objIds, String parentId, String siteId) throws ServiceException;
+
+	List<Channel> findByIdArray(@NotNull String[] objIds);
+
+	void copy(@NotNull Channel channel, String parentId, String siteId) throws ServiceException;
+
+	void cut(@NotNull Channel channel, String parentId, String siteId) throws ServiceException;
 }

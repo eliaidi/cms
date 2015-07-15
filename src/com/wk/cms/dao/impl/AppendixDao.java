@@ -2,10 +2,8 @@ package com.wk.cms.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,6 +18,7 @@ public class AppendixDao implements IAppendixDao {
 
 	@Autowired
 	private HibernateTemplate hibernateTemplate;
+	@SuppressWarnings("unchecked")
 	@Override
 	public PageInfo find(String documentId, Integer type, PageInfo pageInfo) {
 		

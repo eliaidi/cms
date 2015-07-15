@@ -82,4 +82,18 @@ public class ChannelController {
 		channelService.deleteMulti(ids);
 		return new Message(true, "删除成功！", null);
 	}
+	
+	@RequestMapping("/copy")
+	public @ResponseBody Message copy(@RequestParam("objIds") String[] objIds,String parentId,String siteId) throws ServiceException{
+		
+		channelService.copy(objIds,parentId,siteId);
+		return new Message(true, "拷贝成功！！", null);
+	}
+	
+	@RequestMapping("/cut")
+	public @ResponseBody Message cut(@RequestParam("objIds") String[] objIds,String parentId,String siteId) throws ServiceException{
+		
+		channelService.cut(objIds,parentId,siteId);
+		return new Message(true, "剪切成功！！", null);
+	}
 }

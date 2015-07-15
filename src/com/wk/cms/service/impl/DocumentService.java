@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -12,6 +13,7 @@ import com.wk.cms.dao.IDocumentDao;
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
+import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
@@ -19,6 +21,7 @@ import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Service
+@Lazy
 public class DocumentService implements IDocumentService {
 
 	@Autowired
@@ -26,6 +29,9 @@ public class DocumentService implements IDocumentService {
 	
 	@Autowired
 	private IChannelService channelService;
+	
+	@Autowired
+	private IAppendixService appendixService;
 	@Override
 	public PageInfo find(String channelId, PageInfo pageInfo, String query) throws ServiceException {
 		
@@ -99,6 +105,47 @@ public class DocumentService implements IDocumentService {
 		
 		return CommonUtils.loadRemoteDoc(url);
 		
+	}
+	@Override
+	public void copy(Channel channel, Channel newChannel) throws ServiceException {
+		
+		List<Document> documents = findAll(channel);
+		
+		if(!CommonUtils.isEmpty(documents)){
+			for(Document document : documents){
+				copy(document,newChannel);
+			}
+		}
+	}
+	
+	@Override
+	public void copy(Document document, Channel newChannel) throws ServiceException {
+		
+		//拷贝本文档
+		Document newDoc = new Document();
+		BeanUtils.copyProperties(document, newDoc, new String[]{"id","crTime","crUser","appendixs"});
+		save(newDoc, newChannel);
+		
+		//拷贝本文档下所有的附件
+		appendixService.copy(document,newDoc);
+	}
+	@Override
+	public void save(Document newDoc, Channel newChannel) {
+		
+		newDoc.setChannel(newChannel);
+		newDoc.setSite(newChannel.getSite());
+		newDoc.setCrTime(new Date());
+		newDoc.setCrUser(null);
+		documentDao.save(newDoc);
+	}
+	@Override
+	public List<Document> findAll(Channel channel) {
+		return documentDao.findAll(channel);
+	}
+	@Override
+	public void refreshBy(Channel channel) {
+		
+		documentDao.refresh(channel);
 	}
 
 }

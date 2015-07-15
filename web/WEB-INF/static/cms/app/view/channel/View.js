@@ -5,7 +5,8 @@ Ext.define('MyCms.view.channel.View', {
 	             'MyCms.model.Channel',
 	             'MyCms.view.ux.ImpWindow',
 	             'MyCms.view.channel.ImgView',
-	             'MyCms.view.ux.MyMenu'],
+	             'MyCms.view.ux.MyMenu',
+	             'MyCms.model.ClipBoard'],
 
 	initComponent : function() {
 		var me = this;
@@ -64,6 +65,18 @@ Ext.define('MyCms.view.channel.View', {
 				text : '修改',
 				handler : function() {
 					me.modifyChannel(record);
+				},
+				scope : me
+			},{
+				text : '复制',
+				handler : function(){
+					me.copy(record);
+				},
+				scope : me
+			},{
+				text : '剪切',
+				handler : function(){
+					me.cut(record);
 				},
 				scope : me
 			}, {
@@ -127,6 +140,11 @@ Ext.define('MyCms.view.channel.View', {
 				text : '导入栏目',
 				handler : 'impChannel',
 				scope : me
+			},{
+				text : '粘贴',
+				handler : 'paste',
+				scope : me,
+				disabled:!MyCms.Application.clipBoard
 			} ]
 		}).showAt(e.getXY());
 
@@ -134,9 +152,69 @@ Ext.define('MyCms.view.channel.View', {
 		e.stopPropagation();
 	},
 	refresh : function() {
-		var me = this;
+		var me = this,view = me.down('dataview');
 
-		me.down('dataview').getStore().load();
+		view.getStore().load();
+		view.mixins.dragSelector.init(view);
+	},
+	copy:function(r){
+		var me = this,rs = me.down('dataview').getSelectionModel().getSelection();
+		if(rs.length==0){
+			rs = [r];
+		}
+		MyCms.Application.copy(new MyCms.model.ClipBoard({
+			eType : MyCms.view.channel.View.ENAME,
+			aType : 'copy',
+			data : rs
+		}));
+	},
+	cut:function(r){
+		var me = this,rs = me.down('dataview').getSelectionModel().getSelection();
+		if(rs.length==0){
+			rs = [r];
+		}
+		MyCms.Application.copy(new MyCms.model.ClipBoard({
+			eType : MyCms.view.channel.View.ENAME,
+			aType : 'cut',
+			data : rs,
+			from : me
+		}));
+	},
+	paste:function(){
+		var me = this,obj = MyCms.Application.clipBoard;
+		if(!obj||obj.get('eType')!=MyCms.view.channel.View.ENAME){
+			return;
+		}
+		var ids = [];
+		obj.get('data').forEach(function(r){
+			ids.push(r.get('id'));
+		});
+		Ext.Ajax.request({
+			url : obj.get('aType')=='copy'?channel_copy:channel_cut,
+			params : {
+				objIds : ids.join(','),
+				siteId : me.site?me.site.get('id'):'',
+				parentId : me.parent?me.parent.get('id'):''
+			},
+			success : function(response, opts) {
+				var o = Ext.decode(response.responseText);
+				if (!o.success) {
+					Ext.Msg.alert('错误', o.message);
+					return;
+				}
+//				Ext.Msg.alert('提示', o.message, function() {
+//					me.fireEvent('refresh', me);
+//				});
+				me.fireEvent('refresh', me);
+				if(obj.get('aType')=='cut'&&obj.get('from')){
+					obj.get('from').fireEvent('refresh',obj.get('from'));
+				}
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	},
 	addChannel : function() {
 		var me = this, desktop = me.up('desktop'), module = desktop.app
@@ -204,5 +282,8 @@ Ext.define('MyCms.view.channel.View', {
 				});
 			}
 		});
+	},
+	statics:{
+		ENAME : 'channel'
 	}
 });

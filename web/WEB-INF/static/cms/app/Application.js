@@ -13,5 +13,10 @@ Ext.define('MyCms.Application', {
     
     launch: function () {
        
+    },
+    statics:{
+    	copy:function(record){
+    		MyCms.Application.clipBoard = record;
+    	}
     }
 });

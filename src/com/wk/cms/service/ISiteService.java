@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Site;
@@ -23,7 +24,7 @@ public interface ISiteService {
 	 * @return
 	 * @throws ServiceException 未找到站点
 	 */
-	Site findById(String siteId) throws ServiceException;
+	Site findById(@NotEmpty String siteId) throws ServiceException ;
 
 	void deleteById(String siteId) throws ServiceException;
 

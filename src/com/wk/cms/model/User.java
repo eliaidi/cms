@@ -2,6 +2,7 @@ package com.wk.cms.model;
 
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -9,8 +10,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
 @Table(name="Sys_User",schema="CMS")
+@Cacheable
+@Cache(region="user",usage=CacheConcurrencyStrategy.READ_WRITE)
 public class User {
 
 	@Id

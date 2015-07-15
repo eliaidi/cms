@@ -13,9 +13,11 @@ import com.wk.cms.dao.IChannelDao;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
 import com.wk.cms.service.IChannelService;
+import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 
 @Service
@@ -25,6 +27,8 @@ public class ChannelServiceImpl implements IChannelService {
 	private IChannelDao channelDao;
 	@Autowired 
 	private ISiteService siteService;
+	@Autowired
+	private IDocumentService documentService;
 	
 	@Override
 	public List<Channel> findBySiteId(String siteId) throws ServiceException {
@@ -39,13 +43,6 @@ public class ChannelServiceImpl implements IChannelService {
 		
 		if(!StringUtils.hasLength(channel.getId())){
 			
-			if(findByName(channel.getName())!=null){
-				throw new ServiceException("名称是【"+channel.getName()+"】的栏目已经存在！");
-			}
-			
-			if(!StringUtils.hasLength(parentId)&&!StringUtils.hasLength(siteId)){
-				throw new ServiceException("参数错误！parentId和siteId必须至少传入一个");
-			}
 			if(StringUtils.hasLength(parentId)){
 				Channel parent = findById(parentId);
 				if(parent==null){
@@ -53,13 +50,15 @@ public class ChannelServiceImpl implements IChannelService {
 				}
 				channel.setParent(parent);
 				channel.setSite(parent.getSite());
-			}else{
+			}else if(StringUtils.hasLength(siteId)){
 				Site site = siteService.findById(siteId);
 				if(site==null){
 					throw new ServiceException("参数错误！siteId为【"+siteId+"】的站点不存在");
 				}
 				channel.setParent(null);
 				channel.setSite(site);
+			}else{
+				throw new ServiceException("参数错误！parentId和siteId必须至少传入一个");
 			}
 			channel.setCrTime(new Date());
 			channel.setCrUser(null);
@@ -92,19 +91,13 @@ public class ChannelServiceImpl implements IChannelService {
 		return channelDao.findByName(name);
 	}
 	@Override
-	public Channel findById(String id) throws ServiceException {
+	public Channel findById(String id) {
 		
-		if(!StringUtils.hasLength(id)){
-			throw new ServiceException("参数错误！id必须传入");
-		}
 		return channelDao.findById(id);
 	}
 	@Override
 	public List<Channel> findByParentId(String parentId) throws ServiceException {
 		
-		if(!StringUtils.hasLength(parentId)){
-			throw new ServiceException("参数错误！parentId必须传入");
-		}
 		return channelDao.findByParentId(parentId);
 	}
 	@Override
@@ -142,6 +135,77 @@ public class ChannelServiceImpl implements IChannelService {
 		String[] idArr = ids.split(",");
 		for(String id : idArr){
 			deleteById(id);
+		}
+	}
+	@Override
+	public void copy(String[] objIds, String parentId, String siteId) throws ServiceException {
+
+		List<Channel> channels = findByIdArray(objIds);
+		if(CommonUtils.isEmpty(channels)){
+			throw new ServiceException("未找到栏目对象！！");
+		}
+		for(Channel channel :channels){
+			copy(channel,parentId,siteId);
+		}
+		
+	}
+	
+	@Override
+	public void copy(Channel channel, String parentId, String siteId) throws ServiceException {
+		//复制本栏目
+		Channel newChannel = new Channel();
+		BeanUtils.copyProperties(channel, newChannel, new String[]{"id","crTime","crUser","children","documents"});
+		save(newChannel, parentId, siteId);
+		//复制栏目下的文档
+		documentService.copy(channel,newChannel);
+		
+		//复制所有子栏目
+		List<Channel> channels = findByParentId(channel.getId());
+		if(!CommonUtils.isEmpty(channels)){
+			for(Channel subChannel : channels){
+				copy(subChannel, newChannel.getId(), newChannel.getSite().getId());
+			}
+		}
+		
+	}
+	@Override
+	public List<Channel> findByIdArray(String[] objIds) {
+		return channelDao.findByIds(objIds);
+	}
+	@Override
+	public void cut(String[] objIds, String parentId, String siteId) throws ServiceException {
+		
+		List<Channel> channels = findByIdArray(objIds);
+		if(!CommonUtils.isEmpty(channels)){
+			for(Channel channel : channels){
+				cut(channel,parentId,siteId);
+			}
+		}
+	}
+	@Override
+	public void cut(Channel channel, String parentId, String siteId) throws ServiceException {
+		
+		Site targetSite = null;
+		if(StringUtils.hasLength(parentId)){
+			Channel parent = findById(parentId);
+			channel.setParent(parent);
+			channel.setSite(parent.getSite());
+			
+			targetSite = parent.getSite();
+		}else if(StringUtils.hasLength(siteId)){
+			
+			targetSite = siteService.findById(siteId);
+			channel.setParent(null);
+			channel.setSite(targetSite);
+		}else{
+			throw new ServiceException("参数错误！parentId和siteId必须传入一个！！");
+		}
+		//更新栏目
+		channelDao.save(channel);
+		
+		//如果栏目剪切到其他站点，则更新栏目下文档的所属站点
+		if(!channel.getSite().getId().equals(targetSite.getId())){
+			documentService.refreshBy(channel);
 		}
 	}
 

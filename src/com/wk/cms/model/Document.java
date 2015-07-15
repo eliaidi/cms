@@ -3,6 +3,7 @@ package com.wk.cms.model;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,6 +24,8 @@ import com.wk.cms.model.annotations.ShowArea;
 
 @Entity
 @JsonIgnoreProperties({"appendixs"})
+@Cacheable
+@Cache(region="document",usage=CacheConcurrencyStrategy.READ_WRITE)
 public class Document {
 
 	@Id

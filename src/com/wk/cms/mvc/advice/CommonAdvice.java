@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wk.cms.controller.vo.Message;
+import com.wk.cms.mvc.editors.MyArrayEditor;
 
 @ControllerAdvice
 public class CommonAdvice {
@@ -32,5 +33,6 @@ public class CommonAdvice {
 	public void initBinder(WebDataBinder dataBinder) {
 		dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(
 				new SimpleDateFormat("yyyy-MM-dd"), true));
+		dataBinder.registerCustomEditor(String[].class, new MyArrayEditor(","));
 	}
 }

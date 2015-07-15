@@ -17,4 +17,6 @@ public interface IChannelDao  {
 	void deleteById(String channelId);
 
 	Channel findByName(String name);
+
+	List<Channel> findByIds(String[] objIds);
 }

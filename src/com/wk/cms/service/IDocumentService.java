@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.wk.cms.exception.ParseException;
+import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.PageInfo;
@@ -26,5 +27,26 @@ public interface IDocumentService {
 	List<Document> findByIds(@NotEmpty String ids) throws ServiceException;
 
 	Document loadRemoteDoc(@NotEmpty String url) throws  ParseException, ServiceException;
+
+	void copy(@NotNull Channel channel, @NotNull Channel newChannel) throws ServiceException;
+
+	List<Document> findAll(@NotNull Channel channel);
+
+	/***
+	 * 
+	 * @param document 
+	 * @param newChannel
+	 * @throws ServiceException 
+	 */
+	void copy(@NotNull Document document,@NotNull Channel newChannel) throws ServiceException;
+
+	void save(@NotNull Document newDoc,@NotNull Channel newChannel);
+
+	/**
+	 * 更新栏目下所有文档的所属站点，保持和栏目的所属站点一致
+	 * @param channel
+	 */
+	void refreshBy(@NotNull Channel channel);
+
 
 }

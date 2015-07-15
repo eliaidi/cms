@@ -25,7 +25,7 @@ public class SiteDaoImpl implements ISiteDao {
 
 		return hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createQuery("from Site order by crTime asc")
-				.setCacheable(true).list();
+				.setCacheable(true).setCacheRegion("site").list();
 	}
 
 	@Override

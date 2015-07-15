@@ -36,8 +36,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
         me.on('refresh','doRefresh',me);
         me.desktop.on('refresh','doRefresh',me);
         me.desktop.shortcutsView.on('itemcontextmenu','onItemMenu',me);
-        me.desktop.shortcutsView.on('itemdblclick', me.onShortcutItemClick, me);
-        
+        me.desktop.shortcutsView.on('itemclick', me.onShortcutItemClick, me);
     },
     onShortcutItemClick:function(dataView, record,item, index, e, eOpts){
     	var me = this, module = me.desktop.app.getModule(record.data.module),
@@ -60,6 +59,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 text: '删除',
                 handler:function(){
                 	me.deleteSite(record)
+                },
+                scope:me
+            },{
+            	text: '复制',
+                handler:function(){
+                	MyCms.Application.copy(record);
                 },
                 scope:me
             }]

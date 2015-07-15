@@ -105,8 +105,18 @@ public class DocumentDao implements IDocumentDao {
 
 	@Override
 	public void refresh(Channel channel) {
-		
-		hibernateTemplate.bulkUpdate("update Document d set d.site=? where d.channel=?", channel.getSite(),channel);
+
+		hibernateTemplate.bulkUpdate(
+				"update Document d set d.site=? where d.channel=?",
+				channel.getSite(), channel);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Document> findByIds(String[] objIds) {
+		return hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createCriteria(Document.class)
+				.add(Restrictions.in("id", objIds)).list();
 	}
 
 }

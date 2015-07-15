@@ -120,6 +120,18 @@ Ext.define('MyCms.view.document.Grid', {
 					me.modifyDoc(record);
 				},
 				scope : me
+			},{
+				text : '复制',
+				handler : function() {
+					me.copy(record);
+				},
+				scope : me
+			},{
+				text : '剪切',
+				handler : function() {
+					me.cut(record);
+				},
+				scope : me
 			}, {
 				text : '删除该条',
 				handler : function() {
@@ -143,6 +155,64 @@ Ext.define('MyCms.view.document.Grid', {
 		e.stopEvent();
 		e.stopPropagation();
 	},
+	copy:function(r){
+		var me = this,rs = me.getSelectionModel().getSelection();
+		if(rs.length==0){
+			rs = [r];
+		}
+		MyCms.Application.copy(new MyCms.model.ClipBoard({
+			eType : MyCms.view.document.Grid.ENAME,
+			aType : 'copy',
+			data : rs
+		}));
+	},
+	cut:function(r){
+		var me = this,rs = me.getSelectionModel().getSelection();
+		if(rs.length==0){
+			rs = [r];
+		}
+		MyCms.Application.copy(new MyCms.model.ClipBoard({
+			eType : MyCms.view.document.Grid.ENAME,
+			aType : 'cut',
+			data : rs,
+			from : me
+		}));
+	},
+	paste:function(){
+		var me = this,obj = MyCms.Application.clipBoard;
+		if(!obj||obj.get('eType')!=MyCms.view.document.Grid.ENAME){
+			return;
+		}
+		var ids = [];
+		obj.get('data').forEach(function(r){
+			ids.push(r.get('id'));
+		});
+		Ext.Ajax.request({
+			url : obj.get('aType')=='copy'?document_copy:document_cut,
+			params : {
+				objIds : ids.join(','),
+				channelId : me.channel.get('id')
+			},
+			success : function(response, opts) {
+				var o = Ext.decode(response.responseText);
+				if (!o.success) {
+					Ext.Msg.alert('错误', o.message);
+					return;
+				}
+//				Ext.Msg.alert('提示', o.message, function() {
+//					me.fireEvent('refresh', me);
+//				});
+				me.fireEvent('refresh', me);
+				if(obj.get('aType')=='cut'&&obj.get('from')){
+					obj.get('from').fireEvent('refresh',obj.get('from'));
+				}
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
+	},
 	showCmpMenu : function(_this, e, eOpts) {
 		var me = this;
 
@@ -160,6 +230,11 @@ Ext.define('MyCms.view.document.Grid', {
 				text : '添加文档',
 				handler : 'addDocument',
 				scope : me
+			},{
+				text : '粘贴',
+				handler : 'paste',
+				scope : me,
+				disabled:!MyCms.Application.clipBoard
 			} ]
 		}).showAt(e.getXY());
 

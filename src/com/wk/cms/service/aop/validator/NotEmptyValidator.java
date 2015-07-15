@@ -15,6 +15,10 @@ public class NotEmptyValidator implements Validator {
 			if("".equals(value)){
 				throw new ValidationException("参数错误，字段值为空字符串！");
 			}
+		}else if(class1.isAssignableFrom(Object[].class)){
+			Object[] objects = (Object[]) value;
+			if(objects.length==0)
+				throw new ValidationException("参数错误，数组为空！");
 		}
 	}
 

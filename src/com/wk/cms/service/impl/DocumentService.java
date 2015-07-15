@@ -147,5 +147,44 @@ public class DocumentService implements IDocumentService {
 		
 		documentDao.refresh(channel);
 	}
+	@Override
+	public void copy(String[] objIds, String channelId) throws ServiceException {
+		
+		List<Document> documents = findByIds(objIds);
+		Channel channel = channelService.findById(channelId);
+		if(channel==null){
+			throw new ServiceException("未找到ID为【"+channelId+"】的栏目！！");
+		}
+		if(!CommonUtils.isEmpty(documents)){
+			for(Document document : documents){
+				copy(document, channel);
+			}
+		}
+	}
+	
+	@Override
+	public List<Document> findByIds(String[] objIds) {
+		return documentDao.findByIds(objIds);
+	}
+	@Override
+	public void cut(String[] objIds, String channelId) throws ServiceException {
+		List<Document> documents = findByIds(objIds);
+		Channel channel = channelService.findById(channelId);
+		if(channel==null){
+			throw new ServiceException("未找到ID为【"+channelId+"】的栏目！！");
+		}
+		if(!CommonUtils.isEmpty(documents)){
+			for(Document document : documents){
+				cut(document, channel);
+			}
+		}
+	}
+	@Override
+	public void cut(Document document, Channel channel) {
+		
+		document.setChannel(channel);
+		document.setSite(channel.getSite());
+		documentDao.save(document);
+	}
 
 }

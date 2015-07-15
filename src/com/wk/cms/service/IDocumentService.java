@@ -48,5 +48,13 @@ public interface IDocumentService {
 	 */
 	void refreshBy(@NotNull Channel channel);
 
+	void copy(@NotEmpty String[] objIds, @NotEmpty String channelId) throws ServiceException;
+
+	void cut(@NotEmpty String[] objIds,@NotEmpty String channelId) throws ServiceException;
+
+	List<Document> findByIds(@NotEmpty String[] objIds);
+
+	void cut(@NotNull Document document, @NotNull Channel channel);
+
 
 }

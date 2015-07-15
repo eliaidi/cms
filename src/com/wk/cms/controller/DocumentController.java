@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -97,6 +98,19 @@ public class DocumentController {
 		
 		Document document = documentService.loadRemoteDoc(url);
 		return new Message(true, "加载成功！", document);
+	}
+	
+	@RequestMapping("/copy")
+	public @ResponseBody Message copy(@RequestParam("objIds") String[] objIds,String channelId) throws ServiceException{
+		
+		documentService.copy(objIds, channelId);
+		return new Message(true, "拷贝成功！", null);
+	}
+	@RequestMapping("/cut")
+	public @ResponseBody Message cut(@RequestParam("objIds") String[] objIds,String channelId) throws ServiceException{
+		
+		documentService.cut(objIds, channelId);
+		return new Message(true, "剪切成功！", null);
 	}
 }
 

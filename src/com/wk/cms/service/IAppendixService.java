@@ -28,6 +28,12 @@ public interface IAppendixService {
 
 	void delete(String id) throws ServiceException;
 
+	/**
+	 * 将文档里面的所有附件拷贝一份，放置到另一个文档里面
+	 * @param document	from
+	 * @param newDoc	to
+	 * @throws ServiceException
+	 */
 	void copy(@NotNull Document document, @NotNull Document newDoc) throws ServiceException;
 
 	void copy(@NotNull Appendix appendix,@NotNull Document newDoc) throws ServiceException;

@@ -1,19 +1,12 @@
 package com.wk.cms.model;
 
-import java.sql.Blob;
-import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.OneToOne;
 
 @Entity
-@JsonIgnoreProperties({"content"})
 public class Appendix {
 
 	@Id
@@ -22,19 +15,11 @@ public class Appendix {
 	@ManyToOne
 	private Document document;
 	private int type;
+	private String name;
 	private String addition;
-	private String fileName;
-	private String fileExt;
 	
-	@Lob
-	private Blob content;
-	private long fileSize;
-	
-	@Temporal(TemporalType.DATE)
-	private Date crTime;
-	
-	@ManyToOne
-	private User crUser;
+	@OneToOne
+	private File file;
 
 	public String getId() {
 		return id;
@@ -42,38 +27,6 @@ public class Appendix {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-	
-	public long getFileSize() {
-		return fileSize;
-	}
-	
-	public void setFileSize(long fileSize) {
-		this.fileSize = fileSize;
-	}
-	
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public String getFileExt() {
-		return fileExt;
-	}
-
-	public void setFileExt(String fileExt) {
-		this.fileExt = fileExt;
-	}
-
-	public String getAddition() {
-		return addition;
-	}
-	
-	public void setAddition(String addition) {
-		this.addition = addition;
 	}
 
 	public Document getDocument() {
@@ -92,29 +45,28 @@ public class Appendix {
 		this.type = type;
 	}
 
-	public Blob getContent() {
-		return content;
+	public String getAddition() {
+		return addition;
 	}
 
-	public void setContent(Blob content) {
-		this.content = content;
+	public void setAddition(String addition) {
+		this.addition = addition;
 	}
 
-	public Date getCrTime() {
-		return crTime;
+	public File getFile() {
+		return file;
 	}
 
-	public void setCrTime(Date crTime) {
-		this.crTime = crTime;
+	public void setFile(File file) {
+		this.file = file;
 	}
 
-	public User getCrUser() {
-		return crUser;
+	public String getName() {
+		return name;
 	}
 
-	public void setCrUser(User crUser) {
-		this.crUser = crUser;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
 	
 }

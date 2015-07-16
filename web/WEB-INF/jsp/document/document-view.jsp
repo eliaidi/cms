@@ -65,12 +65,12 @@
 				<c:forEach items="${obj.appendixs }" var="app" >
 					<c:choose>
 						<c:when test="${app.type==1 }">
-							<p><img alt="" title="${app.fileName }(大小：${app.fileSize })" width="570"
-								src="${pageContext.request.contextPath }/file/app/${app.id}"
+							<p><img alt="" title="${app.name }(名称：${app.file.fileName }，大小：${app.file.fileSize })" width="570"
+								src="${pageContext.request.contextPath }/file/app/${app.file.id}"
 								class="img-rounded"></p>
 						</c:when>
 						<c:otherwise>
-							<p><a href="${pageContext.request.contextPath }/file/app/${app.id}">${app.fileName }(大小：${app.fileSize })</a></p>
+							<p><a href="${pageContext.request.contextPath }/file/app/${app.file.id}">${app.Name }(名称：${app.file.fileName }，大小：${app.file.fileSize })</a></p>
 						</c:otherwise>
 					</c:choose>
 

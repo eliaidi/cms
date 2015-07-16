@@ -19,6 +19,10 @@ Ext.define('MyCms.view.site.Form',{
 		        name: 'descr',
 		        allowBlank: false
 			},{
+				fieldLabel: '站点存放目录',
+		        name: 'folder',
+		        allowBlank: false
+			},{
 				fieldLabel: '站点发布地址',
 		        name: 'url',
 		        allowBlank: false

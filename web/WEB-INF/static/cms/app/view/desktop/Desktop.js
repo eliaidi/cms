@@ -13,7 +13,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
         'Ext.window.MessageBox',
         'Ext.ux.desktop.ShortcutModel',
         'MyCms.view.systemstatus.SystemStatus',
-        'MyCms.view.videowindow.VideoWindow',
+        'MyCms.view.copyright.AboutUs',
         'MyCms.view.gridwindow.GridWindow',
         'MyCms.view.tabwindow.TabWindow',
         'MyCms.view.accordion.AccordionWindow',
@@ -76,7 +76,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
 
     getModules : function(){
         return [
-            new MyCms.view.videowindow.VideoWindow(),
+            new MyCms.view.copyright.AboutUs(),
             new MyCms.view.systemstatus.SystemStatus(),
             new MyCms.view.gridwindow.GridWindow(),
             new MyCms.view.tabwindow.TabWindow(),

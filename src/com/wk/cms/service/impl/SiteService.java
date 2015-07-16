@@ -18,7 +18,7 @@ import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 
 @Service
-public class SiteServiceImpl implements ISiteService {
+public class SiteService implements ISiteService {
 
 	@Autowired
 	private ISiteDao siteDao;

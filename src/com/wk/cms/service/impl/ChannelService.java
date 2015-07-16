@@ -21,7 +21,7 @@ import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 
 @Service
-public class ChannelServiceImpl implements IChannelService {
+public class ChannelService implements IChannelService {
 
 	@Autowired
 	private IChannelDao channelDao;

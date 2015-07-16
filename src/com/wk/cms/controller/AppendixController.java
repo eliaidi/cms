@@ -28,7 +28,7 @@ public class AppendixController {
 	}
 	
 	@RequestMapping("/save")
-	public @ResponseBody Message save(@RequestParam("file") MultipartFile file,Appendix appendix ) throws ServiceException, IOException{
+	public @ResponseBody Message save(@RequestParam("f") MultipartFile file,Appendix appendix ) throws ServiceException, IOException{
 		
 		appendixService.save(file,appendix);
 		

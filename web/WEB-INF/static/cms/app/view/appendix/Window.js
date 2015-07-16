@@ -43,7 +43,7 @@ Ext.define('MyCms.view.appendix.Window',{
 			    valueField: 'value'
 			},{
 				xtype: 'filefield',
-		        name: 'file',
+		        name: 'f',
 		        fieldLabel: '文件',
 		        buttonText: '选择文件'
 			},{
@@ -211,15 +211,15 @@ Ext.define('MyCms.view.appendix.Window',{
 					width : 50,
 					sortable : false
 				},{
-					text : "文件名",
-					dataIndex : 'fileName',
+					text : "附件名称",
+					dataIndex : 'name',
 					flex : 3,
 					sortable : false,
 					editor: {
 		                allowBlank: false
 		            }
 				}, {
-					text : "说明",
+					text : "附件说明",
 					dataIndex : 'addition',
 					flex : 3,
 					sortable : false,
@@ -251,7 +251,7 @@ Ext.define('MyCms.view.appendix.Window',{
 								url : appendix_update,
 								params : {
 									id:record.get('id'),
-									fileName:record.get('fileName'),
+									name:record.get('name'),
 									addition:record.get('addition')
 								},
 								success : function(response, opts) {
@@ -340,7 +340,7 @@ Ext.define('MyCms.view.appendix.Window',{
 					width:272,
 					height:212,
 					title:'图片-'+record.get('fileName'),
-					html:'<img id="picApp" src="'+RootPath+'/file/app/'+record.get('id')+'" width="272" />'
+					html:'<img id="picApp" src="'+RootPath+'/file/app/'+record.get('fileId')+'" width="272" />'
 				}]
 			}).showAt(e.getXY());
 		}

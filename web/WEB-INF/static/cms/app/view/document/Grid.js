@@ -14,6 +14,7 @@ Ext.define('MyCms.view.document.Grid', {
 	multiSelect : true,
 	viewConfig : {
 		trackOver : false,
+		loadingText:'正在加载中...',
 		emptyText : '<h1 style="margin:20px">未找到任何记录！！！</h1>'
 	},
 	columns : [ {
@@ -45,11 +46,26 @@ Ext.define('MyCms.view.document.Grid', {
 	} ],
 	initComponent : function() {
 		var me = this;
+		//面板右键菜单
+		me.cmpContextItems = [ {
+			text : '刷新',
+			handler : 'refresh',
+			scope : me
+		}, {
+			text : '添加文档',
+			handler : 'addDocument',
+			scope : me
+		},{
+			text : '粘贴',
+			handler : 'paste',
+			scope : me/*,
+			disabled:!MyCms.Application.clipBoard*/
+		} ];
 
 		var store = Ext.create('Ext.data.BufferedStore', {
 			model : 'MyCms.model.Document',
 			pageSize : 20,
-			leadingBufferZone : 1000,
+			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
 				url : document_list,
@@ -79,7 +95,10 @@ Ext.define('MyCms.view.document.Grid', {
 			dockedItems : [ {
 				dock : 'top',
 				xtype : 'toolbar',
-				items : [ {
+				items : [{
+					text:'面板操作',
+					menu:me.cmpContextItems
+				}, {
 					width : 400,
 					fieldLabel : '检索',
 					labelWidth : 50,
@@ -138,18 +157,15 @@ Ext.define('MyCms.view.document.Grid', {
 					me.deleteDoc(record);
 				},
 				scope : me
-			} ]
-		});
-		
-		if(me.getSelectionModel().getSelection().length>1){
-			dMenu.add({
+			},me.getSelectionModel().getSelection().length>1?{
 				text : '删除所选',
 				handler : function() {
 					me.deleteDocs();
 				},
 				scope : me
-			});
-		}
+			}:'-' ]
+		});
+		
 		dMenu.showAt(e.getXY());
 
 		e.stopEvent();
@@ -199,9 +215,6 @@ Ext.define('MyCms.view.document.Grid', {
 					Ext.Msg.alert('错误', o.message);
 					return;
 				}
-//				Ext.Msg.alert('提示', o.message, function() {
-//					me.fireEvent('refresh', me);
-//				});
 				me.fireEvent('refresh', me);
 				if(obj.get('aType')=='cut'&&obj.get('from')){
 					obj.get('from').fireEvent('refresh',obj.get('from'));
@@ -222,20 +235,7 @@ Ext.define('MyCms.view.document.Grid', {
 		}
 		dMenu = Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'document-cmp-menu',
-			items : [ {
-				text : '刷新',
-				handler : 'refresh',
-				scope : me
-			}, {
-				text : '添加文档',
-				handler : 'addDocument',
-				scope : me
-			},{
-				text : '粘贴',
-				handler : 'paste',
-				scope : me,
-				disabled:!MyCms.Application.clipBoard
-			} ]
+			items : me.cmpContextItems
 		}).showAt(e.getXY());
 
 		e.stopEvent();

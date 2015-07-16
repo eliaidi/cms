@@ -16,7 +16,7 @@ import com.wk.cms.model.Channel;
 import com.wk.cms.utils.CommonUtils;
 
 @Repository
-public class ChannelDaoImpl implements IChannelDao {
+public class ChannelDao implements IChannelDao {
 
 	@Autowired
 	private HibernateTemplate hibernateTemplate;

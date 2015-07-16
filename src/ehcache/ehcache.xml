@@ -65,5 +65,12 @@
            overflowToDisk="false"
            statistics="true">
     </cache>
+    <cache name="file"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
 
 </ehcache>

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.wk.cms.model.Appendix;
-import com.wk.cms.service.IAppendixService;
+import com.wk.cms.model.File;
+import com.wk.cms.service.IFileService;
 import com.wk.cms.service.exception.ServiceException;
 
 @Controller
@@ -22,19 +22,19 @@ import com.wk.cms.service.exception.ServiceException;
 public class FileController {
 
 	@Autowired
-	private IAppendixService appendixService;
+	private IFileService fileService;
 	@RequestMapping("/app/{id}")
 	public void readAppFile(@PathVariable("id") String id,HttpServletRequest request,HttpServletResponse response) throws ServiceException, SQLException, IOException{
 		
-		Appendix appendix = appendixService.findById(id);
+		File file = fileService.findById(id);
 		
 		response.setHeader("Content-disposition", "attachment;filename="  
-	              + appendix.getFileName());  
-		response.setHeader("Content-Length", String.valueOf(appendix.getFileSize()));
+	              + file.getFileName());  
+		response.setHeader("Content-Length", String.valueOf(file.getFileSize()));
 		response.setContentType("application/octet-stream;charset=UTF-8");
 	    
 		
-		InputStream is = appendix.getContent().getBinaryStream();
+		InputStream is = file.getContent().getBinaryStream();
 		OutputStream bos = response.getOutputStream();
 		byte[] buff = new byte[10000];
 		int len;

@@ -14,7 +14,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
         'Ext.ux.desktop.ShortcutModel',
         'MyCms.view.systemstatus.SystemStatus',
         'MyCms.view.copyright.AboutUs',
-        'MyCms.view.gridwindow.GridWindow',
+        'MyCms.view.sysmgt.Module',
         'MyCms.view.tabwindow.TabWindow',
         'MyCms.view.accordion.AccordionWindow',
         'MyCms.view.notepad.Notepad',
@@ -61,12 +61,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 	me.deleteSite(record)
                 },
                 scope:me
-            },{
-            	text: '复制',
-                handler:function(){
-                	MyCms.Application.copy(record);
-                },
-                scope:me
+//            },{
+//            	text: '复制',
+//                handler:function(){
+//                	MyCms.Application.copy(record);
+//                },
+//                scope:me
             }]
     	}).showAt(e.getXY());
     	
@@ -78,7 +78,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
         return [
             new MyCms.view.copyright.AboutUs(),
             new MyCms.view.systemstatus.SystemStatus(),
-            new MyCms.view.gridwindow.GridWindow(),
+            new MyCms.view.sysmgt.Module(),
             new MyCms.view.tabwindow.TabWindow(),
             new MyCms.view.accordion.AccordionWindow(),
             new MyCms.view.notepad.Notepad(),

@@ -281,7 +281,7 @@ Ext.define('MyCms.view.document.Grid', {
 				Ext.Ajax.request({
 					url : document_delete,
 					params : {
-						docId : record.get('id')
+						id : record.get('id')
 					},
 					success : function(response, opts) {
 						var obj = Ext.decode(response.responseText);
@@ -289,9 +289,7 @@ Ext.define('MyCms.view.document.Grid', {
 							Ext.Msg.alert('错误', obj.message);
 							return;
 						}
-						Ext.Msg.alert('提示', obj.message, function() {
-							me.fireEvent('refresh', me);
-						});
+						me.fireEvent('refresh', me);
 					},
 					failure : function(response, opts) {
 						console.log('server-side failure with status code '

@@ -92,14 +92,11 @@ Ext.define('MyCms.view.appendix.Window',{
 		me.on('beforedestroy','onDestroy',me);
 		me.callParent();
 	},
-	insertApp2Doc:function(_this){
+	insertApp2Doc:function(record){
 		var me = this;
 		
-		var urlValue = _this.up('form').getForm().findField('url').getValue();
-		if(!Ext.isEmpty(urlValue)){
-			var conField = me.view.down('form').getForm().findField('content');
-			conField.setValue(conField.getValue()+'<img src="'+urlValue+'" />');
-		}
+		var conField = me.view.down('form').getForm().findField('content');
+		conField.setValue(conField.getValue()+'<img src="'+RootPath+'/file/app/'+record.get('fileId')+'" />');
 	},
 	updateApp:function(_this){
 		var me = this;
@@ -123,7 +120,6 @@ Ext.define('MyCms.view.appendix.Window',{
     		store.remove(store.getById(app.get('id')));
     	}
     	store.add(app);
-    	Ext.Msg.alert('成功', action.result.message);
 	},
 	onUpload:function(){
 		var me = this;
@@ -189,14 +185,10 @@ Ext.define('MyCms.view.appendix.Window',{
 				xtype:'grid',
 				id:'appendix-tabgrid-'+t,
 				title:MyCms.model.Appendix.TypeMapping[t],
-//				selModel: {
-//			        selType: 'checkboxmodel'
-//			    },
 			    _type:t,
 				multiSelect : true,
 				plugins:Ext.create('Ext.grid.plugin.RowEditing',{
 					clicksToMoveEditor: 2
-//			        autoCancel: false
 				}),
 				viewConfig : {
 					trackOver : false,
@@ -309,6 +301,12 @@ Ext.define('MyCms.view.appendix.Window',{
 									me.deleteApp(_this,record);
 								},
 								scope:me
+							},{
+								text:'插入到正文',
+								handler:function(){
+									me.insertApp2Doc(record);
+								},
+								scope:me
 							}]
 						}).showAt(e.getXY());
 						
@@ -347,15 +345,7 @@ Ext.define('MyCms.view.appendix.Window',{
 		
 	},
 	download:function(record){
-		window.open(RootPath+'/file/app/'+record.get('id'));
-	},
-	gridItemCopy:function(record){
-		try {
-			MyCms.Application.copyToClipboard("file/app/"+record.get('id'));
-			
-		} catch (e) {
-			alert(e);
-		}
+		window.open(RootPath+'/file/app/'+record.get('fileId'));
 	},
 	deleteApp:function(grid,record){
 		var me = this;

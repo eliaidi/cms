@@ -72,12 +72,11 @@ Ext.define('MyCms.view.site.Window',{
     		clientValidation: true,
     	    url: site_save,
     	    params:me.site?{id:me.site.get('id')}:null,
-            success: function(form, action) {
-               Ext.Msg.alert('成功', action.result.message,'onSuccess',me);
-            },
+            success: 'onSuccess',
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');
-            }
+            },
+            scope:me
         });
     },
     okReset : function(){

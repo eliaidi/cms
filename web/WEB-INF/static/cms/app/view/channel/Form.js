@@ -21,6 +21,10 @@ Ext.define('MyCms.view.channel.Form',{
 				fieldLabel: '栏目显示名称',
 		        name: 'descr',
 		        allowBlank: false
+			},{
+				fieldLabel: '栏目发布目录',
+		        name: 'folder',
+		        allowBlank: false
 			}]
 		});
 		me.callParent();

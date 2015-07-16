@@ -3,7 +3,6 @@ package com.wk.cms.model;
 import java.sql.Blob;
 import java.util.Date;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -11,9 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wk.cms.model.annotations.Show;
@@ -23,8 +19,6 @@ import com.wk.cms.utils.MyBlob;
 @Entity
 @Table(schema="CMS",name="Sys_File")
 @JsonIgnoreProperties({"content"})
-@Cacheable
-@Cache(region="file",usage=CacheConcurrencyStrategy.READ_ONLY)
 public class File {
 
 	@Id

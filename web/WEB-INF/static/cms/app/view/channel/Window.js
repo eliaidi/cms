@@ -50,12 +50,11 @@ Ext.define('MyCms.view.channel.Window',{
     		clientValidation: true,
     	    url: channel_save,
     	    params:me.channel?{id:me.channel.get('id')}:(me.parent?{parentId:me.parent.get('id')}:(me.site?{siteId:me.site.get('id')}:null)),
-            success: function(form, action) {
-               Ext.Msg.alert('成功', action.result.message,'onSuccess',me);
-            },
+            success: 'onSuccess',
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');
-            }
+            },
+            scope:me
         });
     },
     okReset : function(){

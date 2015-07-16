@@ -110,12 +110,11 @@ Ext.define('MyCms.view.document.Window',{
     		clientValidation: true,
     	    url: document_save,
     	    params:me.document?{id:me.document.get('id')}:(me.channel?{channelId:me.channel.get('id')}:null),
-            success: function(form, action) {
-               Ext.Msg.alert('成功', action.result.message,'onSuccess',me);
-            },
+            success: 'onSuccess',
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');
-            }
+            },
+            scope:me
         });
     },
     okReset : function(){

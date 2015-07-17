@@ -17,7 +17,7 @@ public class Template {
 	@NotEmpty
 	private String name;
 	
-	@OneToOne(cascade=CascadeType.REMOVE)
+	@OneToOne(cascade=CascadeType.ALL)
 	private File file;
 
 	public String getId() {

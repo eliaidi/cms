@@ -1,7 +1,8 @@
 package com.wk.cms.mvc.advice;
 
+import java.sql.Blob;
 import java.text.SimpleDateFormat;
-import java.util.Date;  
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wk.cms.controller.vo.Message;
 import com.wk.cms.mvc.editors.MyArrayEditor;
+import com.wk.cms.mvc.editors.MyBlobEditor;
 
 @ControllerAdvice
 public class CommonAdvice {
@@ -34,5 +36,6 @@ public class CommonAdvice {
 		dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(
 				new SimpleDateFormat("yyyy-MM-dd"), true));
 		dataBinder.registerCustomEditor(String[].class, new MyArrayEditor(","));
+		dataBinder.registerCustomEditor(Blob.class, new MyBlobEditor("UTF-8"));
 	}
 }

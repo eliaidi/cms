@@ -12,8 +12,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wk.cms.model.annotations.Show;
 import com.wk.cms.model.annotations.ShowArea;
+import com.wk.cms.mvc.json.BlobJsonSerializer;
 import com.wk.cms.utils.MyBlob;
 
 @Entity
@@ -28,6 +30,7 @@ public class File {
 	
 	@Lob
 	@Show(ShowArea.Detail)
+	@JsonSerialize(using=BlobJsonSerializer.class)
 	private Blob content;
 	private long fileSize;
 	

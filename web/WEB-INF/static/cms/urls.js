@@ -28,3 +28,5 @@ var appendix_update = RootPath+'/appendix/update';
 var appendix_delete = RootPath+'/appendix/delete';
 
 var template_list = RootPath+'/template/list';
+var template_save = RootPath+'/template/save';
+var template_delete = RootPath+'/template/delete';

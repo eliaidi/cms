@@ -20,7 +20,6 @@ import com.wk.cms.utils.MyBlob;
 
 @Entity
 @Table(schema="CMS",name="Sys_File")
-@JsonIgnoreProperties({"content"})
 public class File {
 
 	@Id

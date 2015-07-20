@@ -2,6 +2,8 @@ package com.wk.cms.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -108,6 +110,21 @@ public class CommonUtils {
 			}
 		}
 		return false;
+	}
+
+	public static String readStringFromIS(InputStream is,String charsetName) throws IOException {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		byte[] buff = new byte[10000];
+		int len;
+		
+		while((len = is.read(buff))!=-1){
+			sb.append(new String(buff,0,len,charsetName));
+		}
+		
+		is.close();
+		return sb.toString();
 	}
 
 }

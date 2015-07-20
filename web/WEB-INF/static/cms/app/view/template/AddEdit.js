@@ -19,11 +19,20 @@ Ext.define('MyCms.view.template.AddEdit', {
 		} ];
 		Ext.apply(me, {
 			layout : 'fit',
-			items : [ me.form ],
-			buttons : buttons
+			items : [ me.form],
+			buttons : buttons,
+			dockedItems:{
+				xtype: 'button',
+		        dock: 'bottom',
+		        text:'dfdsfds'
+//		        items: [{
+//		            text: 'Docked to the top'
+//		        }]
+			}
 		});
 
 		if (me.template) {
+			me.title = '编辑模板';
 			me.loadForm();
 		}
 		me.callParent();
@@ -47,6 +56,7 @@ Ext.define('MyCms.view.template.AddEdit', {
 				{
 					clientValidation : true,
 					url : template_save,
+					params : me.template?{id:me.template.get('id')}:{},
 					success : 'onSuccess',
 					failure : function(form, action) {
 						Ext.Msg.alert('失败',
@@ -57,6 +67,11 @@ Ext.define('MyCms.view.template.AddEdit', {
 				});
 	},
 	onReset : function() {
-
+		
+		var me = this;
+		me.form.getForm().reset();
+		if(me.template){
+			me.loadForm();
+		}
 	}
 });

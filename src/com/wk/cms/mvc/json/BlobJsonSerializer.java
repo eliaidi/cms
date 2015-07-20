@@ -8,8 +8,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.wk.cms.utils.CommonUtils;
 
-public class BlobJsonSerializer extends JsonSerializer<Blob> {
+public class BlobJsonSerializer extends JsonSerializer<Blob>  {
 
 	@Override
 	public void serialize(Blob value, JsonGenerator gen,
@@ -17,11 +18,13 @@ public class BlobJsonSerializer extends JsonSerializer<Blob> {
 			JsonProcessingException {
 		
 		try {
-			gen.writeString(new String(value.getBytes(0, (int) value.length())));
+			
+			gen.writeString(CommonUtils.readStringFromIS(value.getBinaryStream(),"UTF-8"));
 		} catch (SQLException e) {
 			throw new IOException("Blob转换成String失败！！",e);
 		}
 	}
+
 
 	
 	

@@ -13,7 +13,7 @@ Ext.define('MyCms.view.sysmgt.Module', {
 
 	init : function() {
 		var me = this;
-		me.launcher = {
+		/*me.launcher = {
 			text : '系统管理',
 			iconCls : 'accordion',
 			menu : [ {
@@ -21,7 +21,7 @@ Ext.define('MyCms.view.sysmgt.Module', {
 				handler : 'tempMgt',
 				scope : me
 			} ]
-		}
+		}*/
 	},
 	tempMgt : function() {
 		var me = this, desktop = me.app.getDesktop();
@@ -31,13 +31,20 @@ Ext.define('MyCms.view.sysmgt.Module', {
 			desktop.restoreWindow(win);
 		}
 	},
-	createTempWin : function() {
+	createWindow:function(cfg){
+		var me = this;
+		if(!cfg) return false;
+		
+		if(cfg.winType == 'template-mgt-window') return me.createTempWin(cfg);
+	},
+	createTempWin : function(cfg) {
 		var desktop = this.app.getDesktop();
 		var win = desktop.getWindow('template-mgt-window');
 		if (!win) {
 			win = desktop.createWindow({
 				id : 'template-mgt-window',
-				desktop : desktop
+				desktop : desktop,
+				site : cfg.obj
 			}, MyCms.view.template.Window);
 		}
 		return win;

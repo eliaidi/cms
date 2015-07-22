@@ -4,6 +4,15 @@ Ext.define('MyCms.model.Template', {
 		name : 'id'
 	}, {
 		name : 'name'
+	},{
+		name : 'siteName',
+		convert : function(v, r) {
+			var f = r.get('site');
+			if (f) {
+				v = f.name;
+			}
+			return v;
+		}
 	}, {
 		name : 'fileId',
 		convert : function(v, r) {

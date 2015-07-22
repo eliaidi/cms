@@ -4,12 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.jsoup.Jsoup;
@@ -19,6 +26,10 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.File;
+import com.wk.cms.model.TempFile;
+import com.wk.cms.model.Template;
+import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.parser.NeteaseDocParser;
 import com.wk.cms.utils.parser.RemoteDocParser;
@@ -127,4 +138,109 @@ public class CommonUtils {
 		return sb.toString();
 	}
 
+	public static String getContentFromUrl(String url) throws FileParseException {
+
+		try {
+			org.jsoup.nodes.Document document = Jsoup.parse(new URL(url), 5000);
+			
+			return document.html();
+		} catch (Exception e) {
+			throw new FileParseException("获取远程文档失败！！");
+		} 
+	}
+
+	public static String getRemoteAttrNameByTagName(String tagName) throws ServiceException {
+		
+		if(tagName.equalsIgnoreCase("script")||tagName.equalsIgnoreCase("img")){
+			return "src";
+		}else if(tagName.equalsIgnoreCase("link")){
+			return "href";
+		}
+		
+		throw new ServiceException("不支持此标签【"+tagName+"】");
+	}
+
+	public static byte[] getBytesFromUrl(String remoteUrl) throws ServiceException  {
+		
+		try {
+			URL url = new URL(remoteUrl);
+			URLConnection connection = url.openConnection();
+			InputStream is = connection.getInputStream();
+			byte[] buff = new byte[is.available()];
+			is.read(buff);
+			is.close();
+			return buff;
+		} catch (Exception e) {
+			throw new ServiceException("获取远程文件失败！",e);
+		} 
+	}
+
+	public static <T> T findFromList(List<T> siteFiles,
+			String[] fieldNames, Object[] fieldValues) throws ServiceException {
+		
+		if(isEmpty(siteFiles)) return null;
+		
+		for(T t : siteFiles){
+			Object value = t;
+			boolean isMatch = true;
+			
+			for(int i = 0;i<fieldNames.length;i++){
+				String fieldName = fieldNames[i];
+				String[] fieldLeval = fieldName.split("\\.");
+				for(String f : fieldLeval){
+					value = getFieldValue(value,f);
+				}
+				
+				isMatch = isMatch&&value.equals(fieldValues[i]);
+				if(!isMatch){
+					break;
+				}
+			}
+			if(isMatch){
+				return t;
+			}
+		}
+		
+		
+		return null;
+	}
+
+	private static Object getFieldValue(Object obj, String field) throws ServiceException {
+		
+		Class<?> clazz = obj.getClass();
+		try {
+			Method method = clazz.getDeclaredMethod("get"+field.substring(0, 1).toUpperCase()+field.substring(1));
+			
+			return method.invoke(obj);
+		} catch (Exception e) {
+			throw new ServiceException("获取属性值失败！！", e);
+		} 
+	}
+
+	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template) throws ServiceException {
+		
+		try {
+			String fileCon = new String(tf.getContent().getBytes(0, (int) tf.getContent().length()),"UTF-8");
+			
+			Pattern p = Pattern.compile("url(^\\s+)");
+			Matcher m = p.matcher(fileCon);
+			while(m.find()){
+				System.out.println(m.group(0));
+				System.out.println(m.group(1));
+			}
+			return null;
+		} catch (Exception e) {
+			throw new ServiceException("下载Css文件内关联文件失败！！", e);
+		} 
+	}
+
+	public static void main(String[] args) {
+		
+		try {
+			downLoadCssInnerFiles(new File(null, "http://localhost:8888/portal/web/themes/default/css/lin.css"), null, null);
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

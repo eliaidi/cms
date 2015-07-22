@@ -61,12 +61,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 	me.deleteSite(record)
                 },
                 scope:me
-//            },{
-//            	text: '复制',
-//                handler:function(){
-//                	MyCms.Application.copy(record);
-//                },
-//                scope:me
+            },{
+            	text: '模板管理',
+                handler:function(){
+                	me.tempMgt(record);
+                },
+                scope:me
             }]
     	}).showAt(e.getXY());
     	
@@ -226,6 +226,15 @@ Ext.define('MyCms.view.desktop.Desktop', {
         		});
     		}
     	});
+    },
+    tempMgt:function(record){
+    	
+    	var me = this, module = me.desktop.app.getModule('sysmgt-module'),
+        win = module && module.createWindow({winType:'template-mgt-window',obj:record});
+
+	    if (win) {
+	        me.desktop.restoreWindow(win);
+	    }
     }
     
 });

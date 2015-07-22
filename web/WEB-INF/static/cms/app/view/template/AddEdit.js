@@ -20,15 +20,7 @@ Ext.define('MyCms.view.template.AddEdit', {
 		Ext.apply(me, {
 			layout : 'fit',
 			items : [ me.form],
-			buttons : buttons,
-			dockedItems:{
-				xtype: 'button',
-		        dock: 'bottom',
-		        text:'dfdsfds'
-//		        items: [{
-//		            text: 'Docked to the top'
-//		        }]
-			}
+			buttons : buttons
 		});
 
 		if (me.template) {
@@ -56,7 +48,7 @@ Ext.define('MyCms.view.template.AddEdit', {
 				{
 					clientValidation : true,
 					url : template_save,
-					params : me.template?{id:me.template.get('id')}:{},
+					params : me.template?{'id':me.template.get('id'),'site.id' : me.view._view.site.get('id')}:{'site.id' : me.view._view.site.get('id')},
 					success : 'onSuccess',
 					failure : function(form, action) {
 						Ext.Msg.alert('失败',

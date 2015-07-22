@@ -23,6 +23,7 @@ public class BlobJsonSerializer extends JsonSerializer<Blob>  {
 		} catch (SQLException e) {
 			throw new IOException("Blob转换成String失败！！",e);
 		}
+		
 	}
 
 

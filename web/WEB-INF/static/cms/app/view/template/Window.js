@@ -6,8 +6,10 @@ Ext.define('MyCms.view.template.Window', {
 	title : '模板管理',
 	initComponent : function() {
 		var me = this;
+		me.title = "模板管理【站点："+me.site.get('name')+"】";
 		
 		var grid = Ext.create('MyCms.view.template.Grid',{
+			_view : me
 		});
 		Ext.apply(me,{
 			layout:'fit',

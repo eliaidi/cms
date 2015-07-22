@@ -33,7 +33,6 @@ Ext.define('MyCms.view.ux.RemoteDocWin',{
 	},
 	sureLoad:function(){
 		var me = this,form=me.down('form'),url=form.getForm().findField('url').getValue();
-//		alert(url);
 		
 		form.getForm().submit({
     		clientValidation: true,
@@ -43,7 +42,6 @@ Ext.define('MyCms.view.ux.RemoteDocWin',{
             		me.view.fireEvent('remoteComplete',me.view,action.result.obj);
             		me.close();
             	}
-               //Ext.Msg.alert('成功', action.result.message,'onSuccess',me);
             },
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');

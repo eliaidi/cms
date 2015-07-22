@@ -11,11 +11,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wk.cms.model.annotations.Show;
 import com.wk.cms.model.annotations.ShowArea;
 import com.wk.cms.mvc.json.BlobJsonSerializer;
+import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.MyBlob;
 
 @Entity
@@ -48,6 +49,20 @@ public class File {
 		this.content = content;
 	}
 
+	public File(Blob content) {
+		this.content = content;
+	}
+	public File(String id ,String remoteUrl) throws ServiceException   {
+		
+		byte[] bytes = CommonUtils.getBytesFromUrl(remoteUrl);
+		this.fileName = remoteUrl.substring(remoteUrl.lastIndexOf("/")+1);
+		this.fileExt = this.fileName.indexOf(".")>0?this.fileName.substring(this.fileName.lastIndexOf(".")+1):null;
+		this.fileSize = bytes.length;
+		this.content = new MyBlob(bytes);
+		this.crTime = new Date();
+		this.crUser = null;
+		this.id = id;
+	}
 	public String getId() {
 		return id;
 	}

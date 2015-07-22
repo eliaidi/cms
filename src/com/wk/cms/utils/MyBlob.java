@@ -3,6 +3,7 @@ package com.wk.cms.utils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.sql.SQLException;
 
@@ -19,6 +20,9 @@ public class MyBlob implements Blob {
 		this.bytes = bytes;
 	}
 
+	public MyBlob(String html) throws UnsupportedEncodingException {
+		this.bytes = html.getBytes("UTF-8");
+	}
 	public byte[] getBytes() {
 		return bytes;
 	}

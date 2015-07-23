@@ -39,10 +39,10 @@ Ext.define('MyCms.view.sysmgt.Module', {
 	},
 	createTempWin : function(cfg) {
 		var desktop = this.app.getDesktop();
-		var win = desktop.getWindow('template-mgt-window');
+		var win = desktop.getWindow('template-mgt-window-'+cfg.obj.get('id'));
 		if (!win) {
 			win = desktop.createWindow({
-				id : 'template-mgt-window',
+				id : 'template-mgt-window'+cfg.obj.get('id'),
 				desktop : desktop,
 				site : cfg.obj
 			}, MyCms.view.template.Window);

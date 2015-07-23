@@ -2,26 +2,21 @@ package com.wk.cms.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.exception.ParseException;
@@ -35,6 +30,8 @@ import com.wk.cms.utils.parser.NeteaseDocParser;
 import com.wk.cms.utils.parser.RemoteDocParser;
 
 public class CommonUtils {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
 
 	public static boolean isEmpty(List<?> list) {
 		
@@ -217,18 +214,46 @@ public class CommonUtils {
 		} 
 	}
 
-	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template) throws ServiceException {
+	/**
+	 * 下载CSS文件里面的模板附件
+	 * @param tf	Css文件
+	 * @param val	Css文件路径	用于拼接模板附件的远程地址
+	 * @param template	所属模板	
+	 * @param siteFiles 站点下已存在的模板附件，如果css文件中包含已存在的模板附件则不进行下载，
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles) throws ServiceException {
 		
 		try {
-			String fileCon = new String(tf.getContent().getBytes(0, (int) tf.getContent().length()),"UTF-8");
+			List<TempFile> tempFiles = new ArrayList<TempFile>();
+			Set<Template > initTpls = new HashSet<Template>();
+			initTpls.add(template);
 			
-			Pattern p = Pattern.compile("url(^\\s+)");
+			String fileCon = new String(tf.getContent().getBytes(0, (int) tf.getContent().length()),"UTF-8");
+			StringBuffer newCon = new StringBuffer();
+			Pattern p = Pattern.compile("url\\(['|\"]?(\\S+)['|\"]?\\);");
 			Matcher m = p.matcher(fileCon);
 			while(m.find()){
-				System.out.println(m.group(0));
-				System.out.println(m.group(1));
+				String url = m.group(1);
+				String fileName = url.indexOf("/")>0?url.substring(url.lastIndexOf("/")+1):url;
+				LOGGER.debug("找到CSS文件内模板附件【"+fileName+"】");
+				m.appendReplacement(newCon, "url("+fileName+")");
+				
+				TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
+				if(tempFile==null){
+					
+					String remoteUrl = val.substring(0, val.lastIndexOf("/")+1);remoteUrl = remoteUrl + url;
+					LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
+					tempFiles.add(new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite()));
+				}else{
+					LOGGER.debug("模板附件【"+fileName+"】已存在，取消下载，直接添加进模板!");
+					tempFiles.add(tempFile);
+				}
+				
 			}
-			return null;
+			m.appendTail(newCon);
+			return tempFiles;
 		} catch (Exception e) {
 			throw new ServiceException("下载Css文件内关联文件失败！！", e);
 		} 
@@ -237,7 +262,7 @@ public class CommonUtils {
 	public static void main(String[] args) {
 		
 		try {
-			downLoadCssInnerFiles(new File(null, "http://localhost:8888/portal/web/themes/default/css/lin.css"), null, null);
+			downLoadCssInnerFiles(new File(null, "http://localhost:8888/portal/web/themes/default/css/lin.css"), null, null,null);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

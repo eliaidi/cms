@@ -27,7 +27,6 @@ import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.CommonUtils;
-import com.wk.cms.utils.FileUtils;
 import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
 
@@ -128,8 +127,12 @@ public class TemplateDao implements ITemplateDao {
 							tempFile = new TempFile(UUID.randomUUID()
 									.toString(), new HashSet<Template>(), tf,template.getSite());
 							
-							if("link".equalsIgnoreCase(attrName)){
-								List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tf,val,template);
+							if("link".equalsIgnoreCase(re.tagName())){
+								LOGGER.debug("找到LINK标签，开始解析CSS文件【"+val+"】中的模板附件~~");
+								List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tf,val,template,siteFiles);
+								for(TempFile ctf : cssInnerFiles){
+									tempFiles.add(ctf);
+								}
 							}
 						}
 						

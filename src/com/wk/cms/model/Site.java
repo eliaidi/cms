@@ -36,6 +36,8 @@ public class Site {
 	private String canPubSta;
 	@NotEmpty
 	private String folder;
+	
+	private String tempIds;
 
 	@ManyToOne
 	private User crUser;
@@ -66,6 +68,14 @@ public class Site {
 		this.crTime = crTime;
 		this.channels = channels;
 		this.documents = documents;
+	}
+
+	public String getTempIds() {
+		return tempIds;
+	}
+
+	public void setTempIds(String tempIds) {
+		this.tempIds = tempIds;
 	}
 
 	public String getCanPubSta() {

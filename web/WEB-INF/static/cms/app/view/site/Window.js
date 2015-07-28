@@ -2,8 +2,8 @@ Ext.define('MyCms.view.site.Window',{
 	extend: 'Ext.Window',
 	title : '新增站点',
 	layout: 'anchor',
-	width : 470,
-	height : 200,
+	width : 581,
+	height : 306,
 //	modal: true,
 	border: false,
 	maximizable:true,
@@ -20,7 +20,7 @@ Ext.define('MyCms.view.site.Window',{
     	
     	var me = this;
     	
-    	me.form = Ext.create('MyCms.view.site.Form');
+    	me.form = Ext.create('MyCms.view.site.Form',{_parent : me});
     	
     	Ext.apply(me,{
     		items:[me.form],
@@ -37,6 +37,26 @@ Ext.define('MyCms.view.site.Window',{
     	
     	if(me.site){//编辑站点
     		me.title = '修改站点【'+me.site.get('name')+'】';
+    		
+    		me.form.add({
+    			xtype:'fieldcontainer',
+    			fieldLabel:'发布模板',
+    			defaultType: 'textfield',
+    			layout:'hbox',
+    			items:[{
+    		        name: 'tempIds',
+    		        allowBlank: true,
+    		        flex:4,
+    		        readOnly:true
+    			},{
+    				xtype:'button',
+    				flex:1,
+    				text:'选择',
+    				handler:'chooseTemp',
+    				scope:me
+    			}]
+    		});
+    		
     		Ext.Ajax.request({
     		    url: site_detail,
     		    params : {siteId:me.site.get('id')},
@@ -47,7 +67,6 @@ Ext.define('MyCms.view.site.Window',{
     		        	return;
     		        }
     		        me.site = new MyCms.model.Site(obj.obj);
-    		        //me.form.getForm().loadRecord(me.site);
     		        me.loadForm();
     		    },
     		    failure: function(response, opts) {
@@ -63,6 +82,12 @@ Ext.define('MyCms.view.site.Window',{
     	
     	if(me.site){
     		me.form.getForm().loadRecord(me.site);
+    		
+    		var staArr = me.site.get('canPubSta')?me.site.get('canPubSta').split(','):[];
+    		for(var k in MyCms.model.Document.StatusMapping){
+    			var staCheck = me.form.down('#status'+k);
+    			staCheck.setValue(Ext.Array.contains(staArr,k));
+    		}
     	}
     	
     },
@@ -83,7 +108,7 @@ Ext.define('MyCms.view.site.Window',{
     	var me = this;
     	
     	if(me.site){
-    		me.form.getForm().loadRecord(me.site);
+    		me.loadForm();
     	}else{
     		me.form.getForm().reset();
     	}
@@ -93,5 +118,36 @@ Ext.define('MyCms.view.site.Window',{
     	
     	me.desktop.fireEvent('refresh',me.desktop,me);
     	me.close();
+    },
+    chooseTemp : function(){
+    	var me = this;
+    	me.tempWin = Ext.create('MyCms.view.template.Window',{
+    		site : me.site,
+    		modal : true,
+    		from : me,
+    		buttons : [{
+    			text : '确定',
+    			handler : 'doChooseTemp',
+    			scope : me
+    		}],
+    		initChooseData : me.form.getForm().findField('tempIds').getValue()
+    	});
+    	me.tempWin.show();
+    },
+    doChooseTemp : function(){
+    	var me = this,rs = me.tempWin.down('grid').getSelectionModel().getSelection();
+    	if(rs.length==0){
+    		Ext.Msg.alert('错误','请选择模板！');
+    		return;
+    	}
+    	var ids = [];
+    	Ext.Array.each(rs,function(r){
+    		ids.push(r.get('id'));
+    	});
+    	
+    	var tempField = me.form.getForm().findField('tempIds');
+    	tempField.setValue(ids.join(','));
+    	
+    	me.tempWin.close();
     }
 });

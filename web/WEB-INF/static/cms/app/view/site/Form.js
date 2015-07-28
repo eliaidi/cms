@@ -9,7 +9,7 @@ Ext.define('MyCms.view.site.Form',{
     defaultType: 'textfield',
 	initComponent:function(){
 		
-		var me = this;
+		var me = this,pubStaFields = [];
 		var allFields = [{
 				fieldLabel: '站点名称',
 		        name: 'name',
@@ -27,7 +27,6 @@ Ext.define('MyCms.view.site.Form',{
 		        name: 'url',
 		        allowBlank: false
 			}];
-		var pubStaFields = [];
 		for(var k in MyCms.model.Document.StatusMapping){
 			pubStaFields.push({
 				 boxLabel  : MyCms.model.Document.StatusMapping[k],
@@ -38,14 +37,13 @@ Ext.define('MyCms.view.site.Form',{
                  checked:MyCms.model.Site.DefaultPubSta[k]
 			});
 		}
-		pubStaFields = {
-				xtype: 'fieldcontainer',
-	            fieldLabel: '可发布状态',
-	            defaultType: 'checkboxfield',
-	            layout:'hbox',
-	            items: pubStaFields
-		};
-		allFields.push(pubStaFields);
+		allFields.push({
+			xtype: 'fieldcontainer',
+            fieldLabel: '可发布状态',
+            defaultType: 'checkboxfield',
+            layout:'hbox',
+            items: pubStaFields
+		});
 		
 		Ext.apply(me,{
 			items:allFields

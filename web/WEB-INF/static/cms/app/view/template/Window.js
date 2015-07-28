@@ -16,6 +16,18 @@ Ext.define('MyCms.view.template.Window', {
 			items:[grid]
 		});
 
+		grid.getStore().on('load',me.doAfterLoad,me);
 		me.callParent();
+	},
+	doAfterLoad : function(){
+		var me = this;
+		
+		if(me.initChooseData){
+			var tidArr = me.initChooseData.split(','),grid = me.down('grid'),sModel = grid.getSelectionModel(),store = grid.getStore(),initRs = [];
+			Ext.Array.each(tidArr,function(tid){
+				initRs.push(store.getById(tid));
+			});
+			sModel.select(initRs);
+		}
 	}
 });

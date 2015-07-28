@@ -8,6 +8,8 @@ Ext.define('MyCms.model.Site', {
 		name : 'descr'
 	}, {
 		name : 'folder'
+	},{
+		name : 'tempIds'
 	}, {
 		name : 'crTime'
 	}, {

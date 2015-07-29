@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.ITemplateDao;
 import com.wk.cms.model.File;
+import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
@@ -185,6 +186,26 @@ public class TemplateDao implements ITemplateDao {
 
 		hibernateTemplate.getSessionFactory().getCurrentSession()
 				.delete(findById(id));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TempFile> findTempFiles(List<String> tempFileNames, Site site) {
+		
+		return hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createCriteria(TempFile.class)
+				.add(Restrictions.eq("site", site))
+				.add(Restrictions.in("file.fileName", tempFileNames))
+				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TempFile> findTempFiles(Site site) {
+		return hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createCriteria(TempFile.class)
+				.add(Restrictions.eq("site", site))
+				.list();
 	}
 
 }

@@ -3,6 +3,7 @@ package com.wk.cms.dao;
 import java.util.List;
 
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 
 public interface ISiteDao {
 
@@ -15,4 +16,6 @@ public interface ISiteDao {
 	Site findById(String siteId);
 
 	void deleteById(String siteId);
+
+	List<Template> findTemplatesBySite( Site obj);
 }

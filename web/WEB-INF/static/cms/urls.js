@@ -3,6 +3,7 @@ var site_save = RootPath+'/site/save';
 var site_detail = RootPath+'/site/detail';
 var site_delete = RootPath+'/site/delete';
 var site_imp = RootPath+'/site/imp';
+var site_preview = RootPath+'/site/preview';
 	
 var list_channel_by_siteid = RootPath+'/channel/list';
 var channel_save = RootPath+'/channel/save';

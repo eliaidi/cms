@@ -68,7 +68,7 @@ public class CommonUtils {
 		int len ;
 		
 		while((len = inputStream.read(buff))!=-1){
-			s.append(new String(buff,0,len));
+			s.append(new String(buff,0,len,"UTF-8"));
 		}
 		return s.toString();
 	}
@@ -267,5 +267,10 @@ public class CommonUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static String getAppPath(String s) {
+		String fullPath = CommonUtils.class.getResource("/").getPath();
+		return fullPath.substring(0, fullPath.lastIndexOf(s)+s.length());
 	}
 }

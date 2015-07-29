@@ -74,4 +74,10 @@ public class SiteController {
 		siteService.imp(file);
 		return new Message(true, "导入成功！", null);
 	}
+	
+	@RequestMapping("/preview")
+	public @ResponseBody Message preview(String siteId) throws ServiceException{
+		
+		return new Message(true, null, siteService.previewById(siteId));
+	}
 }

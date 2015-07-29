@@ -1,5 +1,7 @@
 package com.wk.cms.service.aop.validator;
 
+import java.util.List;
+
 import com.wk.cms.service.exception.ValidationException;
 
 public class NotEmptyValidator implements Validator {
@@ -19,6 +21,10 @@ public class NotEmptyValidator implements Validator {
 			Object[] objects = (Object[]) value;
 			if(objects.length==0)
 				throw new ValidationException("参数错误，数组为空！");
+		}else if(class1.isAssignableFrom(List.class)){
+			List<?> l = (List<?>) value;
+			if(l.size()==0)
+				throw new ValidationException("参数错误，List为空！");
 		}
 	}
 

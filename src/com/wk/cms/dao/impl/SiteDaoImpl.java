@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.ISiteDao;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 import com.wk.cms.utils.CommonUtils;
 
 @Repository
@@ -61,6 +63,16 @@ public class SiteDaoImpl implements ISiteDao {
 		s.delete(findById(siteId));
 		// hibernateTemplate.bulkUpdate("delete from Site s where s.id=?",
 		// siteId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Template> findTemplatesBySite(Site obj) {
+		
+		if(!StringUtils.hasLength(obj.getTempIds())) return null;
+		return hibernateTemplate.getSessionFactory().getCurrentSession().createCriteria(Template.class)
+				.add(Restrictions.in("id", obj.getTempIds().split(",")))
+				.list();
 	}
 
 }

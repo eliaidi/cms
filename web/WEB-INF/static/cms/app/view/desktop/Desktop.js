@@ -50,6 +50,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
     	var me = this;
     	var sMenu =  Ext.create('MyCms.view.ux.MyMenu',{
             items: [{
+            	text: '预览',
+                handler:function(){
+                	me.preview(record)
+                },
+                scope:me
+            },{
                 text: '修改',
                 handler:function(){
                 	me.modifySite(record)
@@ -194,6 +200,24 @@ Ext.define('MyCms.view.desktop.Desktop', {
     		title:'批量导入站点'
     	});
     	win.show();
+    },
+    preview:function(record){
+    	var me = this;
+    	Ext.Ajax.request({
+		    url: site_preview,
+		    params : {siteId:record.get('id')},
+		    success: function(response, opts) {
+		        var obj = Ext.decode(response.responseText);
+		        if(!obj.success){
+		        	Ext.Msg.alert('错误',obj.message);
+		        	return;
+		        }
+		        window.open(obj.obj);
+		    },
+		    failure: function(response, opts) {
+		        console.log('server-side failure with status code ' + response.status);
+		    }
+		});
     },
     modifySite:function(record){
     	var me = this, module = me.desktop.app.getModule('site-module'),

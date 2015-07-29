@@ -2,6 +2,7 @@ package com.wk.cms.dao;
 
 import java.util.List;
 
+import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
@@ -20,5 +21,9 @@ public interface ITemplateDao {
 	TempFile findBySiteIdAndFileName(String siteId, String fileName);
 
 	List<TempFile> findAllTempFileBySiteId(String id);
+
+	List<TempFile> findTempFiles(List<String> tempFileNames, Site site);
+
+	List<TempFile> findTempFiles(Site site);
 
 }

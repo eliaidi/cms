@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.dao.ISiteDao;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
+import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
@@ -22,6 +24,9 @@ public class SiteService implements ISiteService {
 
 	@Autowired
 	private ISiteDao siteDao;
+	
+	@Autowired
+	private IPublishServer publishServer;
 	@Override
 	public List<Site> findAll() {
 		return siteDao.findAll();
@@ -91,6 +96,17 @@ public class SiteService implements ISiteService {
 		} catch (FileParseException e) {
 			throw new ServiceException("解析文件失败！",e);
 		}
+	}
+	@Override
+	public String previewById(String siteId) throws ServiceException {
+		
+		Site site = findById(siteId);
+		
+		return publishServer.publish(site, true,null);
+	}
+	@Override
+	public List<Template> findTemplatesBySite(Site obj) {
+		return siteDao.findTemplatesBySite(obj);
 	}
 
 }

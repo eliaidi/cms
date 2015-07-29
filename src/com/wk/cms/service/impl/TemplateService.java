@@ -2,6 +2,7 @@ package com.wk.cms.service.impl;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -12,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.ITemplateDao;
 import com.wk.cms.model.File;
+import com.wk.cms.model.Site;
+import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
@@ -99,6 +102,18 @@ public class TemplateService implements ITemplateService {
 		} 
 		
 		
+	}
+
+	@Override
+	public List<TempFile> findTempFilesByFileNames(List<String> tempFileNames,
+			Site site) {
+		return templateDao.findTempFiles(tempFileNames,site);
+	}
+
+	@Override
+	public List<TempFile> findTempFilesBySite(Site site) {
+		
+		return templateDao.findTempFiles( site);
 	}
 
 }

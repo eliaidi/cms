@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
 
 public interface ISiteService {
@@ -29,4 +30,8 @@ public interface ISiteService {
 	void deleteById(String siteId) throws ServiceException;
 
 	void imp(MultipartFile file) throws ServiceException;
+
+	String previewById(@NotEmpty String siteId) throws ServiceException;
+
+	List<Template> findTemplatesBySite(@NotNull Site obj);
 }

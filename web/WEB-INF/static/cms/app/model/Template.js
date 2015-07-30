@@ -5,6 +5,10 @@ Ext.define('MyCms.model.Template', {
 	}, {
 		name : 'name'
 	},{
+		name : 'prefix'
+	},{
+		name : 'ext'
+	},{
 		name : 'siteName',
 		convert : function(v, r) {
 			var f = r.get('site');

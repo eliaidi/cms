@@ -4,11 +4,11 @@ package com.wk.cms.model;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -28,6 +28,11 @@ public class Template {
 	@OneToOne(cascade=CascadeType.ALL)
 	private File file;
 	
+	@NotEmpty
+	private String prefix = "index";
+	
+	@NotEmpty
+	private String ext = "html";
 	private String remoteUrl;
 	
 	@ManyToOne
@@ -42,6 +47,22 @@ public class Template {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getExt() {
+		return ext;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
 	}
 
 	public String getRemoteUrl() {

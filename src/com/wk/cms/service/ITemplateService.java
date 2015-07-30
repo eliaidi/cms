@@ -16,6 +16,7 @@ import com.wk.cms.utils.PageInfo;
 public interface ITemplateService {
 
 	String TEMPFILE_FOLDER = "images";
+	String PREVIEW_FOLDER = "preview";
 
 	PageInfo find(@NotEmpty String siteId, @NotNull PageInfo pageInfo,String query);
 

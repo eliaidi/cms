@@ -93,7 +93,7 @@ public class PublishServer implements IPublishServer {
 				}
 			});
 		}
-		return getDir(obj);
+		return ITemplateService.PREVIEW_FOLDER+getDir(obj)+File.separator+getPubFileName(obj, templates.get(0));
 	}
 
 	private void publishTempFile(Object obj, String pDir) {
@@ -113,29 +113,44 @@ public class PublishServer implements IPublishServer {
 	private void publishInternal(Object obj, Template template, String pDir) throws PublishException {
 		
 		try {
-			
 			String content = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
-			updateContentTempFile(obj,content,pDir);
+			
+			content = updateContentTempFile(obj,content,pDir);
+			
+			parse(obj,content);
+			
+			FileUtils.writeFile(content,getPubFileName(obj,template),pDir);
 		} catch (Exception e) {
 			throw new PublishException(e.getMessage(),e);
 		} 
 
 	}
 
-	private void updateContentTempFile(Object obj,String content, String pDir) throws ServiceException {
+	private String getPubFileName(Object obj, Template template) {
+		
+		if(obj instanceof Document){
+			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
+		}
+		return template.getPrefix()+"."+template.getExt();
+	}
+
+	private void parse(Object obj, String content) {
+		
+		//org.jsoup.nodes.Document doc = Jsoup.parse(content);
+	}
+
+	private String updateContentTempFile(Object obj,String content, String pDir) throws ServiceException {
 		
 		org.jsoup.nodes.Document document = Jsoup.parse(content);
 		Elements tfEs = document.getElementsByAttributeValue("hasdone", "true");
 		String tfPath = getPath2Path(getDir(obj),getDir(getSite(obj))+File.separator+"images");
-		List<String> tempFileNames = new ArrayList<String>();
 		for(Element el : tfEs){
 			String attrName = CommonUtils.getRemoteAttrNameByTagName(el.tagName());
 			String attrVal = el.attr(attrName);
-			el.attr(attrName, tfPath+attrVal);
-			tempFileNames.add(attrVal);
+			el.attr(attrName, tfPath+attrVal).removeAttr("hasdone");
 		}
 		
-		content = document.html();
+		return document.html();
 	}
 
 	private String getPath2Path(String f, String t) {
@@ -160,7 +175,7 @@ public class PublishServer implements IPublishServer {
 	
 	private String getPreviewDir(Object obj) {
 		String dir = getDir(obj);
-		dir = CommonUtils.getAppPath("cms") + File.separator + "preivew" + dir;
+		dir = CommonUtils.getAppPath("cms") + File.separator + ITemplateService.PREVIEW_FOLDER + dir;
 		
 		File f = new File(dir);
 		if(!f.exists()){

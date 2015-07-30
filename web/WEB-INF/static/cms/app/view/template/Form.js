@@ -11,6 +11,23 @@ Ext.define('MyCms.view.template.Form',{
         name: 'name',
         allowBlank: false
 	},{
+		xtype : 'fieldcontainer',
+		defaultType: 'textfield',
+		layout : 'hbox',
+		items:[{
+			fieldLabel: '前缀',
+	        name: 'prefix',
+	        flex :1,
+	        allowBlank: false,
+	        value : 'index'
+		},{
+			fieldLabel: '后缀',
+	        name: 'ext',
+	        flex :1,
+	        allowBlank: false,
+	        value : 'html'
+		}]
+	},{
 		xtype:'textarea',
 		fieldLabel: '模板内容',
 		height:600,

@@ -212,7 +212,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
 		        	Ext.Msg.alert('错误',obj.message);
 		        	return;
 		        }
-		        window.open(obj.obj);
+		        window.open(RootPath+"/"+obj.obj);
 		    },
 		    failure: function(response, opts) {
 		        console.log('server-side failure with status code ' + response.status);

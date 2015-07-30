@@ -62,4 +62,20 @@ public class FileUtils {
 		}
 	}
 
+	public static void writeFile(String content, String fileName, String dir) throws ServiceException {
+
+		File folder = new File(dir);
+		if(!folder.exists()){
+			folder.mkdirs();
+		}
+		try {
+			FileOutputStream fos = new FileOutputStream(new File(folder,fileName));
+			
+			fos.write(content.getBytes("UTF-8"));
+			fos.close();
+		} catch (Exception e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
 }

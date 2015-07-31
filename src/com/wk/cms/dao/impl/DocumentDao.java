@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -83,26 +85,6 @@ public class DocumentDao implements IDocumentDao {
 		s.delete(findById(id));
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Document> findByIds(String ids) {
-
-		List<String> fields = HibernateUtils.getShowFields(Document.class,
-				ShowArea.LIST);
-		String fStr = CommonUtils.list2String(fields, ",");
-		return (List<Document>) hibernateTemplate.find("select " + fStr
-				+ " from Document d where d.id in (" + ids + ")");
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Document> findAll(Channel channel) {
-
-		return hibernateTemplate.getSessionFactory().getCurrentSession()
-				.createCriteria(Document.class)
-				.add(Restrictions.eq("channel.id", channel.getId())).list();
-	}
-
 	@Override
 	public void refresh(Channel channel) {
 
@@ -117,6 +99,36 @@ public class DocumentDao implements IDocumentDao {
 		return hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createCriteria(Document.class)
 				.add(Restrictions.in("id", objIds)).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Document> findAll(Channel channel, int pageSize,
+			DetachedCriteria dc) {
+		return (List<Document>) hibernateTemplate.findByCriteria(
+				dc.add(Restrictions.eq("channel", channel)), 0, pageSize);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Document> find(String hql, Object[] params) {
+
+		return (List<Document>) hibernateTemplate.find(hql, params);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Document> find(String hql, Object[] params, PageInfo pageInfo) {
+
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql);
+		if(!CommonUtils.isEmpty(params)){
+			for(int i=0;i<params.length;i++){
+				q.setParameter(i, params[i]);
+			}
+		}
+		q.setFirstResult(pageInfo.getStart());
+		q.setMaxResults(pageInfo.getLimit());
+		return q.list();
 	}
 
 }

@@ -2,6 +2,11 @@ package com.wk.cms.dao;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.utils.PageInfo;
@@ -16,12 +21,14 @@ public interface IDocumentDao {
 
 	void deleteById(String id);
 
-	List<Document> findByIds(String ids);
-
-	List<Document> findAll( Channel channel);
+	List<Document> findAll( Channel channel,int pageSize,DetachedCriteria dc);
 
 	void refresh(Channel channel);
 
 	List<Document> findByIds(String[] objIds);
+
+	List<Document> find(String hql, Object[] params);
+
+	List<Document> find(@NotEmpty String hql, Object[] params, @NotNull PageInfo pageInfo);
 
 }

@@ -15,6 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -202,7 +204,14 @@ public class CommonUtils {
 		return null;
 	}
 
-	private static Object getFieldValue(Object obj, String field) throws ServiceException {
+	/**
+	 * 获取对象属性值，仅支持对象的直接属性
+	 * @param obj
+	 * @param field
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static Object getFieldValue(Object obj, String field) throws ServiceException {
 		
 		Class<?> clazz = obj.getClass();
 		try {
@@ -212,6 +221,22 @@ public class CommonUtils {
 		} catch (Exception e) {
 			throw new ServiceException("获取属性值失败！！", e);
 		} 
+	}
+	
+	/**
+	 * 获取对象属性值，支持a.b.c形式
+	 * @param obj
+	 * @param field
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static Object getDeepFieldValue(Object obj, String field) throws ServiceException {
+		
+		String[] fields = field.split("\\.");
+		for(String f : fields){
+			obj = getFieldValue(obj,f);
+		}
+		return obj;
 	}
 
 	/**
@@ -272,5 +297,19 @@ public class CommonUtils {
 	public static String getAppPath(String s) {
 		String fullPath = CommonUtils.class.getResource("/").getPath();
 		return fullPath.substring(0, fullPath.lastIndexOf(s)+s.length());
+	}
+
+	public static Elements getElementsByTagNamePrefix(
+			Element doc, String prefix) {
+		
+		Elements es =  doc.getAllElements();
+		Elements hitEs = new Elements();
+		for(Element e : es){
+			String tagName = e.tagName().toLowerCase();
+			if(tagName.indexOf(prefix.toLowerCase())>=0){
+				hitEs.add(e);
+			}
+		}
+		return hitEs;
 	}
 }

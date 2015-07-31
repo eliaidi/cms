@@ -16,6 +16,15 @@ public class PageInfo {
 		this.list = list;
 		this.totalCount = count;
 	}
+	
+	
+	public PageInfo(Integer start, Integer limit, List<?> list, Long totalCount) {
+		super();
+		this.start = start;
+		this.limit = limit;
+		this.list = list;
+		this.totalCount = totalCount;
+	}
 	public Integer getStart() {
 		return start;
 	}

@@ -3,6 +3,7 @@ package com.wk.cms.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -98,7 +99,7 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public List<Document> findByIds(String ids) throws ServiceException {
 		
-		return documentDao.findByIds(ids);
+		return documentDao.findByIds(ids.split(","));
 	}
 	@Override
 	public Document loadRemoteDoc(String url) throws  ParseException, ServiceException {
@@ -140,7 +141,7 @@ public class DocumentService implements IDocumentService {
 	}
 	@Override
 	public List<Document> findAll(Channel channel) {
-		return documentDao.findAll(channel);
+		return documentDao.findAll(channel,MAX_FETCH_SIZE,DetachedCriteria.forClass(Document.class));
 	}
 	@Override
 	public void refreshBy(Channel channel) {
@@ -185,6 +186,24 @@ public class DocumentService implements IDocumentService {
 		document.setChannel(channel);
 		document.setSite(channel.getSite());
 		documentDao.save(document);
+	}
+	@Override
+	public List<Document> findCanPub(Channel currChnl, int pageSize,
+			String where,String order,Object[] params) {
+		String hql = " from Doucment where channel.id='"+currChnl.getId()+"'  ";
+		
+		if(StringUtils.hasLength(currChnl.getSite().getCanPubSta())){
+			hql += " and status in ("+currChnl.getSite().getCanPubSta()+")";
+		}else{
+			hql += " and status <> 5";
+		}
+		if(StringUtils.hasLength(where)){
+			hql += " and "+where;
+		}
+		if(StringUtils.hasLength(order)){
+			hql += " order by "+order;
+		}
+		return documentDao.find(hql,params,new PageInfo(1,pageSize,null,null));
 	}
 
 }

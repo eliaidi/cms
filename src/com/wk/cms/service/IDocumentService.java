@@ -14,6 +14,8 @@ import com.wk.cms.utils.PageInfo;
 
 public interface IDocumentService {
 
+	int MAX_FETCH_SIZE = 500;
+
 	PageInfo find(@NotEmpty String channelId,@NotNull PageInfo pageInfo, String query) throws ServiceException;
 
 	void save(@NotNull Document document, String channelId) throws ServiceException;
@@ -56,5 +58,6 @@ public interface IDocumentService {
 
 	void cut(@NotNull Document document, @NotNull Channel channel);
 
+	List<Document> findCanPub(@NotNull Channel currChnl, int pageSize, String where, String order,Object[] params);
 
 }

@@ -1,8 +1,9 @@
 package com.wk.cms.publish.server;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.jsoup.Jsoup;
@@ -21,7 +22,9 @@ import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.publish.parser.TagParser;
 import com.wk.cms.publish.type.PublishType;
+import com.wk.cms.publish.utils.ParseUtils;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.ServiceException;
@@ -38,6 +41,17 @@ public class PublishServer implements IPublishServer {
 			MAX_POOL_SIZE);
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(PublishServer.class);
+	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
+	private static final Properties pubCompCfg;
+	
+	static{
+		pubCompCfg = new Properties();
+		try {
+			pubCompCfg.load(new FileInputStream(new File(PublishServer.class.getResource("/").getPath()+PUBLISH_COMP_FILE_NAME)));
+		} catch (Exception e) {
+			LOGGER.error("加载发布组件失败，文件【"+PUBLISH_COMP_FILE_NAME+"】",e);
+		} 
+	}
 
 	@Override
 	public String publish(Object obj, boolean isPreview, PublishType type)
@@ -117,7 +131,7 @@ public class PublishServer implements IPublishServer {
 			
 			content = updateContentTempFile(obj,content,pDir);
 			
-			parse(obj,content);
+			content = parse(obj,content);
 			
 			FileUtils.writeFile(content,getPubFileName(obj,template),pDir);
 		} catch (Exception e) {
@@ -134,9 +148,33 @@ public class PublishServer implements IPublishServer {
 		return template.getPrefix()+"."+template.getExt();
 	}
 
-	private void parse(Object obj, String content) {
+	public static String parse(Object obj, String content) throws PublishException {
 		
-		//org.jsoup.nodes.Document doc = Jsoup.parse(content);
+		org.jsoup.nodes.Document doc = Jsoup.parse(content);
+		Elements es = CommonUtils.getElementsByTagNamePrefix(doc,"wk_");
+		if(es.size()==0){
+			return ParseUtils.parse(obj,content);
+		}
+		for(Element e : es){
+			TagParser parser = getParser(e);
+			parser.parse( obj,content);
+		}
+		
+		return content;
+	}
+
+	private static TagParser getParser(Element e) throws PublishException {
+		
+		String pubBeanName = pubCompCfg.getProperty(e.tagName());
+		if(!StringUtils.hasLength(pubBeanName)){
+			throw new PublishException("未在配置文件中找到【k="+e.tagName()+"】的项！");
+		}
+		TagParser parser = BeanFactory.getBean(pubBeanName);
+		if(parser==null){
+			throw new PublishException("未找到beanName为【"+pubBeanName+"】的发布组件，【k="+e.tagName()+"】的项！");
+		}
+		parser.setElement(e);
+		return parser;
 	}
 
 	private String updateContentTempFile(Object obj,String content, String pDir) throws ServiceException {

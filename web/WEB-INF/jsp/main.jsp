@@ -10,7 +10,7 @@
 
 <title>Main</title>
 <script type="text/javascript">
-var RootPath = '<%=path%>';
+var RootPath = '<%=path%>',ScreenWidth = window.screen.availWidth,ScreenHeight = window.screen.availHeight;
 </script>
 <script type="text/javascript" src="<%=path %>/static/cms/urls.js"></script>
 <script id="microloader" type="text/javascript" src="<%=path %>/static/cms/bootstrap.js"></script>

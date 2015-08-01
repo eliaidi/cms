@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.site.Window',{
-	extend: 'Ext.Window',
+	extend: 'MyCms.view.ux.MyWindow',
 	title : '新增站点',
 	layout: 'anchor',
 	width : 581,
@@ -9,7 +9,7 @@ Ext.define('MyCms.view.site.Window',{
 	maximizable:true,
 	minimizable:true,
     uses: [
-        'Ext.Window',
+        'MyCms.view.ux.MyWindow',
         'Ext.form.Panel',
         'MyCms.view.site.Form',
         'MyCms.model.Site'

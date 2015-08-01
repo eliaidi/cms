@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.template.Window', {
-	extend : 'Ext.Window',
+	extend : 'MyCms.view.ux.MyWindow',
 	requires:['MyCms.view.template.Grid'],
 	width : 927,
 	height : 478,
@@ -25,7 +25,10 @@ Ext.define('MyCms.view.template.Window', {
 		if(me.initChooseData){
 			var tidArr = me.initChooseData.split(','),grid = me.down('grid'),sModel = grid.getSelectionModel(),store = grid.getStore(),initRs = [];
 			Ext.Array.each(tidArr,function(tid){
-				initRs.push(store.getById(tid));
+				var r = store.getById(tid);
+				if(r){
+					initRs.push(r);
+				}
 			});
 			sModel.select(initRs);
 		}

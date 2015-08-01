@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.template.AddEdit', {
-	extend : 'Ext.window.Window',
+	extend : 'MyCms.view.ux.MyWindow',
 	width : 850,
 	height : 764,
 	modal : true,

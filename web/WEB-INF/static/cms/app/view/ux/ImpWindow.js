@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.ux.ImpWindow',{
-	extend:'Ext.window.Window',
+	extend:'MyCms.view.ux.MyWindow',
 	width:463,
 	height:140,
 	title:'批量导入',

@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.appendix.Window',{
-	extend:'Ext.window.Window',
+	extend:'MyCms.view.ux.MyWindow',
 	uses:['Ext.form.Panel',
 	      'Ext.tab.Panel',
 	      'MyCms.model.Appendix',

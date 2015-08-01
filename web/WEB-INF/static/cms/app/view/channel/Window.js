@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.channel.Window',{
-	extend: 'Ext.Window',
+	extend: 'MyCms.view.ux.MyWindow',
 	id:'channel-window',
 	title : '新增栏目',
 	layout: 'anchor',
@@ -7,7 +7,7 @@ Ext.define('MyCms.view.channel.Window',{
 	height : 200,
 	border: false,
     uses: [
-        'Ext.Window',
+        'MyCms.view.ux.MyWindow',
         'Ext.form.Panel',
         'MyCms.view.channel.Form',
         'MyCms.model.Channel'

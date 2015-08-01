@@ -10,7 +10,6 @@ Ext.define('MyCms.view.desktop.Desktop', {
     xtype:'my-desktop',
 
     requires: [
-        'Ext.window.MessageBox',
         'Ext.ux.desktop.ShortcutModel',
         'MyCms.view.systemstatus.SystemStatus',
         'MyCms.view.copyright.AboutUs',
@@ -48,23 +47,23 @@ Ext.define('MyCms.view.desktop.Desktop', {
     },
     onItemMenu:function(_this, record, item, index, e, eOpts){
     	var me = this;
-    	var sMenu =  Ext.create('MyCms.view.ux.MyMenu',{
+    	Ext.create('MyCms.view.ux.MyMenu',{
             items: [{
             	text: '预览',
                 handler:function(){
-                	me.preview(record)
+                	me.preview(record);
                 },
                 scope:me
             },{
                 text: '修改',
                 handler:function(){
-                	me.modifySite(record)
+                	me.modifySite(record);
                 },
                 scope:me
             },{
                 text: '删除',
                 handler:function(){
-                	me.deleteSite(record)
+                	me.deleteSite(record);
                 },
                 scope:me
             },{

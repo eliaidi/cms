@@ -16,14 +16,8 @@
 
 	<!-- mapping static resources -->
 	<mvc:resources location="/WEB-INF/static/" mapping="/static/**"></mvc:resources>
-	<mvc:resources location="/WEB-INF/static/cms/" mapping="/bootstrap.*"></mvc:resources>
-	<mvc:resources location="/WEB-INF/static/cms/app/"
-		mapping="/app/**"></mvc:resources>
-	<mvc:resources location="/WEB-INF/static/cms/" mapping="/app.js"></mvc:resources>
-	<mvc:resources location="/WEB-INF/static/cms/ext/"
-		mapping="/ext/**"></mvc:resources>
-	<mvc:resources location="/WEB-INF/static/cms/resources/"
-		mapping="/resources/**"></mvc:resources>
+	<mvc:resources location="/preview/" mapping="/preview/**"></mvc:resources>
+	<mvc:resources location="/WEB-INF/static/cms/" mapping="/**"></mvc:resources>
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">

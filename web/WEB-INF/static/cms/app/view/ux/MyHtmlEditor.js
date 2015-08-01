@@ -24,7 +24,7 @@ Ext.define('MyCms.view.ux.MyHtmlEditor',{
     showAdd:function(_this,e){
     	var me = this;
     	
-    	var win = Ext.create('Ext.window.Window',{
+    	var win = Ext.create('MyCms.view.ux.MyWindow',{
     		title:'添加图片',
     		modal:true,
     		width:433,

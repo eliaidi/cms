@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.document.Window',{
-	extend: 'Ext.Window',
+	extend: 'MyCms.view.ux.MyWindow',
 	id:'document-window',
 	title : '新增文档',
 	layout: 'anchor',
@@ -7,7 +7,7 @@ Ext.define('MyCms.view.document.Window',{
 	height : 690,
 	border: false,
     requires: [
-        'Ext.Window',
+        'MyCms.view.ux.MyWindow',
         'Ext.form.Panel',
         'MyCms.view.document.Form',
         'MyCms.model.Document',

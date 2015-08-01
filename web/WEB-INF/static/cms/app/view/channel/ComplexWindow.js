@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.channel.ComplexWindow',{
-	extend: 'Ext.Window',
+	extend: 'MyCms.view.ux.MyWindow',
 	layout: 'anchor',
 	width : 1137,
 	height : 613,

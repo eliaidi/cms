@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.ux.RemoteDocWin',{
-	extend:'Ext.window.Window',
+	extend:'MyCms.view.ux.MyWindow',
 	uses:['Ext.form.Panel'
 	      ],
 	modal:true,

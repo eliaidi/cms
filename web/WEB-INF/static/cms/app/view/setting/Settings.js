@@ -6,7 +6,7 @@
  */
 
 Ext.define('MyCms.view.setting.Settings', {
-    extend: 'Ext.window.Window',
+    extend: 'MyCms.view.ux.MyWindow',
 
     uses: [
         'Ext.tree.Panel',

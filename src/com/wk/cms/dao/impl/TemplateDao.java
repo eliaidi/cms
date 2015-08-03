@@ -1,5 +1,6 @@
 package com.wk.cms.dao.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CallBack;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
@@ -124,13 +126,24 @@ public class TemplateDao implements ITemplateDao {
 						String fileName = val.indexOf("/")>=0?val.substring(val.lastIndexOf("/")+1):val;
 						TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
 						if (tempFile == null) {
-							File tf = new File(UUID.randomUUID().toString(),val);
+							final File tf = new File(UUID.randomUUID().toString(),val);
 							tempFile = new TempFile(UUID.randomUUID()
 									.toString(), new HashSet<Template>(), tf,template.getSite());
 							
 							if("link".equalsIgnoreCase(re.tagName())){
 								LOGGER.debug("找到LINK标签，开始解析CSS文件【"+val+"】中的模板附件~~");
-								List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tf,val,template,siteFiles);
+								List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tf,val,template,siteFiles,new CallBack() {
+
+									@Override
+									public void doCallBack(Object[] objs)
+											throws ServiceException {
+										try {
+											tf.setContent(new MyBlob(objs[0].toString()));
+										} catch (UnsupportedEncodingException e) {
+											throw new ServiceException("回写css文件内容失败！",e);
+										}
+									}
+								});
 								for(TempFile ctf : cssInnerFiles){
 									tempFiles.add(ctf);
 								}

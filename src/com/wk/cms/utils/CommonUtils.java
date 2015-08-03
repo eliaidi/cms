@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -165,10 +166,21 @@ public class CommonUtils {
 			URL url = new URL(remoteUrl);
 			URLConnection connection = url.openConnection();
 			InputStream is = connection.getInputStream();
-			byte[] buff = new byte[is.available()];
-			is.read(buff);
+			
+			List<Byte> bytes = new ArrayList<Byte>();
+			int i;
+			while((i = is.read())!=-1){
+				bytes.add((byte) i);
+			}
 			is.close();
-			return buff;
+			
+			byte[] rs = new byte[bytes.size()];
+			for(int j=0;j<bytes.size();j++){
+				rs[j] = bytes.get(j);
+			}
+			
+			return rs;
+			
 		} catch (Exception e) {
 			throw new ServiceException("获取远程文件失败！",e);
 		} 
@@ -248,7 +260,7 @@ public class CommonUtils {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles) throws ServiceException {
+	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles,CallBack cb) throws ServiceException {
 		
 		try {
 			List<TempFile> tempFiles = new ArrayList<TempFile>();
@@ -263,7 +275,7 @@ public class CommonUtils {
 				String url = m.group(1);
 				String fileName = url.indexOf("/")>0?url.substring(url.lastIndexOf("/")+1):url;
 				LOGGER.debug("找到CSS文件内模板附件【"+fileName+"】");
-				m.appendReplacement(newCon, "url("+fileName+")");
+				m.appendReplacement(newCon, "url("+fileName+");");
 				
 				TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
 				if(tempFile==null){
@@ -278,6 +290,10 @@ public class CommonUtils {
 				
 			}
 			m.appendTail(newCon);
+			
+			if(cb!=null){
+				cb.doCallBack(new Object[]{newCon.toString()});
+			}
 			return tempFiles;
 		} catch (Exception e) {
 			throw new ServiceException("下载Css文件内关联文件失败！！", e);
@@ -287,7 +303,7 @@ public class CommonUtils {
 	public static void main(String[] args) {
 		
 		try {
-			downLoadCssInnerFiles(new File(null, "http://localhost:8888/portal/web/themes/default/css/lin.css"), null, null,null);
+			downLoadCssInnerFiles(new File(null, "http://localhost:8888/portal/web/themes/default/css/lin.css"), null, null,null,null);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

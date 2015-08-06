@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
@@ -34,5 +35,7 @@ public interface ITemplateService {
 			@NotNull Site site);
 
 	List<TempFile> findTempFilesBySite(@NotNull Site site);
+
+	void imp(@NotNull MultipartFile f, @NotEmpty String siteId,String encode) throws ServiceException;
 
 }

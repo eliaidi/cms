@@ -2,7 +2,7 @@ Ext.define('MyCms.view.ux.ImpWindow',{
 	extend:'MyCms.view.ux.MyWindow',
 	width:463,
 	height:140,
-	title:'批量导入',
+	title:'导入',
 	modal:true,
 	initComponent:function(){
 		var me = this;
@@ -14,7 +14,7 @@ Ext.define('MyCms.view.ux.ImpWindow',{
     			margin:'10px 5px',
     			items:[{
     				xtype:'filefield',
-    				fieldLabel:'上传txt文件',
+    				fieldLabel:'上传文件',
     				name:'file',
     				anchor:'100%',
     				allowBlank: false,

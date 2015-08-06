@@ -26,4 +26,6 @@ public interface ITemplateDao {
 
 	List<TempFile> findTempFiles(Site site);
 
+	void search2Add(java.io.File tempfolder, Site site,String encode) throws ServiceException;
+
 }

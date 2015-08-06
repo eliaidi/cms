@@ -4,7 +4,6 @@ package com.wk.cms.model;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -40,6 +39,16 @@ public class Template {
 	
 	@ManyToMany(mappedBy="templates",cascade={CascadeType.ALL})
 	private Set<TempFile> tempFiles;
+
+	public Template(){}
+	public Template(String id, String name, String prefix,
+			String fileExt, Site site) {
+		this.id = id;
+		this.name = name;
+		this.prefix = prefix;
+		this.ext = fileExt;
+		this.site = site;
+	}
 
 	public String getId() {
 		return id;

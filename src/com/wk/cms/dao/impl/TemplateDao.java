@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.dao.ITemplateDao;
 import com.wk.cms.model.File;
 import com.wk.cms.model.Site;
@@ -30,6 +32,7 @@ import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.CallBack;
 import com.wk.cms.utils.CommonUtils;
+import com.wk.cms.utils.FileUtils;
 import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
 
@@ -84,7 +87,7 @@ public class TemplateDao implements ITemplateDao {
 
 	private void analysizeTemplate(Template template) throws ServiceException {
 		boolean isFromRemote = StringUtils.hasLength(template.getRemoteUrl());
-		Set<TempFile> tempFiles = new HashSet<TempFile>();
+		Set<TempFile> tempFiles = template.getTempFiles();
 		List<TempFile> siteFiles = new ArrayList<TempFile>();
 		boolean hasFetchSiteFiles = false;
 		try {
@@ -95,13 +98,13 @@ public class TemplateDao implements ITemplateDao {
 									0,
 									(int) template.getFile().getContent()
 											.length()), "UTF-8"));
-			Elements rEs = document.select("script,link,img");
+			Map<String, String> parseTags = SysCfg.getSupportParseTags();
+			Elements rEs = document.select(CommonUtils.join(parseTags.keySet(), ",")); 
 			for (Element re : rEs) {
 				boolean hasDone = "true".equalsIgnoreCase(re.attr("hasDone"));
 				if (!hasDone) {
 					try {
-						String attrName = CommonUtils
-								.getRemoteAttrNameByTagName(re.tagName());
+						String attrName = parseTags.get(re.tagName());
 						String val = re.attr(attrName);
 						if(!StringUtils.hasLength(val)){
 							LOGGER.debug("此标签【"+attrName+"】属性值为空！！跳过~~");
@@ -199,6 +202,26 @@ public class TemplateDao implements ITemplateDao {
 
 		hibernateTemplate.getSessionFactory().getCurrentSession()
 				.delete(findById(id));
+		removeFromSize(id);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void removeFromSize(String id) {
+		
+		List<Site> sites = (List<Site>) hibernateTemplate.find("from Site where tempIds like ?", "%"+id+"%");
+		if(!CommonUtils.isEmpty(sites)){
+			for(Site s : sites){
+				String tids = s.getTempIds();
+				String[] idsArr = tids.split(",");
+				for(int i=0;i<idsArr.length;i++){
+					if(idsArr[i].equals(id)){
+						idsArr[i] = null;
+					}
+				}
+				s.setTempIds(CommonUtils.join(idsArr,","));
+				hibernateTemplate.update(s);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -219,6 +242,91 @@ public class TemplateDao implements ITemplateDao {
 				.createCriteria(TempFile.class)
 				.add(Restrictions.eq("site", site))
 				.list();
+	}
+
+	@Override
+	public void search2Add(java.io.File tempfolder, Site site,String encode) throws ServiceException {
+		
+		List<TempFile> siteTempFiles = null;
+		boolean hasFetchSiteTempFiles = false;
+		if(tempfolder.isDirectory()){
+			java.io.File[] children = tempfolder.listFiles();
+			for(java.io.File child : children){
+				search2Add(child, site,encode);
+			}
+		}else{
+			try {
+				String fileName = tempfolder.getName();
+				String fileExt = FileUtils.getFileExt(fileName);
+				if(fileExt==null||!CommonUtils.in(SysCfg.getSupportTemplateExt(),fileExt)){
+					return;
+				}
+				Document document = Jsoup.parse(tempfolder, encode);
+				Elements titleEs = document.select("title");
+				Map<String, String> parseTags = SysCfg.getSupportParseTags();
+				Elements es = document.select(CommonUtils.join(parseTags.keySet(), ","));
+				
+				Set<TempFile> tfs = new HashSet<TempFile>();
+				Template template = new Template(null,(titleEs.size()>0?titleEs.get(0).text():fileName),"index",fileExt,site);
+				for(Element ele : es){
+					if("true".equals(ele.attr("hasdone"))){
+						continue;
+					}
+					String attrName = parseTags.get(ele.tagName());
+					String attrValue = ele.attr(attrName);
+					if(!StringUtils.hasLength(attrValue)){
+						ele.attr("hasdone", "true");
+						continue;
+					}
+					
+					String eFileFullName = tempfolder.getParent()+java.io.File.separator+attrValue;
+					java.io.File eFile = new java.io.File(eFileFullName);
+					if(!eFile.exists()){
+						ele.attr("hasdone", "true");
+						continue;
+					}
+					String eFileName = eFile.getName();
+					if(!hasFetchSiteTempFiles){
+						siteTempFiles = findAllTempFileBySiteId(site.getId());
+					}
+					TempFile tempFile = CommonUtils.findFromList(siteTempFiles,new String[]{"file.fileName"},new Object[]{eFileName});
+					if(tempFile==null){
+						Set<Template> temps = new HashSet<Template>();temps.add(template);
+						
+						final File tff = new File(UUID.randomUUID().toString(),eFile);
+						tempFile = new TempFile(UUID.randomUUID().toString(), temps, tff, site);
+						if("link".equalsIgnoreCase(ele.tagName())){
+							List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tempFile.getFile(),eFileFullName,template,siteTempFiles,new CallBack() {
+								@Override
+								public void doCallBack(Object[] objs)
+										throws ServiceException {
+									try {
+										tff.setContent(new MyBlob(objs[0].toString()));
+									} catch (UnsupportedEncodingException e) {
+										throw new ServiceException("回写css文件内容失败！",e);
+									}
+								}
+							},false);
+							for(TempFile ctf : cssInnerFiles){
+								tfs.add(ctf);
+							}
+						}
+						
+					}else{
+						tempFile.getTemplates().add(template);
+					}
+					tfs.add(tempFile);
+					
+					ele.attr(attrName, eFileName).attr("hasdone", "true");
+				}
+				byte[] tBytes = document.html().getBytes("UTF-8");
+				template.setFile(new File(fileName, tBytes.length, fileExt, new MyBlob(tBytes)));
+				template.setTempFiles(tfs);
+				save(template);
+			} catch (Exception e) {
+				throw new ServiceException("解析文件失败！"+tempfolder, e);
+			}
+		}
 	}
 
 }

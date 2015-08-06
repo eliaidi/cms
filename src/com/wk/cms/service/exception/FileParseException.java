@@ -1,6 +1,6 @@
 package com.wk.cms.service.exception;
 
-public class FileParseException extends Exception {
+public class FileParseException extends ServiceException {
 
 	public FileParseException(){
 		

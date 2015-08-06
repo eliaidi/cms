@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -250,18 +252,18 @@ public class CommonUtils {
 		}
 		return obj;
 	}
-
+	
 	/**
 	 * 下载CSS文件里面的模板附件
 	 * @param tf	Css文件
 	 * @param val	Css文件路径	用于拼接模板附件的远程地址
 	 * @param template	所属模板	
 	 * @param siteFiles 站点下已存在的模板附件，如果css文件中包含已存在的模板附件则不进行下载，
+	 * @param isRemote 是否远程文件
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles,CallBack cb) throws ServiceException {
-		
+	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles,CallBack cb,boolean isRemote) throws ServiceException {
 		try {
 			List<TempFile> tempFiles = new ArrayList<TempFile>();
 			Set<Template > initTpls = new HashSet<Template>();
@@ -269,25 +271,28 @@ public class CommonUtils {
 			
 			String fileCon = new String(tf.getContent().getBytes(0, (int) tf.getContent().length()),"UTF-8");
 			StringBuffer newCon = new StringBuffer();
-			Pattern p = Pattern.compile("url\\(['|\"]?(\\S+)['|\"]?\\);");
+			Pattern p = Pattern.compile("url\\(['|\"]?([^\\)|\\s]+)['|\"]?\\)");
 			Matcher m = p.matcher(fileCon);
 			while(m.find()){
 				String url = m.group(1);
 				String fileName = url.indexOf("/")>0?url.substring(url.lastIndexOf("/")+1):url;
 				LOGGER.debug("找到CSS文件内模板附件【"+fileName+"】");
-				m.appendReplacement(newCon, "url("+fileName+");");
+				m.appendReplacement(newCon, "url("+fileName+")");
 				
 				TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
 				if(tempFile==null){
-					
 					String remoteUrl = val.substring(0, val.lastIndexOf("/")+1);remoteUrl = remoteUrl + url;
-					LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
-					tempFiles.add(new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite()));
+					if(isRemote){
+						LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
+						tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite());
+					}else{
+						tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),new java.io.File(remoteUrl)), template.getSite());
+					}
 				}else{
 					LOGGER.debug("模板附件【"+fileName+"】已存在，取消下载，直接添加进模板!");
-					tempFiles.add(tempFile);
 				}
-				
+				tempFiles.add(tempFile);
+				tempFile.getTemplates().add(template);
 			}
 			m.appendTail(newCon);
 			
@@ -298,6 +303,20 @@ public class CommonUtils {
 		} catch (Exception e) {
 			throw new ServiceException("下载Css文件内关联文件失败！！", e);
 		} 
+	}
+
+	/**
+	 * @param tf
+	 * @param val
+	 * @param template
+	 * @param siteFiles
+	 * @param cb
+	 * @return
+	 * @throws ServiceException
+	 */
+	public static List<TempFile> downLoadCssInnerFiles(File tf, String val,Template template, List<TempFile> siteFiles,CallBack cb) throws ServiceException {
+		
+		return downLoadCssInnerFiles(tf, val, template, siteFiles, cb, true);
 	}
 
 	public static void main(String[] args) {
@@ -327,5 +346,40 @@ public class CommonUtils {
 			}
 		}
 		return hitEs;
+	}
+
+	public static String join(String[] idsArr, String sp) {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		for(String id : idsArr){
+			if(id==null) continue;
+			sb.append(sp+id);
+		}
+		if(sb.length()>0){
+			sb.delete(0, 1);
+		}
+		return sb.toString();
+	}
+
+	public static boolean in(Object[] os, Object o) {
+		
+		for(Object obj : os){
+			if(obj.equals(o))
+				return true;
+		}
+		return false;
+	}
+
+	public static String join(Set<String> keySet, String sp) {
+		
+		StringBuffer sb = new StringBuffer();
+		for(String o : keySet){
+			sb.append(sp+o);
+		}
+		if(sb.length()>0){
+			sb.delete(0, 1);
+		}
+		return sb.toString();
 	}
 }

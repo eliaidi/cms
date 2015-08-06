@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.Template;
@@ -46,6 +47,13 @@ public class TemplateController {
 	public @ResponseBody Message loadRemote(String url,String siteId) throws FileParseException{
 		
 		Template template = templateService.loadRemoteDoc(url, siteId);
-		return new Message(true, "加载成功！！", null);
+		return new Message(true, "加载成功！！", template);
+	}
+	
+	@RequestMapping("/imp")
+	public @ResponseBody Message imp(@RequestParam("file") MultipartFile f,String siteId,String encode) throws ServiceException{
+		
+		templateService.imp(f,siteId,encode);
+		return new Message(true, "导入成功！！", null);
 	}
 }

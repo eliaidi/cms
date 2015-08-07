@@ -1,6 +1,7 @@
 package com.wk.cms.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Channel;
+import com.wk.cms.model.Site;
 import com.wk.cms.service.exception.ServiceException;
 
 public interface IChannelService {
@@ -52,13 +54,6 @@ public interface IChannelService {
 	 */
 	void deleteById(String channelId) throws ServiceException;
 
-	/**
-	 * 根据栏目名称查询栏目
-	 * @param name
-	 * @return
-	 * @throws ServiceException
-	 */
-	Channel findByName(String name) throws ServiceException;
 
 	void imp(MultipartFile file, String parentId, String siteId) throws ServiceException;
 
@@ -73,4 +68,10 @@ public interface IChannelService {
 	void copy(@NotNull Channel channel, String parentId, String siteId) throws ServiceException;
 
 	void cut(@NotNull Channel channel, String parentId, String siteId) throws ServiceException;
+
+	Channel findByName(@NotEmpty String name, @NotNull Site currSite);
+
+	List<Channel> findByMap(@NotNull Channel pChannel, @NotNull Map<String, String> params);
+
+	List<Channel> findByMap(@NotNull Site obj, @NotNull Map<String, String> params);
 }

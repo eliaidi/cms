@@ -142,4 +142,10 @@ public class TemplateService implements ITemplateService {
 		}
 	}
 
+	@Override
+	public Template findByName(String tName) {
+
+		return templateDao.findByName(tName);
+	}
+
 }

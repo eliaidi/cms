@@ -31,6 +31,7 @@ import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
+import com.wk.cms.utils.PublishUtils;
 
 @Component
 @Transactional(readOnly = true)
@@ -43,6 +44,8 @@ public class PublishServer implements IPublishServer {
 			.getLogger(PublishServer.class);
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
+	private static final String PUBLISH_TAG_KEY = "w_comp";
+	private Object base;
 	
 	static{
 		pubCompCfg = new Properties();
@@ -57,6 +60,7 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
+		this.base = obj;
 		if (isPreview)
 			return preview(obj);
 		return null;
@@ -93,10 +97,9 @@ public class PublishServer implements IPublishServer {
 			throw new PublishException("站点【" + obj.getName() + "】未配置模板！！");
 		
 		final String pDir = getPreviewDir(obj);
-		publishTempFile(obj,getPreviewDir(getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
+		publishTempFile(obj,getPreviewDir(PublishUtils.getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
 		for (final Template template : templates) {
 			EXECUTOR.execute(new Runnable() {
-
 				@Override
 				public void run() {
 					try {
@@ -107,13 +110,13 @@ public class PublishServer implements IPublishServer {
 				}
 			});
 		}
-		return ITemplateService.PREVIEW_FOLDER+getDir(obj)+File.separator+getPubFileName(obj, templates.get(0));
+		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+getPubFileName(obj, templates.get(0));
 	}
 
 	private void publishTempFile(Object obj, String pDir) {
 		
 		ITemplateService templateService = BeanFactory.getBean(ITemplateService.class);
-		List<TempFile> tempFiles = templateService.findTempFilesBySite(getSite(obj));
+		List<TempFile> tempFiles = templateService.findTempFilesBySite(PublishUtils.getSite(obj));
 		
 		for(TempFile tf : tempFiles){
 			try {
@@ -129,9 +132,8 @@ public class PublishServer implements IPublishServer {
 		try {
 			String content = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
 			
-			content = updateContentTempFile(obj,content,pDir);
-			
 			content = parse(obj,content);
+			content = updateContentTempFile(obj,content,pDir);
 			
 			FileUtils.writeFile(content,getPubFileName(obj,template),pDir);
 		} catch (Exception e) {
@@ -148,16 +150,34 @@ public class PublishServer implements IPublishServer {
 		return template.getPrefix()+"."+template.getExt();
 	}
 
+	/**
+	 * 解析标签
+	 * @param obj 当前解析对象
+	 * @param base 发布对象（根对象）
+	 * @param content
+	 * @return
+	 * @throws PublishException
+	 */
 	public static String parse(Object obj, String content) throws PublishException {
 		
-		org.jsoup.nodes.Document doc = Jsoup.parse(content);
-		Elements es = CommonUtils.getElementsByTagNamePrefix(doc,"wk_");
-		if(es.size()==0){
-			return ParseUtils.parse(obj,content);
-		}
-		for(Element e : es){
-			TagParser parser = getParser(e);
-			parser.parse( obj,content);
+		org.jsoup.nodes.Document doc = null;
+		Elements es = null;
+		while(true){
+			doc = Jsoup.parse(content);
+			es = doc.getElementsByAttribute(PUBLISH_TAG_KEY);
+			if(es.size()==0){
+				content = ParseUtils.parse(obj,content);
+				break;
+			}
+			for(Element e : es){
+				TagParser parser = getParser(e);
+				try {
+					e.html(parser.parse( obj,content));
+				} catch (ServiceException e1) {
+					LOGGER.error("解析标签失败！"+e.tagName(),e1);
+				}
+			}
+			content = doc.html();
 		}
 		
 		return content;
@@ -165,7 +185,7 @@ public class PublishServer implements IPublishServer {
 
 	private static TagParser getParser(Element e) throws PublishException {
 		
-		String pubBeanName = pubCompCfg.getProperty(e.tagName());
+		String pubBeanName = pubCompCfg.getProperty(e.attr(PUBLISH_TAG_KEY));
 		if(!StringUtils.hasLength(pubBeanName)){
 			throw new PublishException("未在配置文件中找到【k="+e.tagName()+"】的项！");
 		}
@@ -181,7 +201,7 @@ public class PublishServer implements IPublishServer {
 		
 		org.jsoup.nodes.Document document = Jsoup.parse(content);
 		Elements tfEs = document.getElementsByAttributeValue("hasdone", "true");
-		String tfPath = getPath2Path(getDir(obj),getDir(getSite(obj))+File.separator+"images");
+		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+File.separator+"images");
 		for(Element el : tfEs){
 			String attrName = CommonUtils.getRemoteAttrNameByTagName(el.tagName());
 			String attrVal = el.attr(attrName);
@@ -191,28 +211,9 @@ public class PublishServer implements IPublishServer {
 		return document.html();
 	}
 
-	private String getPath2Path(String f, String t) {
-		
-		String[] fArr = f.split("\\"+File.separator);
-		String[] tArr = t.split("\\"+File.separator);
-		
-		String p = "";
-		for(int i=0;i<fArr.length;i++){
-			if(!StringUtils.hasLength(fArr[i])) continue;
-			if(tArr.length>=(i+1)&&fArr[i].equalsIgnoreCase(tArr[i])) continue;
-			p += ".."+File.separator;
-		}
-		for(int i=0;i<tArr.length;i++){
-			if(!StringUtils.hasLength(tArr[i])) continue;
-			if(fArr.length>=(i+1)&&fArr[i].equalsIgnoreCase(tArr[i])) continue;
-			
-			p = p+tArr[i]+File.separator;
-		}
-		return p;
-	}
 	
 	private String getPreviewDir(Object obj) {
-		String dir = getDir(obj);
+		String dir = PublishUtils.getDir(obj);
 		dir = CommonUtils.getAppPath("cms") + File.separator + ITemplateService.PREVIEW_FOLDER + dir;
 		
 		File f = new File(dir);
@@ -222,32 +223,6 @@ public class PublishServer implements IPublishServer {
 		return dir;
 	}
 
-	private String getDir(Object obj) {
-		Site currSite = getSite(obj);
-		String dir = "";
-		String sep = File.separator;
-		if (obj instanceof Site) {
-		} else if (obj instanceof Channel) {
-			Channel chnl = (Channel) obj;
-			while (chnl != null) {
-				dir = sep + chnl.getFolder() + dir;
-				chnl = chnl.getParent();
-			}
-		} else if (obj instanceof Document) {
-			Document doc = (Document) obj;
-			Channel currChnl = doc.getChannel();
-			dir = getPreviewDir(currChnl);
-		}
-		dir = sep + currSite.getFolder() + dir;
-		return dir;
-	}
-
-	private Site getSite(Object obj) {
-		
-		if(obj instanceof Site) return (Site)obj;
-		if(obj instanceof Channel) return ((Channel)obj).getSite();
-		if(obj instanceof Document) return ((Document) obj).getSite();
-		return null;
-	}
+	
 
 }

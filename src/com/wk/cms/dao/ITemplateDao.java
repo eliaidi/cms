@@ -28,4 +28,6 @@ public interface ITemplateDao {
 
 	void search2Add(java.io.File tempfolder, Site site,String encode) throws ServiceException;
 
+	Template findByName(String tName);
+
 }

@@ -20,6 +20,11 @@ Ext
 						xtype : 'rownumberer',
 						width : 50,
 						sortable : false
+					},{
+						text : "ID",
+						dataIndex : 'id',
+						flex : 1,
+						sortable : false
 					}, {
 						tdCls : 'x-grid-cell-topic',
 						text : "名称",

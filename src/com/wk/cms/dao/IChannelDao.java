@@ -1,8 +1,10 @@
 package com.wk.cms.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.wk.cms.model.Channel;
+import com.wk.cms.model.Site;
 
 public interface IChannelDao  {
 
@@ -16,7 +18,11 @@ public interface IChannelDao  {
 
 	void deleteById(String channelId);
 
-	Channel findByName(String name);
-
 	List<Channel> findByIds(String[] objIds);
+
+	Channel findByName(String name, Site currSite);
+
+	List<Channel> findByMap(Channel pChannel, Map<String, String> params);
+
+	List<Channel> findByMap(Site obj, Map<String, String> params);
 }

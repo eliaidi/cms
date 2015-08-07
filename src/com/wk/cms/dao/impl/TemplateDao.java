@@ -87,7 +87,7 @@ public class TemplateDao implements ITemplateDao {
 
 	private void analysizeTemplate(Template template) throws ServiceException {
 		boolean isFromRemote = StringUtils.hasLength(template.getRemoteUrl());
-		Set<TempFile> tempFiles = template.getTempFiles();
+		Set<TempFile> tempFiles = template.getTempFiles()==null?new HashSet<TempFile>():template.getTempFiles();
 		List<TempFile> siteFiles = new ArrayList<TempFile>();
 		boolean hasFetchSiteFiles = false;
 		try {
@@ -327,6 +327,16 @@ public class TemplateDao implements ITemplateDao {
 				throw new ServiceException("解析文件失败！"+tempfolder, e);
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Template findByName(String tName) {
+		
+		List<Template> templates = (List<Template>) hibernateTemplate.find("from Template where name=?", tName);
+		if(CommonUtils.isEmpty(templates)) return null;
+		
+		return templates.get(0);
 	}
 
 }

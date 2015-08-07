@@ -2,6 +2,7 @@ package com.wk.cms.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class ChannelService implements IChannelService {
 			channelDao.save(channel);
 		}else{
 			
-			Channel sameNameChnl = findByName(channel.getName());
+			Channel sameNameChnl = findByName(channel.getName(),channel.getSite());
 			if(sameNameChnl!=null&&!channel.getId().equals(sameNameChnl.getId())){
 				throw new ServiceException("name为【"+channel.getName()+"】的栏目已经存在！");
 			}
@@ -82,14 +83,6 @@ public class ChannelService implements IChannelService {
 		
 	}
 	
-	@Override
-	public Channel findByName(String name) throws ServiceException {
-		
-		if(!StringUtils.hasLength(name)){
-			throw new ServiceException("name必须传入");
-		}
-		return channelDao.findByName(name);
-	}
 	@Override
 	public Channel findById(String id) {
 		
@@ -207,6 +200,19 @@ public class ChannelService implements IChannelService {
 		if(!channel.getSite().getId().equals(targetSite.getId())){
 			documentService.refreshBy(channel);
 		}
+	}
+	@Override
+	public Channel findByName(String name, Site currSite) {
+		return channelDao.findByName(name,currSite);
+	}
+	@Override
+	public List<Channel> findByMap(Channel pChannel, Map<String, String> params) {
+		
+		return channelDao.findByMap(pChannel,params);
+	}
+	@Override
+	public List<Channel> findByMap(Site obj, Map<String, String> params) {
+		return channelDao.findByMap(obj,params);
 	}
 
 }

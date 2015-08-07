@@ -38,4 +38,6 @@ public interface ITemplateService {
 
 	void imp(@NotNull MultipartFile f, @NotEmpty String siteId,String encode) throws ServiceException;
 
+	Template findByName(@NotEmpty String tName);
+
 }

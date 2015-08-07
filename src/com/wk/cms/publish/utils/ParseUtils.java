@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.CommonUtils;
+import com.wk.cms.utils.PublishUtils;
 
 public class ParseUtils {
 
@@ -20,11 +21,17 @@ public class ParseUtils {
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
 			String fName = m.group(1);
-			try {
-				m.appendReplacement(sb, CommonUtils.getDeepFieldValue(obj,fName).toString());
-			} catch (ServiceException e) {
-				LOGGER.error(e.getMessage(),e);
+			String rv = "";
+			if("_url".equalsIgnoreCase(fName)){
+				//rv = PublishUtils.getUrl(obj);
+			}else{
+				try {
+					rv = CommonUtils.getDeepFieldValue(obj,fName).toString();
+				} catch (ServiceException e) {
+					LOGGER.error("获取对象属性值失败！",e);
+				}
 			}
+			m.appendReplacement(sb, rv);
 		}
 		m.appendTail(sb);
 		return sb.toString();

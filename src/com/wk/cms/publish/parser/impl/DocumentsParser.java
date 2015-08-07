@@ -17,6 +17,7 @@ import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.publish.server.PublishServer;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
+import com.wk.cms.service.exception.ServiceException;
 
 @Component("Documents")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -29,8 +30,8 @@ public class DocumentsParser extends AbstractTagParser {
 	@Autowired
 	private IChannelService channelService;
 	@Override
-	public String parse(Object obj, String con) {
-
+	protected String parseInternal(Object obj, String con)
+			throws ServiceException {
 		Channel currChnl = StringUtils.hasLength(e.attr("id"))?channelService.findById(e.attr("id")):(Channel)obj;
 		int pageSize = StringUtils.hasLength(e.attr("num"))?Integer.parseInt("num"):IDocumentService.MAX_FETCH_SIZE;
 		String where = StringUtils.hasLength(e.attr("where"))?e.attr("where"):"";

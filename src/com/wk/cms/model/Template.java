@@ -13,6 +13,8 @@ import javax.persistence.OneToOne;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 
 @Entity
 @JsonIgnoreProperties({"tempFiles"})
@@ -112,6 +114,13 @@ public class Template {
 
 	public void setTempFiles(Set<TempFile> tempFiles) {
 		this.tempFiles = tempFiles;
+	}
+	public String getConInStr() throws ServiceException {
+		try {
+			return CommonUtils.getContent(this.file.getContent().getBinaryStream());
+		} catch (Exception e) {
+			throw new ServiceException("获取附件内容失败！",e);
+		} 
 	}
 	
 	

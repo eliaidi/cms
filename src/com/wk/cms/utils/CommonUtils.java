@@ -67,13 +67,18 @@ public class CommonUtils {
 
 	public static String getContent(InputStream inputStream) throws IOException {
 		
+		return getContent(inputStream, "UTF-8");
+	}
+	
+	public static String getContent(InputStream inputStream,String charsetName) throws IOException {
+		
 		StringBuffer s = new StringBuffer();
 		
 		byte[] buff = new byte[10000];
 		int len ;
 		
 		while((len = inputStream.read(buff))!=-1){
-			s.append(new String(buff,0,len,"UTF-8"));
+			s.append(new String(buff,0,len,charsetName));
 		}
 		return s.toString();
 	}

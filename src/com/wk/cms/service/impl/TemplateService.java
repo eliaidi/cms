@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.tools.zip.ZipFile;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,7 @@ public class TemplateService implements ITemplateService {
 	public Template loadRemoteDoc(String url,String siteId) throws FileParseException {
 		
 		try {
-			org.jsoup.nodes.Document document = Jsoup.parse(new URL(url), 5000);
+			Document document = Jsoup.parse(new URL(url), 5000);
 			Elements titleEs = document.select("title");
 			
 			Template template = new Template();

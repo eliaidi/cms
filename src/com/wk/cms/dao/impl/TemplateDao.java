@@ -1,6 +1,8 @@
 package com.wk.cms.dao.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -84,6 +86,19 @@ public class TemplateDao implements ITemplateDao {
 			hibernateTemplate.update(template);
 		}
 	}
+	
+	private void analysizeTemplate2(Template template) throws ServiceException {
+		
+		try {
+			String con = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	private void analysizeTemplate(Template template) throws ServiceException {
 		boolean isFromRemote = StringUtils.hasLength(template.getRemoteUrl());
@@ -99,6 +114,7 @@ public class TemplateDao implements ITemplateDao {
 									(int) template.getFile().getContent()
 											.length()), "UTF-8"));
 			Map<String, String> parseTags = SysCfg.getSupportParseTags();
+			
 			Elements rEs = document.select(CommonUtils.join(parseTags.keySet(), ",")); 
 			for (Element re : rEs) {
 				boolean hasDone = "true".equalsIgnoreCase(re.attr("hasDone"));

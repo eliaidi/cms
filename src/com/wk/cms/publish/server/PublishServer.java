@@ -45,7 +45,6 @@ public class PublishServer implements IPublishServer {
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
 	private static final String PUBLISH_TAG_KEY = "w_comp";
-	private Object base;
 	
 	static{
 		pubCompCfg = new Properties();
@@ -60,7 +59,6 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
-		this.base = obj;
 		if (isPreview)
 			return preview(obj);
 		return null;

@@ -282,25 +282,27 @@ public class CommonUtils {
 				String url = m.group(1);
 				String fileName = url.indexOf("/")>0?url.substring(url.lastIndexOf("/")+1):url;
 				LOGGER.debug("找到CSS文件内模板附件【"+fileName+"】");
-				m.appendReplacement(newCon, "url("+fileName+")");
-				
-				TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
-				if(tempFile==null){
-					String remoteUrl = val.substring(0, val.lastIndexOf("/")+1);remoteUrl = remoteUrl + url;
-					if(isRemote){
-						LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
-						tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite());
+				try {
+					m.appendReplacement(newCon, "url("+fileName+")");
+					TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
+					if(tempFile==null){
+						String remoteUrl = val.substring(0, val.lastIndexOf("/")+1);remoteUrl = remoteUrl + url;
+						if(isRemote){
+							LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
+							tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite());
+						}else{
+							tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),new java.io.File(remoteUrl)), template.getSite());
+						}
 					}else{
-						tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),new java.io.File(remoteUrl)), template.getSite());
+						LOGGER.debug("模板附件【"+fileName+"】已存在，取消下载，直接添加进模板!");
 					}
-				}else{
-					LOGGER.debug("模板附件【"+fileName+"】已存在，取消下载，直接添加进模板!");
+					tempFiles.add(tempFile);
+					tempFile.getTemplates().add(template);
+				} catch (Exception e) {
+					LOGGER.error("导入css文件内模板附件失败！URL="+url,e);
 				}
-				tempFiles.add(tempFile);
-				tempFile.getTemplates().add(template);
 			}
 			m.appendTail(newCon);
-			
 			if(cb!=null){
 				cb.doCallBack(new Object[]{newCon.toString()});
 			}

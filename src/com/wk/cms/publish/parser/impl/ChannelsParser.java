@@ -23,14 +23,14 @@ public class ChannelsParser extends AbstractTagParser {
 	@Autowired
 	private IChannelService channelService;
 	@Override
-	protected String parseInternal(Object obj, String con)
+	protected String parseInternal(Object obj,Object base, String con)
 			throws ServiceException {
 		
-		String name = e.attr("w_name");
-		String num = e.attr("w_num");
-		String order = e.attr("w_order");
-		String where = e.attr("w_where");
-		String startpos = e.attr("w_startpos");
+		String name = e.attr("name");
+		String num = e.attr("num");
+		String order = e.attr("order");
+		String where = e.attr("where");
+		String startpos = e.attr("startpos");
 		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("num", num);
@@ -59,7 +59,7 @@ public class ChannelsParser extends AbstractTagParser {
 		StringBuilder sb = new StringBuilder();
 		if(channels!=null){
 			for(Channel c : channels){
-				sb.append(PublishServer.parse(c, e.html()));
+				sb.append(PublishServer.parse(c,base, e.getHtml()));
 			}
 		}
 		

@@ -3,28 +3,31 @@ package com.wk.cms.publish.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
+import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.exceptions.PublishException;
 import com.wk.cms.publish.parser.TagParser;
 import com.wk.cms.publish.type.PublishType;
-import com.wk.cms.publish.utils.ParseUtils;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.ServiceException;
@@ -44,7 +47,6 @@ public class PublishServer implements IPublishServer {
 			.getLogger(PublishServer.class);
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
-	private static final String PUBLISH_TAG_KEY = "w_comp";
 	
 	static{
 		pubCompCfg = new Properties();
@@ -97,7 +99,8 @@ public class PublishServer implements IPublishServer {
 		final String pDir = getPreviewDir(obj);
 		publishTempFile(obj,getPreviewDir(PublishUtils.getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
 		for (final Template template : templates) {
-			EXECUTOR.execute(new Runnable() {
+			publishInternal(obj, template, pDir);
+			/*EXECUTOR.execute(new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -106,9 +109,9 @@ public class PublishServer implements IPublishServer {
 						LOGGER.error(e.getMessage(), e);
 					}
 				}
-			});
+			});*/
 		}
-		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+getPubFileName(obj, templates.get(0));
+		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
 	}
 
 	private void publishTempFile(Object obj, String pDir) {
@@ -130,22 +133,14 @@ public class PublishServer implements IPublishServer {
 		try {
 			String content = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
 			
-			content = parse(obj,content);
+			content = parse(obj,obj,content);
 			content = updateContentTempFile(obj,content,pDir);
 			
-			FileUtils.writeFile(content,getPubFileName(obj,template),pDir);
+			FileUtils.writeFile(content,PublishUtils.getPubFileName(obj,template),pDir);
 		} catch (Exception e) {
 			throw new PublishException(e.getMessage(),e);
 		} 
 
-	}
-
-	private String getPubFileName(Object obj, Template template) {
-		
-		if(obj instanceof Document){
-			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
-		}
-		return template.getPrefix()+"."+template.getExt();
 	}
 
 	/**
@@ -154,59 +149,70 @@ public class PublishServer implements IPublishServer {
 	 * @param base 发布对象（根对象）
 	 * @param content
 	 * @return
-	 * @throws PublishException
+	 * @throws ServiceException 
 	 */
-	public static String parse(Object obj, String content) throws PublishException {
+	public static String parse(Object obj,Object base, String content) throws ServiceException {
 		
-		org.jsoup.nodes.Document doc = null;
-		Elements es = null;
+		Matcher m = null;
+		StringBuffer sb = null;
 		while(true){
-			doc = Jsoup.parse(content);
-			es = doc.getElementsByAttribute(PUBLISH_TAG_KEY);
-			if(es.size()==0){
-				content = ParseUtils.parse(obj,content);
+			sb = new StringBuffer();
+			m = Pattern.compile("<(wk_[a-z0-9\\$]+)\\s+([^>]*)>",Pattern.CASE_INSENSITIVE).matcher(content);
+			if(!m.find()){
 				break;
 			}
-			for(Element e : es){
-				TagParser parser = getParser(e);
-				try {
-					e.html(parser.parse( obj,content));
-				} catch (ServiceException e1) {
-					LOGGER.error("解析标签失败！"+e.tagName(),e1);
-				}
-			}
-			content = doc.html();
+			String header = m.group(),tagName = m.group(1),attrStr = m.group(2);
+			String aftHtml = content.substring(m.end()),innerHtml = header.endsWith("/>")?"":aftHtml.substring(0, aftHtml.indexOf("</"+tagName+">"));
+			
+			TagParser parser = getParser(new HtmlTag(tagName,attrStr,innerHtml));
+			String newCon = parser.parse(obj,base, content);
+			
+			sb.append(content.substring(0, m.start()));
+			sb.append(newCon);
+			sb.append(content.substring(m.end()));
+			
+			content = sb.toString();
 		}
 		
 		return content;
 	}
 
-	private static TagParser getParser(Element e) throws PublishException {
-		
-		String pubBeanName = pubCompCfg.getProperty(e.attr(PUBLISH_TAG_KEY));
+	private static TagParser getParser(HtmlTag tag) throws PublishException {
+		String tagName = tag.getName();
+		tagName = tagName.split("\\$")[0];
+		String pubBeanName = pubCompCfg.getProperty(tag.getName());
 		if(!StringUtils.hasLength(pubBeanName)){
-			throw new PublishException("未在配置文件中找到【k="+e.tagName()+"】的项！");
+			throw new PublishException("未在配置文件中找到【k="+tagName+"】的项！");
 		}
 		TagParser parser = BeanFactory.getBean(pubBeanName);
 		if(parser==null){
-			throw new PublishException("未找到beanName为【"+pubBeanName+"】的发布组件，【k="+e.tagName()+"】的项！");
+			throw new PublishException("未找到beanName为【"+pubBeanName+"】的发布组件，【k="+tagName+"】的项！");
 		}
-		parser.setElement(e);
+		parser.setTag(tag);
 		return parser;
 	}
 
 	private String updateContentTempFile(Object obj,String content, String pDir) throws ServiceException {
 		
-		org.jsoup.nodes.Document document = Jsoup.parse(content);
-		Elements tfEs = document.getElementsByAttributeValue("hasdone", "true");
 		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+File.separator+"images");
-		for(Element el : tfEs){
-			String attrName = CommonUtils.getRemoteAttrNameByTagName(el.tagName());
-			String attrVal = el.attr(attrName);
-			el.attr(attrName, tfPath+attrVal).removeAttr("hasdone");
+		Map<String, String> parseTags = SysCfg.getSupportParseTags();
+		String parseTagStr = CommonUtils.join(parseTags.keySet(), "|");
+		StringBuffer sb = new StringBuffer();
+		Matcher m = Pattern.compile("<("+parseTagStr+")\\s+hasDone=true([^>]+)>",Pattern.CASE_INSENSITIVE).matcher(content);
+		while(m.find()){
+			String tagName = m.group(1);
+			String attrStr = m.group(2);
+			String attrName = parseTags.get(tagName);
+			
+			HtmlTag tag = new HtmlTag(tagName, attrStr,"");
+			tag.removeAttr("hasDone");
+			if(StringUtils.hasLength(tag.attr(attrName))){
+				tag.attr(attrName,tfPath+tag.attr(attrName));
+			}
+			m.appendReplacement(sb, StringEscapeUtils.escapeJava("<"+tagName+" "+tag.attrs()+">"));
 		}
-		
-		return document.html();
+		m.appendTail(sb);
+		return sb.toString();
 	}
 
 	
@@ -220,7 +226,5 @@ public class PublishServer implements IPublishServer {
 		}
 		return dir;
 	}
-
-	
 
 }

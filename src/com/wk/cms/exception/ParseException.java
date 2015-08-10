@@ -1,6 +1,8 @@
 package com.wk.cms.exception;
 
-public class ParseException extends Exception {
+import com.wk.cms.service.exception.ServiceException;
+
+public class ParseException extends ServiceException {
 
 	public ParseException(String string, Throwable e) {
 		super(string, e);

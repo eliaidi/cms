@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 
 public class PublishUtils {
 
@@ -55,5 +56,13 @@ public class PublishUtils {
 			p = p+tArr[i]+File.separator;
 		}
 		return p;
+	}
+	
+	public static String getPubFileName(Object obj, Template template) {
+		
+		if(obj instanceof Document){
+			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
+		}
+		return template.getPrefix()+"."+template.getExt();
 	}
 }

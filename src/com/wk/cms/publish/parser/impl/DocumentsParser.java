@@ -30,7 +30,7 @@ public class DocumentsParser extends AbstractTagParser {
 	@Autowired
 	private IChannelService channelService;
 	@Override
-	protected String parseInternal(Object obj, String con)
+	protected String parseInternal(Object obj,Object base, String con)
 			throws ServiceException {
 		Channel currChnl = StringUtils.hasLength(e.attr("id"))?channelService.findById(e.attr("id")):(Channel)obj;
 		int pageSize = StringUtils.hasLength(e.attr("num"))?Integer.parseInt("num"):IDocumentService.MAX_FETCH_SIZE;
@@ -41,7 +41,7 @@ public class DocumentsParser extends AbstractTagParser {
 		StringBuffer sb = new StringBuffer();
 		for(Document document : documents){
 			try {
-				sb.append(PublishServer.parse(document, con));
+				sb.append(PublishServer.parse(document,base, con));
 			} catch (PublishException e1) {
 				LOGGER.error(e1.getMessage(),e1);
 			}

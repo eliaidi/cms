@@ -1,13 +1,12 @@
 package com.wk.cms.publish.parser;
 
 
-import org.jsoup.nodes.Element;
-
+import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.service.exception.ServiceException;
 
 
 public interface TagParser {
 
-	void setElement(Element e);
-	String parse(Object obj,String con) throws ServiceException;
+	String parse(Object obj,Object base, String con) throws ServiceException;
+	void setTag(HtmlTag htmlTag);
 }

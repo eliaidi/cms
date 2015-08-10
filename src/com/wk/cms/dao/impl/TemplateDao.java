@@ -1,14 +1,14 @@
 package com.wk.cms.dao.impl;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
@@ -75,7 +75,7 @@ public class TemplateDao implements ITemplateDao {
 	@Override
 	public void save(Template template) throws ServiceException {
 
-		analysizeTemplate(template);
+		analysizeTemplate2(template);
 
 		if (!StringUtils.hasLength(template.getId())) {
 			template.getFile().setId(UUID.randomUUID().toString());
@@ -89,15 +89,87 @@ public class TemplateDao implements ITemplateDao {
 	
 	private void analysizeTemplate2(Template template) throws ServiceException {
 		
+		boolean isFromRemote = StringUtils.hasLength(template.getRemoteUrl());
+		Set<TempFile> tempFiles = template.getTempFiles()==null?new HashSet<TempFile>():template.getTempFiles();
+		List<TempFile> siteFiles = new ArrayList<TempFile>();
+		boolean hasFetchSiteFiles = false;
+		StringBuffer sb = null;
 		try {
 			String con = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			Map<String, String> parseTags = SysCfg.getSupportParseTags();
+			String parseTagStr = CommonUtils.join(parseTags.keySet(), "|");
+			Matcher m = null;
+			while(true){
+				sb = new StringBuffer();
+				m = Pattern.compile("<("+parseTagStr+")\\s+(?!hasDone=true)([^>]+)>",Pattern.CASE_INSENSITIVE).matcher(con);
+				if(!m.find()){
+					break;
+				}
+				String tagName = m.group(1);
+				String attrStr = m.group(2);
+				
+				String attrName = parseTags.get(tagName);
+				Matcher attrMatcher = Pattern.compile(attrName+"\\s*=\\s*['|\"]?([^'\"\\s]+)['|\"]?").matcher(attrStr);
+				String originVal = attrMatcher.find()?attrMatcher.group(1):"";
+				String fileName = originVal.indexOf("/")>=0?originVal.substring(originVal.lastIndexOf("/")+1):originVal;
+				
+				if(StringUtils.hasLength(originVal)){
+					String val = originVal;
+					if (!(val.toLowerCase().contains("http://") || val
+							.toLowerCase().contains("https://"))
+							&& isFromRemote) {
+						val = template.getRemoteUrl()
+								.substring(
+										0,
+										template.getRemoteUrl()
+												.lastIndexOf("/") + 1)
+								+ val;
+					}
+					
+					if(!hasFetchSiteFiles){
+						siteFiles = findAllTempFileBySiteId(template.getSite().getId());
+						hasFetchSiteFiles = true;
+					}
+					try {
+						TempFile tempFile = CommonUtils.findFromList(siteFiles,new String[]{"file.fileName"},new Object[]{fileName});
+						if (tempFile == null) {
+							final File tf = new File(UUID.randomUUID().toString(),val);
+							tempFile = new TempFile(UUID.randomUUID()
+									.toString(), new HashSet<Template>(), tf,template.getSite());
+							if("link".equalsIgnoreCase(tagName)){
+								LOGGER.debug("找到LINK标签，开始解析CSS文件【"+val+"】中的模板附件~~");
+								List<TempFile> cssInnerFiles = CommonUtils.downLoadCssInnerFiles(tf,val,template,siteFiles,new CallBack() {
+									@Override
+									public void doCallBack(Object[] objs)
+											throws ServiceException {
+										try {
+											tf.setContent(new MyBlob(objs[0].toString()));
+										} catch (UnsupportedEncodingException e) {
+											throw new ServiceException("回写css文件内容失败！",e);
+										}
+									}
+								});
+								for(TempFile ctf : cssInnerFiles){
+									tempFiles.add(ctf);
+								}
+							}
+						}
+						tempFile.getTemplates().add(template);
+						tempFiles.add(tempFile);
+					} catch (Exception e) {
+						LOGGER.error("导入模板附件失败！URL="+val,e);
+					}
+				}
+				m.appendReplacement(sb, "<"+tagName+" hasDone=true "+attrStr.replaceAll(originVal, fileName)+">");
+				m.appendTail(sb);
+				
+				con = sb.toString();
+			}
+			template.getFile().setContent(new MyBlob(con));
+			template.setTempFiles(tempFiles);
+		} catch (Exception e) {
+			throw new ServiceException("解析模板失败！template="+template,e);
+		} 
 	}
 
 	private void analysizeTemplate(Template template) throws ServiceException {

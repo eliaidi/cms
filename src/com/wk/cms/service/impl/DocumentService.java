@@ -2,7 +2,10 @@ package com.wk.cms.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,6 +207,11 @@ public class DocumentService implements IDocumentService {
 			hql += " order by "+order;
 		}
 		return documentDao.find(hql,params,new PageInfo(1,pageSize,null,null));
+	}
+	@Override
+	public List<Document> findByMap(Channel currChnl, Map<String, String> params) {
+		
+		return documentDao.findByMap(currChnl,params);
 	}
 
 }

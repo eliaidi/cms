@@ -1,6 +1,7 @@
 package com.wk.cms.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.hibernate.Criteria;
@@ -128,6 +129,37 @@ public class DocumentDao implements IDocumentDao {
 		}
 		q.setFirstResult(pageInfo.getStart());
 		q.setMaxResults(pageInfo.getLimit());
+		return q.list();
+	}
+
+	@Override
+	public List<Document> findByMap(Channel currChnl, Map<String, String> params) {
+		String where = params.get("where");
+		String order = params.get("order");
+		String num = params.get("num");
+		String startpos = params.get("startpos");
+		String hql = "from Document where channel=?";
+		if(StringUtils.hasLength(currChnl.getSite().getCanPubSta())){
+			hql += " and status in ("+currChnl.getSite().getCanPubSta()+")";
+		}else{
+			hql += " and status <> 5";
+		}
+		
+		if(StringUtils.hasLength(where)){
+			hql += " and "+where;
+		}
+		if(StringUtils.hasLength(order)){
+			hql += " order by "+order;
+		}
+		
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql);
+		
+		if(StringUtils.hasLength(startpos)){
+			q.setFirstResult(Integer.parseInt(startpos));
+		}
+		if(StringUtils.hasLength(num)){
+			q.setMaxResults(Integer.parseInt(num));
+		}
 		return q.list();
 	}
 

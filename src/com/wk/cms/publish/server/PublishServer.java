@@ -161,15 +161,21 @@ public class PublishServer implements IPublishServer {
 			if(!m.find()){
 				break;
 			}
-			String header = m.group(),tagName = m.group(1),attrStr = m.group(2);
-			String aftHtml = content.substring(m.end()),innerHtml = header.endsWith("/>")?"":aftHtml.substring(0, aftHtml.indexOf("</"+tagName+">"));
+			String header = m.group(),tagName = m.group(1),attrStr = m.group(2),endTag = "</"+tagName+">";
+			String aftHtml = content.substring(m.end()), innerHtml = "";
+			if(header.endsWith("/>")){
+				endTag = "";
+			}else{
+				innerHtml = aftHtml.substring(0, aftHtml.indexOf(endTag));
+			}
+			int end = m.start()+header.length()+innerHtml.length()+endTag.length();
 			
 			TagParser parser = getParser(new HtmlTag(tagName,attrStr,innerHtml));
 			String newCon = parser.parse(obj,base, content);
 			
 			sb.append(content.substring(0, m.start()));
 			sb.append(newCon);
-			sb.append(content.substring(m.end()));
+			sb.append(content.substring(end));
 			
 			content = sb.toString();
 		}

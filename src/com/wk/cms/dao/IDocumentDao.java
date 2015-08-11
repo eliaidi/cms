@@ -1,6 +1,7 @@
 package com.wk.cms.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -30,5 +31,7 @@ public interface IDocumentDao {
 	List<Document> find(String hql, Object[] params);
 
 	List<Document> find(@NotEmpty String hql, Object[] params, @NotNull PageInfo pageInfo);
+
+	List<Document> findByMap(Channel currChnl, Map<String, String> params);
 
 }

@@ -3,8 +3,8 @@ Ext.define('MyCms.view.channel.Window',{
 	id:'channel-window',
 	title : '新增栏目',
 	layout: 'anchor',
-	width : 470,
-	height : 200,
+	width : 601,
+	height : 262,
 	border: false,
     uses: [
         'MyCms.view.ux.MyWindow',

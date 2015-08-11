@@ -2,6 +2,8 @@ package com.wk.cms.utils;
 
 import java.io.File;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.model.Channel;
@@ -65,4 +67,5 @@ public class PublishUtils {
 		}
 		return template.getPrefix()+"."+template.getExt();
 	}
+	
 }

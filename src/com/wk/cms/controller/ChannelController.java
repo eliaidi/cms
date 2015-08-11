@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,7 @@ import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.Channel;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.CommonUtils;
 
 @Controller
 @RequestMapping("/channel")

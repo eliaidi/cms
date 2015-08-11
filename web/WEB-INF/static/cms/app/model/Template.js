@@ -5,6 +5,8 @@ Ext.define('MyCms.model.Template', {
 	}, {
 		name : 'name'
 	},{
+		name : 'type'
+	},{
 		name : 'prefix'
 	},{
 		name : 'ext'
@@ -55,5 +57,12 @@ Ext.define('MyCms.model.Template', {
 			}
 			return v;
 		}
-	} ]
+	} ],
+	statics:{
+		Type : {
+			1 : '概览模板',
+			2 : '细缆模板',
+			3 : '嵌套模板'
+		}
+	}
 });

@@ -1,29 +1,25 @@
 package com.wk.cms.publish.parser.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
-import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.model.Site;
 import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.publish.server.PublishServer;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
 
-@Component("Documents")
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Component("DocumentsComp")
 public class DocumentsParser extends AbstractTagParser {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentsParser.class);
 	@Autowired
 	private IDocumentService documentService;
 	
@@ -32,19 +28,36 @@ public class DocumentsParser extends AbstractTagParser {
 	@Override
 	protected String parseInternal(Object obj,Object base, String con)
 			throws ServiceException {
-		Channel currChnl = StringUtils.hasLength(e.attr("id"))?channelService.findById(e.attr("id")):(Channel)obj;
-		int pageSize = StringUtils.hasLength(e.attr("num"))?Integer.parseInt("num"):IDocumentService.MAX_FETCH_SIZE;
-		String where = StringUtils.hasLength(e.attr("where"))?e.attr("where"):"";
-		String order = StringUtils.hasLength(e.attr("order"))?e.attr("order"):"crtime desc";
-		List<Document> documents = documentService.findCanPub(currChnl,pageSize,where,order,null);
 		
-		StringBuffer sb = new StringBuffer();
-		for(Document document : documents){
-			try {
-				sb.append(PublishServer.parse(document,base, con));
-			} catch (PublishException e1) {
-				LOGGER.error(e1.getMessage(),e1);
+		String name = e.attr("name");
+		String num = e.attr("num");
+		String order = e.attr("order");
+		String where = e.attr("where");
+		String startpos = e.attr("startpos");
+		
+		Channel currChnl = null;
+		Site currSite = getSite(obj);
+		if(StringUtils.hasLength(name)){
+			currChnl = channelService.findByName(name, currSite);
+		}else{
+			if(obj instanceof Channel){
+				currChnl = (Channel) obj;
+			}else if(obj instanceof Document){
+				currChnl = ((Document) obj).getChannel();
+			}else{
+				throw new ServiceException("错误的上下文环境！"+obj);
 			}
+		}
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("num", num);
+		params.put("order", order);
+		params.put("where", where);
+		params.put("startpos", startpos);
+		
+		List<Document> documents = documentService.findByMap(currChnl,params);
+		StringBuilder sb = new StringBuilder();
+		for(Document doc : documents){
+			sb.append(PublishServer.parse(doc, base, e.getHtml()));
 		}
 		return sb.toString();
 	}

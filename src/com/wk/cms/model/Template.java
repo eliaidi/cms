@@ -20,107 +20,122 @@ import com.wk.cms.utils.CommonUtils;
 @JsonIgnoreProperties({"tempFiles"})
 public class Template {
 	
+	public class Type {
+
+		public static final int OUTLINE = 1;
+		public static final int DETAIL = 2;
+		public static final int INCLUDE = 3;
+
+	}
+	@NotEmpty
+	private String ext = "html";
+	
+	@OneToOne(cascade=CascadeType.ALL)
+	private File file;
 	@Id
 	private String id;
 	
 	@NotEmpty
 	private String name;
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	private File file;
-	
 	@NotEmpty
 	private String prefix = "index";
 	
-	@NotEmpty
-	private String ext = "html";
 	private String remoteUrl;
-	
 	@ManyToOne
 	private Site site;
 	
 	@ManyToMany(mappedBy="templates",cascade={CascadeType.ALL})
 	private Set<TempFile> tempFiles;
+	
+	private int type;
 
 	public Template(){}
-	public Template(String id, String name, String prefix,
+	public Template(String id, String name, String prefix,int type,
 			String fileExt, Site site) {
 		this.id = id;
 		this.name = name;
+		this.type = type;
 		this.prefix = prefix;
 		this.ext = fileExt;
 		this.site = site;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
-
-	public String getExt() {
-		return ext;
-	}
-
-	public void setExt(String ext) {
-		this.ext = ext;
-	}
-
-	public String getRemoteUrl() {
-		return remoteUrl;
-	}
-
-	public void setRemoteUrl(String remoteUrl) {
-		this.remoteUrl = remoteUrl;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public Site getSite() {
-		return site;
-	}
-
-	public void setSite(Site site) {
-		this.site = site;
-	}
-
-	public Set<TempFile> getTempFiles() {
-		return tempFiles;
-	}
-
-	public void setTempFiles(Set<TempFile> tempFiles) {
-		this.tempFiles = tempFiles;
-	}
 	public String getConInStr() throws ServiceException {
 		try {
 			return CommonUtils.getContent(this.file.getContent().getBinaryStream());
 		} catch (Exception e) {
 			throw new ServiceException("获取附件内容失败！",e);
 		} 
+	}
+
+	public String getExt() {
+		return ext;
+	}
+
+	public File getFile() {
+		return file;
+	}
+	public String getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public String getRemoteUrl() {
+		return remoteUrl;
+	}
+
+	public Site getSite() {
+		return site;
+	}
+
+	public Set<TempFile> getTempFiles() {
+		return tempFiles;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public void setRemoteUrl(String remoteUrl) {
+		this.remoteUrl = remoteUrl;
+	}
+
+	public void setSite(Site site) {
+		this.site = site;
+	}
+
+	public void setTempFiles(Set<TempFile> tempFiles) {
+		this.tempFiles = tempFiles;
+	}
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 	

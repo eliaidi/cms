@@ -1,5 +1,7 @@
 package com.wk.cms.controller;
 
+import javax.servlet.annotation.MultipartConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import com.wk.cms.utils.PageInfo;
 
 @Controller
 @RequestMapping("/template")
+@MultipartConfig(maxFileSize=50000000)
 public class TemplateController {
 	
 
@@ -24,9 +27,9 @@ public class TemplateController {
 
 	@RequestMapping("/list")
 	public @ResponseBody
-	PageInfo list(String siteId ,PageInfo pageInfo, String query) {
+	PageInfo list(String siteId ,String show,PageInfo pageInfo, String query) {
 
-		return templateService.find(siteId,pageInfo, query);
+		return templateService.find(siteId,show,pageInfo, query);
 	}
 	
 	@RequestMapping("/save")
@@ -51,7 +54,8 @@ public class TemplateController {
 	}
 	
 	@RequestMapping("/imp")
-	public @ResponseBody Message imp(@RequestParam("file") MultipartFile f,String siteId,String encode) throws ServiceException{
+	
+	public @ResponseBody Message imp(@RequestParam("file")  MultipartFile f,String siteId,String encode) throws ServiceException{
 		
 		templateService.imp(f,siteId,encode);
 		return new Message(true, "导入成功！！", null);

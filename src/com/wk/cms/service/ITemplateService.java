@@ -19,7 +19,7 @@ public interface ITemplateService {
 	String TEMPFILE_FOLDER = "images";
 	String PREVIEW_FOLDER = "preview";
 
-	PageInfo find(@NotEmpty String siteId, @NotNull PageInfo pageInfo,String query);
+	PageInfo find(@NotEmpty String siteId, String show, @NotNull PageInfo pageInfo,String query);
 
 	void save(@NotNull Template template) throws ServiceException;
 

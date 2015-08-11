@@ -31,6 +31,8 @@ public class Channel {
 
 	private String descr;
 	private String folder;
+	private String otempIds;
+	private String dtempIds;
 	@ManyToOne
 	private Site site;
 	@ManyToOne
@@ -50,19 +52,44 @@ public class Channel {
 		super();
 	}
 	
-	public Channel(String id, String name, String descr, Site site,
+	public Channel(String id, String name, String descr,String folder, Site site,
 			Channel parent, Set<Channel> children, Set<Document> documents,
 			User crUser, Date crTime) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.descr = descr;
+		this.folder = folder;
 		this.site = site;
 		this.parent = parent;
 		this.children = children;
 		this.documents = documents;
 		this.crUser = crUser;
 		this.crTime = crTime;
+	}
+
+	public String getOtempIds() {
+		return otempIds;
+	}
+
+	public void setOtempIds(String otempIds) {
+		this.otempIds = otempIds;
+	}
+
+	public String getDtempIds() {
+		return dtempIds;
+	}
+
+	public void setDtempIds(String dtempIds) {
+		this.dtempIds = dtempIds;
+	}
+
+	public Set<Document> getDocuments() {
+		return documents;
+	}
+
+	public void setDocuments(Set<Document> documents) {
+		this.documents = documents;
 	}
 
 	public Set<Channel> getChildren() {

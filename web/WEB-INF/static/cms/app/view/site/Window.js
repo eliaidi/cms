@@ -125,6 +125,7 @@ Ext.define('MyCms.view.site.Window',{
     		site : me.site,
     		modal : true,
     		from : me,
+    		showType : 'outline',
     		buttons : [{
     			text : '确定',
     			handler : 'doChooseTemp',

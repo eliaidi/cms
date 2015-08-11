@@ -110,7 +110,7 @@ public class ChannelService implements IChannelService {
 			
 			for(String chnlName : chnlNames){
 				if(StringUtils.hasLength(chnlName)){
-					save(new Channel(null, chnlName, chnlName, null, null, null, null, null, null), parentId, siteId);
+					save(new Channel(null, chnlName, chnlName,CommonUtils.getFirstWordOf(chnlName), null, null, null, null, null, null), parentId, siteId);
 				}
 			}
 		} catch (FileParseException e) {

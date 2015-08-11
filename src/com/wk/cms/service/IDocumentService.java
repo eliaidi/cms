@@ -1,6 +1,7 @@
 package com.wk.cms.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -59,5 +60,7 @@ public interface IDocumentService {
 	void cut(@NotNull Document document, @NotNull Channel channel);
 
 	List<Document> findCanPub(@NotNull Channel currChnl, int pageSize, String where, String order,Object[] params);
+
+	List<Document> findByMap(@NotNull Channel currChnl, Map<String, String> params);
 
 }

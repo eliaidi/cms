@@ -1,7 +1,8 @@
 package com.wk.cms.publish.parser;
 
-import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wk.cms.model.Site;
 import com.wk.cms.parser.HtmlTag;
@@ -10,6 +11,7 @@ import com.wk.cms.utils.PublishUtils;
 
 public abstract class AbstractTagParser implements TagParser {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTagParser.class);
 	protected HtmlTag e;
 	public AbstractTagParser(){
 		
@@ -26,9 +28,10 @@ public abstract class AbstractTagParser implements TagParser {
 	@Override
 	public String parse(Object obj,Object base, String con) throws ServiceException {
 		
+		LOGGER.debug("开始解析对象"+obj+"，使用解析置标"+this.getClass());
 		String pubFileName = this.getPubFileName(obj);
 		if("_url".equalsIgnoreCase(e.attr("field"))&&pubFileName!=null){
-			return PublishUtils.getPath2Path(PublishUtils.getDir(obj), PublishUtils.getDir(base))+File.separator+pubFileName;
+			return PublishUtils.getPath2Path(PublishUtils.getDir(base), PublishUtils.getDir(obj))+pubFileName;
 		}
 		String c = this.parseInternal(obj,base, con);
 		return c;

@@ -230,6 +230,28 @@ public class FileUtils {
 		} 
 		
 	}
+	
+	public static String getFileCon(java.io.File tempfolder,String charset) throws ServiceException {
+		
+		if(tempfolder==null||!tempfolder.exists()){
+			throw new FileParseException("文件不存在！"+tempfolder);
+		}
+		try {
+			FileInputStream fis = new FileInputStream(tempfolder);
+			StringBuffer sb = new StringBuffer();
+			byte[] buff = new byte[2000];
+			int len;
+			while((len = fis.read(buff))!=-1){
+				sb.append(new String(buff,0,len,charset));
+			}
+			fis.close();
+			
+			return sb.toString();
+		} catch (Exception e) {
+			throw new FileParseException("获取文件内容失败！", e);
+		} 
+		
+	}
 
 	public static byte[] getBytes(java.io.File eFile) throws FileParseException {
 		

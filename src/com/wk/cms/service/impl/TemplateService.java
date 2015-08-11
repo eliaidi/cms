@@ -19,6 +19,7 @@ import com.wk.cms.model.File;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
+import com.wk.cms.model.Template.Type;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.FileParseException;
@@ -37,8 +38,8 @@ public class TemplateService implements ITemplateService {
 	private ISiteService siteService;
 
 	@Override
-	public PageInfo find(String siteId ,PageInfo pageInfo, String query) {
-		return templateDao.find(siteId,pageInfo, query);
+	public PageInfo find(String siteId,String show ,PageInfo pageInfo, String query) {
+		return templateDao.find(siteId,show,pageInfo, query);
 	}
 
 	@Override
@@ -98,6 +99,7 @@ public class TemplateService implements ITemplateService {
 			template.setFile(new File(new MyBlob(document.html())));
 			template.setRemoteUrl(url);
 			template.setSite(siteService.findById(siteId));
+			template.setType(Type.OUTLINE);
 			
 			save(template);
 			return template;

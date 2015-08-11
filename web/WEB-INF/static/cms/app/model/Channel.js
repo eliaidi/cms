@@ -14,5 +14,9 @@ Ext.define('MyCms.model.Channel', {
 		name : 'crTime'
 	}, {
 		name : 'crUser'
+	},{
+		name : 'otempIds'
+	},{
+		name : 'dtempIds'
 	} ]
 });

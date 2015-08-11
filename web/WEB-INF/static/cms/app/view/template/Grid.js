@@ -31,6 +31,14 @@ Ext
 						dataIndex : 'name',
 						flex : 3,
 						sortable : false
+					},{
+						text : "类型",
+						dataIndex : 'type',
+						flex : 1,
+						sortable : false,
+						renderer:function(v){
+							return MyCms.model.Template.Type[v]||'未知';
+						}
 					}, {
 						text : "所属站点",
 						dataIndex : 'siteName',
@@ -76,7 +84,8 @@ Ext
 								type : 'ajax',
 								url : template_list,
 								extraParams : {
-									siteId : me._view.site.get('id')
+									siteId : me._view.site.get('id'),
+									show : me._view.showType
 								},
 								reader : {
 									rootProperty : 'list',

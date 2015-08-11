@@ -16,6 +16,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+
 import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -383,6 +385,45 @@ public class CommonUtils {
 		StringBuffer sb = new StringBuffer();
 		for(String o : keySet){
 			sb.append(sp+o);
+		}
+		if(sb.length()>0){
+			sb.delete(0, 1);
+		}
+		return sb.toString();
+	}
+
+	public static String getFirstWordOf(String chnlName) {
+		
+		StringBuilder r = new StringBuilder();
+		int len = chnlName.length();
+		for(int i=0;i<len;i++){
+			String cStr = chnlName.substring(i, i+1);
+			if(Pattern.matches("[\u4e00-\u9fa5]",cStr)){
+				String py = PinyinHelper.toHanyuPinyinStringArray(chnlName.charAt(i))[0];
+				r.append(py.subSequence(0, 1));
+			}else{
+				r.append(cStr);
+			}
+		}
+		return r.toString();
+	}
+
+	public static <T> List<T> removeFrom(T[] sArr, T id) {
+		
+		List<T> sList = new ArrayList<T>();
+		for(int i=0;i<sArr.length;i++){
+			T s = sArr[i];
+			if(s==null) continue;
+			if(!s.equals(id)) sList.add(s);
+		}
+		return sList;
+	}
+
+	public static String join(List<String> list, String sp) {
+		StringBuilder sb = new StringBuilder();
+		
+		for(String s : list){
+			sb.append(sp+s);
 		}
 		if(sb.length()>0){
 			sb.delete(0, 1);

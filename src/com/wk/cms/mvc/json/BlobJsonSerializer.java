@@ -12,21 +12,36 @@ import com.wk.cms.utils.CommonUtils;
 
 public class BlobJsonSerializer extends JsonSerializer<Blob>  {
 
+	private String encode = "UTF-8";
+	
+	public BlobJsonSerializer(){}
+	public BlobJsonSerializer(String encode2) {
+		this.encode = encode2;
+	}
+
+	public String getEncode() {
+		return encode;
+	}
+
+	public void setEncode(String encode) {
+		this.encode = encode;
+	}
+
 	@Override
 	public void serialize(Blob value, JsonGenerator gen,
 			SerializerProvider serializers) throws IOException,
 			JsonProcessingException {
 		
 		try {
-			
-			gen.writeString(CommonUtils.readStringFromIS(value.getBinaryStream(),"UTF-8"));
+			gen.writeString(format(value));
 		} catch (SQLException e) {
 			throw new IOException("Blob转换成String失败！！",e);
 		}
 		
 	}
-
-
+	public String format(Blob s) throws IOException, SQLException {
+		return CommonUtils.readStringFromIS(s.getBinaryStream(),encode);
+	}
 	
 	
 }

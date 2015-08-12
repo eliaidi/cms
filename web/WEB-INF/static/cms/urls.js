@@ -33,3 +33,5 @@ var template_save = RootPath+'/template/save';
 var template_delete = RootPath+'/template/delete';
 var template_remote = RootPath+'/template/remote';
 var template_imp = RootPath+'/template/imp';
+var tempfile_list = RootPath+'/template/file/list';
+var tempfile_upload = RootPath+'/template/file/upload';

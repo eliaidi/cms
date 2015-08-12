@@ -40,4 +40,8 @@ public interface ITemplateService {
 
 	Template findByName(@NotEmpty String tName);
 
+	PageInfo findFiles(@NotEmpty String siteId, @NotNull PageInfo pageInfo, String query);
+
+	TempFile uploadFile(@NotNull MultipartFile f, @NotEmpty String siteId, String id, @NotEmpty String encode) throws ServiceException;
+
 }

@@ -52,7 +52,7 @@ public class AppendixService implements IAppendixService{
 			
 			File f;
 			try {
-				f = new File(fileName,file.getSize(),fileName.indexOf(".")>0?fileName.substring(fileName.lastIndexOf(".")+1):null,new MyBlob(file.getBytes()));
+				f = new File(fileName,file.getSize(),fileName.indexOf(".")>0?fileName.substring(fileName.lastIndexOf(".")+1):null,new MyBlob(file.getBytes()),null);
 			} catch (IOException e) {
 				throw new ServiceException("实例化文件对象失败！！");
 			}

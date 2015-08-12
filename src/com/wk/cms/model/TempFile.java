@@ -9,6 +9,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wk.cms.mvc.json.FileJsonSerializer;
+
 /**
  * 模板附件
  * 
@@ -16,11 +20,13 @@ import javax.persistence.OneToOne;
  * 
  */
 @Entity
+@JsonIgnoreProperties("templates")
 public class TempFile {
 
 	@Id
 	private String id;
 	@OneToOne(cascade = { CascadeType.ALL })
+	@JsonSerialize(using=FileJsonSerializer.class)
 	private File file;
 	
 	@ManyToOne

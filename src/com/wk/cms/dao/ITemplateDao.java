@@ -30,4 +30,10 @@ public interface ITemplateDao {
 
 	Template findByName(String tName);
 
+	PageInfo findFiles(String siteId, PageInfo pageInfo, String query);
+
+	TempFile findFileByFId(String id);
+
+	void saveFile(TempFile tf);
+
 }

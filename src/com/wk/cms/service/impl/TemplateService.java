@@ -3,11 +3,11 @@ package com.wk.cms.service.impl;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tools.zip.ZipFile;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,12 +91,13 @@ public class TemplateService implements ITemplateService {
 	public Template loadRemoteDoc(String url,String siteId) throws FileParseException {
 		
 		try {
-			Document document = Jsoup.parse(new URL(url), 5000);
-			Elements titleEs = document.select("title");
-			
+			String fileCon = FileUtils.getFileCon(new URL(url),5000,"UTF-8");
+			String title = url.substring(url.lastIndexOf("/")+1);
+			Matcher tm = Pattern.compile("<title[^>]*>(.*?)</title>",Pattern.CASE_INSENSITIVE).matcher(fileCon);
+			if(tm.find()) title = tm.group(1);
 			Template template = new Template();
-			template.setName(titleEs.size()>0?titleEs.get(0).html():"");
-			template.setFile(new File(new MyBlob(document.html())));
+			template.setName(title);
+			template.setFile(new File(new MyBlob(fileCon)));
 			template.setRemoteUrl(url);
 			template.setSite(siteService.findById(siteId));
 			template.setType(Type.OUTLINE);
@@ -148,6 +149,32 @@ public class TemplateService implements ITemplateService {
 	public Template findByName(String tName) {
 
 		return templateDao.findByName(tName);
+	}
+
+	@Override
+	public PageInfo findFiles(String siteId, PageInfo pageInfo,String query) {
+		return templateDao.findFiles(siteId,pageInfo,query);
+	}
+
+	@Override
+	public TempFile uploadFile(MultipartFile f, String siteId, String id,String encode) throws ServiceException {
+		
+		if(f.isEmpty()){
+			throw new ServiceException("上传文件不能为空！"+f);
+		}
+		TempFile tf = null;
+		if(StringUtils.hasLength(id)){
+			tf = templateDao.findFileByFId(id);
+			File file = tf.getFile();
+			file.setContent(new MyBlob(f));
+			tf.setFile(file);
+			
+			templateDao.saveFile(tf);
+		}else{
+			tf = new TempFile(null, null, new File(UUID.randomUUID().toString(),f,encode), siteService.findById(siteId));
+			templateDao.saveFile(tf);
+		}
+		return tf;
 	}
 
 }

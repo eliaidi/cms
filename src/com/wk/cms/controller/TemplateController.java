@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.controller.vo.Message;
+import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.FileParseException;
@@ -54,10 +55,24 @@ public class TemplateController {
 	}
 	
 	@RequestMapping("/imp")
-	
 	public @ResponseBody Message imp(@RequestParam("file")  MultipartFile f,String siteId,String encode) throws ServiceException{
 		
 		templateService.imp(f,siteId,encode);
 		return new Message(true, "导入成功！！", null);
+	}
+	
+	@RequestMapping("/file/list")
+	@ResponseBody
+	public PageInfo fileList(String siteId,String query,PageInfo pageInfo){
+		
+		return templateService.findFiles(siteId,pageInfo,query);
+	}
+	
+	@RequestMapping("/file/upload")
+	@ResponseBody
+	public Message upload(@RequestParam("file") MultipartFile f,String siteId,String id,String encode) throws ServiceException{
+		
+		TempFile tf = templateService.uploadFile(f,siteId,id,encode);
+		return new Message(true, "上传成功！", tf);
 	}
 }

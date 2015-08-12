@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -263,6 +265,41 @@ public class FileUtils {
 			return buff;
 		} catch (Exception e) {
 			throw new FileParseException("解析文件失败！"+eFile,e);
+		}
+	}
+
+	public static String getFileCon(URL url, int timeout,String encode) throws FileParseException {
+		
+		try {
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setReadTimeout(timeout);
+			
+			InputStream is = connection.getInputStream();
+			byte[] buff = new byte[2000];
+			int len;
+			StringBuilder sb = new StringBuilder();
+			
+			while((len = is.read(buff))!=-1){
+				sb.append(new String(buff,0,len,encode));
+			}
+			is.close();
+			return sb.toString();
+		} catch (IOException e) {
+			throw new FileParseException("获取远程文件失败！", e);
+		}
+	}
+
+	public static byte[] getBytes(MultipartFile f) throws FileParseException {
+
+		try {
+			InputStream is = f.getInputStream();
+			byte[] buff = new byte[is.available()];
+			
+			is.read(buff);
+			is.close();
+			return buff;
+		} catch (IOException e) {
+			throw new FileParseException("获取上传文件内容失败！", e);
 		}
 	}
 }

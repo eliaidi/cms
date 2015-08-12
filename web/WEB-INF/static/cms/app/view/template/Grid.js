@@ -74,6 +74,10 @@ Ext
 							text : '导入',
 							handler : 'import',
 							scope : me
+						},{
+							text : '模板附件',
+							handler : 'tempFileMgt',
+							scope : me
 						} ];
 
 						var store = Ext.create('Ext.data.BufferedStore', {
@@ -132,6 +136,13 @@ Ext
 						me.on('itemcontextmenu', 'showItemMenu', me);
 						me.on('refresh', 'doRefresh', me);
 						me.callParent();
+					},
+					tempFileMgt:function(){
+						var me = this;
+						
+						Ext.create('MyCms.view.tempfile.Window',{
+							from : me
+						}).show();
 					},
 					loadRemoteDoc : function() {
 						var me = this;

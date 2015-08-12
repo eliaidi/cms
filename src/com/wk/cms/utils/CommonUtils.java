@@ -19,9 +19,6 @@ import java.util.regex.Pattern;
 import net.sourceforge.pinyin4j.PinyinHelper;
 
 import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -145,17 +142,6 @@ public class CommonUtils {
 		
 		is.close();
 		return sb.toString();
-	}
-
-	public static String getContentFromUrl(String url) throws FileParseException {
-
-		try {
-			org.jsoup.nodes.Document document = Jsoup.parse(new URL(url), 5000);
-			
-			return document.html();
-		} catch (Exception e) {
-			throw new FileParseException("获取远程文档失败！！");
-		} 
 	}
 
 	public static String getRemoteAttrNameByTagName(String tagName) throws ServiceException {
@@ -293,7 +279,7 @@ public class CommonUtils {
 							LOGGER.debug("模板附件【"+fileName+"】不存在，开始下载【"+remoteUrl+"】~~");
 							tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),remoteUrl), template.getSite());
 						}else{
-							tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),new java.io.File(remoteUrl)), template.getSite());
+							tempFile = new TempFile(UUID.randomUUID().toString(), initTpls, new File(UUID.randomUUID().toString(),new java.io.File(remoteUrl),null), template.getSite());
 						}
 					}else{
 						LOGGER.debug("模板附件【"+fileName+"】已存在，取消下载，直接添加进模板!");
@@ -341,20 +327,6 @@ public class CommonUtils {
 	public static String getAppPath(String s) {
 		String fullPath = CommonUtils.class.getResource("/").getPath();
 		return fullPath.substring(0, fullPath.lastIndexOf(s)+s.length());
-	}
-
-	public static Elements getElementsByTagNamePrefix(
-			Element doc, String prefix) {
-		
-		Elements es =  doc.getAllElements();
-		Elements hitEs = new Elements();
-		for(Element e : es){
-			String tagName = e.tagName().toLowerCase();
-			if(tagName.indexOf(prefix.toLowerCase())>=0){
-				hitEs.add(e);
-			}
-		}
-		return hitEs;
 	}
 
 	public static String join(String[] idsArr, String sp) {

@@ -8,14 +8,18 @@ import java.sql.Blob;
 import java.sql.SQLException;
 
 import org.hibernate.engine.jdbc.internal.BinaryStreamImpl;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.wk.cms.service.exception.FileParseException;
 
 public class MyBlob implements Blob {
 
-	private byte[] bytes ;
-	
-	public MyBlob(){
-		
+	private byte[] bytes;
+
+	public MyBlob() {
+
 	}
+
 	public MyBlob(byte[] bytes) {
 		this.bytes = bytes;
 	}
@@ -23,29 +27,36 @@ public class MyBlob implements Blob {
 	public MyBlob(String html) throws UnsupportedEncodingException {
 		this.bytes = html.getBytes("UTF-8");
 	}
+
+	public MyBlob(MultipartFile f) throws FileParseException {
+		this.bytes = FileUtils.getBytes(f);
+	}
+
 	public byte[] getBytes() {
 		return bytes;
 	}
+
 	public void setBytes(byte[] bytes) {
 		this.bytes = bytes;
 	}
+
 	@Override
 	public long length() throws SQLException {
-		
+
 		return bytes.length;
 	}
 
 	@Override
 	public byte[] getBytes(long pos, int length) throws SQLException {
-		
-		if(pos<0||length<=0){
+
+		if (pos < 0 || length <= 0) {
 			throw new SQLException("长度错误！");
 		}
 		byte[] newByte = new byte[length];
-		
+
 		int newIndex = 0;
-		for(int i=0;i<this.bytes.length&&newIndex<length;i++){
-			if(i<pos){
+		for (int i = 0; i < this.bytes.length && newIndex < length; i++) {
+			if (i < pos) {
 				continue;
 			}
 			newByte[newIndex++] = this.bytes[i];
@@ -55,7 +66,7 @@ public class MyBlob implements Blob {
 
 	@Override
 	public InputStream getBinaryStream() throws SQLException {
-		
+
 		return new ByteArrayInputStream(bytes);
 	}
 
@@ -105,7 +116,8 @@ public class MyBlob implements Blob {
 	@Override
 	public InputStream getBinaryStream(long pos, long length)
 			throws SQLException {
-		return new BinaryStreamImpl(getBytes(pos, (int)length));
+		return new ByteArrayInputStream(bytes);
+//		return new BinaryStreamImpl(getBytes(pos, (int) length));
 	}
 
 }

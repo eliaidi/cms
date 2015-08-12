@@ -1,7 +1,11 @@
 package com.wk.cms.model;
 
+import java.lang.reflect.Field;
 import java.sql.Blob;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wk.cms.model.annotations.Show;
@@ -29,6 +35,7 @@ public class File {
 	private String id;
 	private String fileName;
 	private String fileExt;
+	private String encode = "UTF-8";
 	
 	@Lob
 	@Show(ShowArea.Detail)
@@ -43,7 +50,7 @@ public class File {
 	private User crUser;
 
 	public File(){}
-	public File(String fileName, long size, String fileExt, MyBlob content) {
+	public File(String fileName, long size, String fileExt, MyBlob content, String encode2) {
 		
 		this.fileName = fileName;
 		this.fileExt = fileExt;
@@ -51,6 +58,7 @@ public class File {
 		this.content = content;
 		this.crTime = new Date();
 		this.crUser = null;
+		this.encode = encode2;
 	}
 
 	public File(Blob content) {
@@ -67,7 +75,7 @@ public class File {
 		this.crUser = null;
 		this.id = id;
 	}
-	public File(String id, java.io.File eFile) throws FileParseException {
+	public File(String id, java.io.File eFile, String encode2) throws FileParseException {
 		this.id = id;
 		this.crTime = new Date();
 		this.crUser = null;
@@ -77,6 +85,19 @@ public class File {
 		this.fileExt = FileUtils.getFileExt(this.fileName);
 		this.fileSize = bytes.length;
 		this.content = new MyBlob(bytes);
+		this.encode = encode2;
+	}
+	public File(String id, MultipartFile f,String encode) throws FileParseException {
+
+		this.id = id;
+		this.fileName = f.getOriginalFilename();
+		this.fileExt = FileUtils.getFileExt(this.fileName);
+		byte[] bytes = FileUtils.getBytes(f);
+		this.content = new MyBlob(bytes);
+		this.fileSize = bytes.length;
+		this.crTime = new Date();
+		this.crUser = null;
+		this.encode = encode;
 	}
 	public String getId() {
 		return id;
@@ -86,6 +107,12 @@ public class File {
 		this.id = id;
 	}
 
+	public String getEncode() {
+		return encode;
+	}
+	public void setEncode(String encode) {
+		this.encode = encode;
+	}
 	public String getFileName() {
 		return fileName;
 	}
@@ -132,6 +159,42 @@ public class File {
 
 	public void setCrUser(User crUser) {
 		this.crUser = crUser;
+	}
+	public boolean isPic() {
+		String[] pics = {"jpg","png","gif","bmp"};
+		for(String e : pics){
+			if(e.equalsIgnoreCase(this.fileExt)){
+				return true;
+			}
+		}
+		return false;
+	}
+	public Map<String, String> toJsonMap() throws ServiceException {
+
+		try {
+			Map<String,String> m = new HashMap<String, String>();
+			Class<File> clazz = (Class<File>) this.getClass();
+			Field[] fields = this.getClass().getDeclaredFields();
+			BlobJsonSerializer blobJsonSerializer = new BlobJsonSerializer(this.encode);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			for(Field f: fields){
+				Object val = f.get(this);
+				String valStr = "";
+				if(val!=null){
+					if(CommonUtils.contains(val.getClass().getInterfaces(), Blob.class)&&!this.isPic()){
+						valStr = blobJsonSerializer.format((Blob) val);
+					}else if(val.getClass().isAssignableFrom(Date.class)){
+						valStr = sdf.format(val);
+					}else{
+						valStr = val.toString();
+					}
+				}
+				m.put(f.getName(), valStr);
+			}
+			return m;
+		} catch (Exception e) {
+			throw new ServiceException("生成File的JSON Map失败！", e);
+		} 
 	}
 	
 }

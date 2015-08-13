@@ -69,9 +69,9 @@ public class SiteController {
 	}
 	
 	@RequestMapping("/imp")
-	public @ResponseBody Message imp(@RequestParam("file") MultipartFile file) throws ServiceException{
+	public @ResponseBody Message imp(@RequestParam("file") MultipartFile file,@RequestParam("encode") String encode) throws ServiceException{
 		
-		siteService.imp(file);
+		siteService.imp(file,encode);
 		return new Message(true, "导入成功！", null);
 	}
 	

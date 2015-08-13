@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sourceforge.pinyin4j.PinyinHelper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -18,7 +16,6 @@ import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.Channel;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.exception.ServiceException;
-import com.wk.cms.utils.CommonUtils;
 
 @Controller
 @RequestMapping("/channel")
@@ -73,9 +70,9 @@ public class ChannelController {
 	@RequestMapping("/imp")
 	public @ResponseBody
 	Message imp(@RequestParam("file") MultipartFile file, String parentId,
-			String siteId) throws ServiceException {
+			String siteId,@RequestParam("encode") String encode) throws ServiceException {
 
-		channelService.imp(file, parentId, siteId);
+		channelService.imp(file, parentId, siteId,encode);
 		return new Message(true, "导入成功！", null);
 	}
 	
@@ -98,5 +95,12 @@ public class ChannelController {
 		
 		channelService.cut(objIds,parentId,siteId);
 		return new Message(true, "剪切成功！！", null);
+	}
+	
+	@RequestMapping("/move")
+	public @ResponseBody Message move(String currId,String targetId) throws ServiceException{
+		
+		channelService.move(currId,targetId);
+		return new Message(true, "移动成功！！", null);
 	}
 }

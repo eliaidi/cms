@@ -75,4 +75,19 @@ public class TemplateController {
 		TempFile tf = templateService.uploadFile(f,siteId,id,encode);
 		return new Message(true, "上传成功！", tf);
 	}
+	
+	@RequestMapping("/file/save")
+	@ResponseBody
+	public Message saveFile(TempFile tempFile){
+		
+		return new Message(true, "保存成功！", templateService.saveFile(tempFile));
+	}
+	
+	@RequestMapping("/file/delete")
+	@ResponseBody
+	public Message deleteFile(String[] ids){
+		
+		templateService.deleteFiles(ids);
+		return new Message(true, "保存成功！", null);
+	}
 }

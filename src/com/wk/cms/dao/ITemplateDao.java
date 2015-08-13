@@ -36,4 +36,8 @@ public interface ITemplateDao {
 
 	void saveFile(TempFile tf);
 
+	void deleteFiles(String[] ids);
+
+	void deleteFile(String id);
+
 }

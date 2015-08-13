@@ -414,7 +414,7 @@ public class TemplateDao implements ITemplateDao {
 								temps.add(template);
 
 								final File tff = new File(UUID.randomUUID()
-										.toString(), eFile,encode);
+										.toString(), eFile, encode);
 								tempFile = new TempFile(UUID.randomUUID()
 										.toString(), temps, tff, site);
 								if ("link".equalsIgnoreCase(tagName)) {
@@ -459,7 +459,7 @@ public class TemplateDao implements ITemplateDao {
 				}
 				byte[] tBytes = fileCon.getBytes("UTF-8");
 				template.setFile(new File(fileName, tBytes.length, fileExt,
-						new MyBlob(tBytes),encode));
+						new MyBlob(tBytes), encode));
 				template.setTempFiles(tfs);
 				save(template);
 
@@ -519,6 +519,20 @@ public class TemplateDao implements ITemplateDao {
 			tf.setId(UUID.randomUUID().toString());
 			hibernateTemplate.save(tf);
 		}
+	}
+
+	@Override
+	public void deleteFiles(String[] ids) {
+
+		for (String id : ids) {
+			deleteFile(id);
+		}
+	}
+
+	@Override
+	public void deleteFile(String id) {
+		hibernateTemplate.getSessionFactory().getCurrentSession()
+				.delete(findFileByFId(id));
 	}
 
 }

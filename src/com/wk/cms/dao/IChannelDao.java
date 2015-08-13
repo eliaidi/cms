@@ -25,4 +25,10 @@ public interface IChannelDao  {
 	List<Channel> findByMap(Channel pChannel, Map<String, String> params);
 
 	List<Channel> findByMap(Site obj, Map<String, String> params);
+
+	void move(String currId, String targetId);
+
+	void move2Site(Channel currChnl, Site site);
+
+	Integer findMaxSortOf(Channel parent, Site site);
 }

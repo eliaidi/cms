@@ -31,8 +31,8 @@ public class ChannelDao implements IChannelDao {
 		return hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createCriteria(Channel.class).createAlias("site", "s")
 				.add(Restrictions.eq("s.id", siteId))
-				.add(Restrictions.isNull("parent"))
-				.addOrder(Order.asc("crTime")).list();
+				.add(Restrictions.isNull("parent")).addOrder(Order.asc("sort"))
+				.list();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ChannelDao implements IChannelDao {
 		return hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createCriteria(Channel.class)
 				.add(Restrictions.eq("parent.id", parentId))
-				.addOrder(Order.desc("crTime")).list();
+				.addOrder(Order.asc("sort")).list();
 	}
 
 	@Override
@@ -67,7 +67,6 @@ public class ChannelDao implements IChannelDao {
 		Session s = hibernateTemplate.getSessionFactory().getCurrentSession();
 		s.delete(findById(channelId));
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -82,34 +81,40 @@ public class ChannelDao implements IChannelDao {
 	@Override
 	public Channel findByName(String name, Site currSite) {
 
-		List<Channel> channels = (List<Channel>) hibernateTemplate.find("from Channel where name=? and site=?", name,currSite);
-		if(CommonUtils.isEmpty(channels)) return null;
+		List<Channel> channels = (List<Channel>) hibernateTemplate.find(
+				"from Channel where name=? and site=?", name, currSite);
+		if (CommonUtils.isEmpty(channels))
+			return null;
 		return channels.get(0);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Channel> findByMap(Channel pChannel, Map<String, String> params) {
-		
-		if(params==null) return findByParentId(pChannel.getId());
-		
+
+		if (params == null)
+			return findByParentId(pChannel.getId());
+
 		String num = params.get("num");
-		String where  = params.get("where");
+		String where = params.get("where");
 		String order = params.get("order");
 		String startpos = params.get("startpos");
-		
-		if(!StringUtils.hasLength(num)) num = "500";
-		if(!StringUtils.hasLength(startpos)) startpos = "0";
-		
+
+		if (!StringUtils.hasLength(num))
+			num = "500";
+		if (!StringUtils.hasLength(startpos))
+			startpos = "0";
+
 		StringBuilder hql = new StringBuilder("from Channel where parent=? ");
-		if(StringUtils.hasLength(where)){
-			hql.append(" and "+where);
+		if (StringUtils.hasLength(where)) {
+			hql.append(" and " + where);
 		}
-		if(StringUtils.hasLength(order)){
-			hql.append(" order by "+order);
+		if (StringUtils.hasLength(order)) {
+			hql.append(" order by " + order);
 		}
-		
-		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql.toString());
+
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createQuery(hql.toString());
 		q.setParameter(0, pChannel);
 		q.setFirstResult(Integer.parseInt(startpos));
 		q.setMaxResults(Integer.parseInt(num));
@@ -118,29 +123,89 @@ public class ChannelDao implements IChannelDao {
 
 	@Override
 	public List<Channel> findByMap(Site obj, Map<String, String> params) {
-		if(params==null) return findBySiteId(obj.getId());
-		
+		if (params == null)
+			return findBySiteId(obj.getId());
+
 		String num = params.get("num");
-		String where  = params.get("where");
+		String where = params.get("where");
 		String order = params.get("order");
 		String startpos = params.get("startpos");
-		
-		if(!StringUtils.hasLength(num)) num = "500";
-		if(!StringUtils.hasLength(startpos)) startpos = "0";
-		
+
+		if (!StringUtils.hasLength(num))
+			num = "500";
+		if (!StringUtils.hasLength(startpos))
+			startpos = "0";
+
 		StringBuilder hql = new StringBuilder("from Channel where site=? ");
-		if(StringUtils.hasLength(where)){
-			hql.append(" and "+where);
+		if (StringUtils.hasLength(where)) {
+			hql.append(" and " + where);
 		}
-		if(StringUtils.hasLength(order)){
-			hql.append(" order by "+order);
+		if (StringUtils.hasLength(order)) {
+			hql.append(" order by " + order);
 		}
-		
-		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql.toString());
+
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createQuery(hql.toString());
 		q.setParameter(0, obj);
 		q.setFirstResult(Integer.parseInt(startpos));
 		q.setMaxResults(Integer.parseInt(num));
 		return q.list();
+	}
+
+	@Override
+	public void move(String currId, String targetId) {
+
+		Channel currChnl = findById(currId);
+		Channel targetChnl = findById(targetId);
+
+		if (!currChnl.getSite().equals(targetChnl.getSite())) {
+			// set channel's templates to null
+			currChnl.setOtempIds(null);
+			currChnl.setDtempIds(null);
+			// modify channel's site, children and documents
+			move2Site(currChnl, targetChnl.getSite());
+
+		}
+		currChnl.setParent(targetChnl.getParent());
+
+		hibernateTemplate
+				.bulkUpdate(
+						"update Channel set sort = sort+1 where site=? and sort>=? and "
+								+ (targetChnl.getParent() == null ? " parent is null"
+										: "parent.id='"
+												+ targetChnl.getParent()
+														.getId() + "'"),
+						targetChnl.getSite(), targetChnl.getSort());
+		currChnl.setSort(targetChnl.getSort());
+		hibernateTemplate.update(currChnl);
+	}
+
+	@Override
+	public void move2Site(Channel currChnl, Site site) {
+
+		currChnl.setSite(site);
+		hibernateTemplate.bulkUpdate(
+				"update Document set site=? where channel=?", site, currChnl);
+
+		List<Channel> children = findByParentId(currChnl.getId());
+		for (Channel c : children) {
+			move2Site(c, site);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer findMaxSortOf(Channel parent, Site site) {
+
+		List<Object> vals = (List<Object>) hibernateTemplate.find(
+				"select max(sort) from Channel where site=? and "
+						+ (parent == null ? "parent is null " : "parent.id='"
+								+ parent.getId() + "'"), site);
+		if(CommonUtils.isEmpty(vals)){
+			return 0;
+		}
+		
+		return vals.get(0)==null?0:Integer.parseInt(vals.get(0).toString());
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.wk.cms.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,14 @@ public class FileDao implements IFileDao {
 		}else{
 			hibernateTemplate.update(f);
 		}
+	}
+	@Override
+	public List<File> findByIds(String[] ids) {
+		List<File> files = new ArrayList<File>();
+		for(String id : ids){
+			files.add(findById(id));
+		}
+		return files;
 	}
 
 }

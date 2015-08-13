@@ -2,6 +2,8 @@ package com.wk.cms.service.aop.validator;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.wk.cms.service.exception.ValidationException;
 
 public class NotEmptyValidator implements Validator {
@@ -25,6 +27,11 @@ public class NotEmptyValidator implements Validator {
 			List<?> l = (List<?>) value;
 			if(l.size()==0)
 				throw new ValidationException("参数错误，List为空！");
+		}else if(class1.isAssignableFrom(MultipartFile.class)){
+			MultipartFile f = (MultipartFile) value;
+			if(f.isEmpty()){
+				throw new ValidationException("参数错误，文件为空！");
+			}
 		}
 	}
 

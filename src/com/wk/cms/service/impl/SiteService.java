@@ -76,14 +76,14 @@ public class SiteService implements ISiteService {
 		
 	}
 	@Override
-	public void imp(MultipartFile file) throws ServiceException {
+	public void imp(MultipartFile file,String encode) throws ServiceException {
 		
 		if(file==null||file.isEmpty()){
 			throw new ServiceException("文件上传失败！！");
 		}
 		
 		try {
-			String[] siteNames = FileUtils.parseTxt2Arr(file);
+			String[] siteNames = FileUtils.parseTxt2Arr(file,encode);
 			
 			if(!CommonUtils.isEmpty(siteNames)){
 				for(String siteName : siteNames){

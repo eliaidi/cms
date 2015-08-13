@@ -18,6 +18,7 @@ import java.util.zip.ZipException;
 
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
+import org.apache.tools.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -31,16 +32,16 @@ import com.wk.cms.service.exception.ServiceException;
 public class FileUtils {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
-	private static final String SYSTEM_TEMP_DIR_KEY = "temp.dir";
+	private static final String SYSTEM_TEMP_DIR_KEY = "temp_dir";
 
-	public static String[] parseTxt2Arr(MultipartFile file) throws FileParseException {
+	public static String[] parseTxt2Arr(MultipartFile file,String encode) throws FileParseException {
 		
 		if(!file.getOriginalFilename().toLowerCase().endsWith(".txt")){
 			throw new FileParseException("解析文件失败！文件必须是txt文件");
 		}
 		
 		try {
-			String fileCon = getFileContent(file);
+			String fileCon = getFileContent(file,encode);
 			
 			return fileCon.split("\r\n");
 		} catch (IOException e) {
@@ -48,9 +49,9 @@ public class FileUtils {
 		}
 	}
 
-	private static String getFileContent(MultipartFile file) throws IOException {
+	private static String getFileContent(MultipartFile file,String encode) throws IOException {
 		
-		return new String(file.getBytes());
+		return new String(file.getBytes(),encode);
 	}
 
 	public static void witeFile(TempFile tf, String pDir) throws ServiceException  {
@@ -114,7 +115,7 @@ public class FileUtils {
 		return desFile;
 	}
 
-	private static File getTempDir() throws ServiceException {
+	public static File getTempDir() throws ServiceException {
 		String tempDir = SysCfg.getProperty(SYSTEM_TEMP_DIR_KEY);
 		if(!StringUtils.hasLength(tempDir)){
 			tempDir = System.getProperty("java.io.tmpdir");
@@ -145,6 +146,7 @@ public class FileUtils {
 					writeFile(zf.getInputStream(ze), f);
 				}
 			}
+			
 		} catch (Exception e) {
 			throw new ServiceException("解压文件失败！", e);
 		} finally{
@@ -170,29 +172,6 @@ public class FileUtils {
 			throw new ServiceException("写文件失败！", e);
 		}
 		
-	}
-
-	public static void main(String[] args) {
-		
-		try {
-			/*Properties p = System.getProperties();
-			
-			for(Object o : p.keySet()){
-				System.err.println(o+"="+p.getProperty(o.toString()));
-			}*/
-			/*Map<String,String> m = System.getenv();
-			for(String k : m.keySet()){
-				System.err.println(k+"="+m.get(k));
-			}
-			ZipFile zf = new ZipFile(new File("C:\\Users\\Administrator\\Desktop\\全部\\1\\1.zip"),"GBK");
-			unZip(zf, new File("C:\\Users\\Administrator\\Desktop\\全部\\1\\方法"));
-			zf.close();*/
-			
-			delete(new File("C:\\Users\\Administrator\\Desktop\\全部\\1\\方法"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
 	}
 
 	public static void delete(java.io.File tempFile) {
@@ -302,4 +281,53 @@ public class FileUtils {
 			throw new FileParseException("获取上传文件内容失败！", e);
 		}
 	}
+
+	public static void writeFile(com.wk.cms.model.File f, java.io.File dir) throws ServiceException {
+		File destFile = new File(dir, f.getFileName());
+		try {
+			writeFile(f.getContent().getBinaryStream(), destFile);
+		} catch (SQLException e) {
+			throw new ServiceException("写文件失败！", e);
+		}
+	}
+
+	public static java.io.File zip(java.io.File localFile) throws FileParseException {
+		
+		if(!localFile.exists()){
+			throw new FileParseException("文件不存在！"+localFile);
+		}
+		File zipFile = new File(localFile.getParentFile(), localFile.getName()+".zip");
+		try {
+			ZipOutputStream zos = new ZipOutputStream(zipFile);
+			zip(zos,localFile,localFile.getName());
+			zos.close();
+		} catch (IOException e) {
+			throw new FileParseException("压缩文件失败！"+localFile, e);
+		}
+		return zipFile;
+	}
+
+	private static void zip(ZipOutputStream zos, File localFile,String base) {
+		
+		if(localFile.isDirectory()){
+			File[] files = localFile.listFiles();
+			for(File f : files){
+				zip(zos,f,base+File.separator+f.getName());
+			}
+		}else{
+			try {
+				zos.putNextEntry(new ZipEntry(base));
+				FileInputStream fis = new FileInputStream(localFile);
+				byte[] buff = new byte[10000];
+				int len;
+				while((len = fis.read(buff))!=-1){
+					zos.write(buff, 0, len);
+				}
+				fis.close();
+			} catch (IOException e) {
+				LOGGER.error("添加压缩文件发生错误！"+localFile,e);
+			}
+		}
+	}
+	
 }

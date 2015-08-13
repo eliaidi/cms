@@ -29,7 +29,7 @@ public interface ISiteService {
 
 	void deleteById(String siteId) throws ServiceException;
 
-	void imp(MultipartFile file) throws ServiceException;
+	void imp(@NotEmpty MultipartFile file, @NotEmpty String encode) throws ServiceException;
 
 	String previewById(@NotEmpty String siteId) throws ServiceException;
 

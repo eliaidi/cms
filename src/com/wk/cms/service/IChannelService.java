@@ -55,7 +55,7 @@ public interface IChannelService {
 	void deleteById(String channelId) throws ServiceException;
 
 
-	void imp(MultipartFile file, String parentId, String siteId) throws ServiceException;
+	void imp(MultipartFile file, String parentId, String siteId, @NotEmpty String encode) throws ServiceException;
 
 	void deleteMulti(String ids) throws ServiceException;
 
@@ -74,4 +74,6 @@ public interface IChannelService {
 	List<Channel> findByMap(@NotNull Channel pChannel, @NotNull Map<String, String> params);
 
 	List<Channel> findByMap(@NotNull Site obj, @NotNull Map<String, String> params);
+
+	void move(@NotEmpty String currId, @NotEmpty String targetId);
 }

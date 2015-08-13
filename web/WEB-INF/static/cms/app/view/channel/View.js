@@ -202,9 +202,6 @@ Ext.define('MyCms.view.channel.View', {
 					Ext.Msg.alert('错误', o.message);
 					return;
 				}
-//				Ext.Msg.alert('提示', o.message, function() {
-//					me.fireEvent('refresh', me);
-//				});
 				me.fireEvent('refresh', me);
 				if(obj.get('aType')=='cut'&&obj.get('from')){
 					obj.get('from').fireEvent('refresh',obj.get('from'));
@@ -232,13 +229,12 @@ Ext.define('MyCms.view.channel.View', {
 	},
 	impChannel:function(){
 		var me = this;
-    	var win = Ext.create('MyCms.view.ux.ImpWindow',{
+    	Ext.create('MyCms.view.ux.ImpWindow',{
     		title:'批量导入栏目',
     		view:me,
     		params:me.parent?{parentId:me.parent.get('id')}:(me.site?{siteId:me.site.get('id')}:null),
     		url:channel_imp
-    	});
-    	win.show();
+    	}).show();
 	},
 	modifyChannel : function(record) {
 		var me = this, desktop = me.up('desktop'), module = desktop.app
@@ -271,9 +267,7 @@ Ext.define('MyCms.view.channel.View', {
 							Ext.Msg.alert('错误', obj.message);
 							return;
 						}
-						Ext.Msg.alert('提示', obj.message, function() {
-							me.fireEvent('refresh', me);
-						});
+						me.fireEvent('refresh', me);
 					},
 					failure : function(response, opts) {
 						console.log('server-side failure with status code '

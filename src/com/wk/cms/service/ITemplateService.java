@@ -19,7 +19,8 @@ public interface ITemplateService {
 	String TEMPFILE_FOLDER = "images";
 	String PREVIEW_FOLDER = "preview";
 
-	PageInfo find(@NotEmpty String siteId, String show, @NotNull PageInfo pageInfo,String query);
+	PageInfo find(@NotEmpty String siteId, String show,
+			@NotNull PageInfo pageInfo, String query);
 
 	void save(@NotNull Template template) throws ServiceException;
 
@@ -29,19 +30,27 @@ public interface ITemplateService {
 
 	void delete(@NotEmpty String id);
 
-	Template loadRemoteDoc(@NotEmpty String url, @NotEmpty String siteId) throws FileParseException;
+	Template loadRemoteDoc(@NotEmpty String url, @NotEmpty String siteId)
+			throws FileParseException;
 
-	List<TempFile> findTempFilesByFileNames(@NotEmpty List<String> tempFileNames,
-			@NotNull Site site);
+	List<TempFile> findTempFilesByFileNames(
+			@NotEmpty List<String> tempFileNames, @NotNull Site site);
 
 	List<TempFile> findTempFilesBySite(@NotNull Site site);
 
-	void imp(@NotNull MultipartFile f, @NotEmpty String siteId,String encode) throws ServiceException;
+	void imp(@NotNull MultipartFile f, @NotEmpty String siteId, String encode)
+			throws ServiceException;
 
 	Template findByName(@NotEmpty String tName);
 
-	PageInfo findFiles(@NotEmpty String siteId, @NotNull PageInfo pageInfo, String query);
+	PageInfo findFiles(@NotEmpty String siteId, @NotNull PageInfo pageInfo,
+			String query);
 
-	TempFile uploadFile(@NotNull MultipartFile f, @NotEmpty String siteId, String id, @NotEmpty String encode) throws ServiceException;
+	TempFile uploadFile(@NotNull MultipartFile f, @NotEmpty String siteId,
+			String id, @NotEmpty String encode) throws ServiceException;
+
+	TempFile saveFile(@NotNull TempFile tempFile);
+
+	void deleteFiles(@NotEmpty String[] ids);
 
 }

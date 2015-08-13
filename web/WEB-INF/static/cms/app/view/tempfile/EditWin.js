@@ -32,8 +32,27 @@ Ext.define('MyCms.view.tempfile.EditWin',{
 		
 		me.callParent();
 	},
+	onSuccess : function() {
+		var me = this;
+		me.from.fireEvent('refresh', me.from, me);
+		me.close();
+	},
 	doSure:function(){
-		
+		var me = this, form = me.down('form');
+
+		form.getForm().submit(
+				{
+					clientValidation : true,
+					url : tempfile_save,
+					params : me.tempFile?{id:me.tempFile.get('id')}:null,
+					success : 'onSuccess',
+					failure : function(form, action) {
+						Ext.Msg.alert('失败',
+								action.result ? action.result.message
+										: 'No response');
+					},
+					scope : me
+				});
 	},
 	doReset:function(){
 		var me = this;

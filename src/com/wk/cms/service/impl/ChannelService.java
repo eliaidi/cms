@@ -63,6 +63,7 @@ public class ChannelService implements IChannelService {
 			}
 			channel.setCrTime(new Date());
 			channel.setCrUser(null);
+			channel.setSort(channelDao.findMaxSortOf(channel.getParent(),channel.getSite())+1);
 			
 			channelDao.save(channel);
 		}else{
@@ -103,14 +104,14 @@ public class ChannelService implements IChannelService {
 		channelDao.deleteById(channelId);
 	}
 	@Override
-	public void imp(MultipartFile file, String parentId, String siteId) throws ServiceException {
+	public void imp(MultipartFile file, String parentId, String siteId,String encode) throws ServiceException {
 		
 		try {
-			String[] chnlNames = FileUtils.parseTxt2Arr(file);
+			String[] chnlNames = FileUtils.parseTxt2Arr(file,encode);
 			
 			for(String chnlName : chnlNames){
 				if(StringUtils.hasLength(chnlName)){
-					save(new Channel(null, chnlName, chnlName,CommonUtils.getFirstWordOf(chnlName), null, null, null, null, null, null), parentId, siteId);
+					save(new Channel(null, chnlName, chnlName,CommonUtils.getFirstWordOf(chnlName),null, null, null, null, null, null, null), parentId, siteId);
 				}
 			}
 		} catch (FileParseException e) {
@@ -179,8 +180,9 @@ public class ChannelService implements IChannelService {
 	public void cut(Channel channel, String parentId, String siteId) throws ServiceException {
 		
 		Site targetSite = null;
+		Channel parent = null;
 		if(StringUtils.hasLength(parentId)){
-			Channel parent = findById(parentId);
+			parent = findById(parentId);
 			channel.setParent(parent);
 			channel.setSite(parent.getSite());
 			
@@ -193,12 +195,14 @@ public class ChannelService implements IChannelService {
 		}else{
 			throw new ServiceException("参数错误！parentId和siteId必须传入一个！！");
 		}
+		channel.setSort(channelDao.findMaxSortOf(parent, targetSite)+1);
 		//更新栏目
 		channelDao.save(channel);
 		
 		//如果栏目剪切到其他站点，则更新栏目下文档的所属站点
 		if(!channel.getSite().getId().equals(targetSite.getId())){
-			documentService.refreshBy(channel);
+//			documentService.refreshBy(channel);
+			channelDao.move2Site(channel, targetSite);
 		}
 	}
 	@Override
@@ -213,6 +217,11 @@ public class ChannelService implements IChannelService {
 	@Override
 	public List<Channel> findByMap(Site obj, Map<String, String> params) {
 		return channelDao.findByMap(obj,params);
+	}
+	@Override
+	public void move(String currId, String targetId) {
+		
+		channelDao.move(currId,targetId);
 	}
 
 }

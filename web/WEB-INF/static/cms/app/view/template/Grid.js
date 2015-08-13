@@ -296,30 +296,12 @@ Ext
 					},
 					import : function(){
 						var me = this;
-						var impWin = Ext.create('MyCms.view.ux.ImpWindow',{
+						Ext.create('MyCms.view.ux.ImpWindow',{
 							view : me,
 							url : template_imp,
 							params : {
 								siteId : me._view.site.get('id')
 							}
-						}),form = impWin.down('form');
-						form.add({
-							xtype:'combobox',
-							fieldLabel: '编码',
-							name:'encode',
-							forceSelection:true,
-						    store: Ext.create('Ext.data.Store', {
-						        fields: [ 'name'],
-						        data : [
-								        {"name":"UTF-8"},
-								        {"name":"GBK"},
-								        {"name":"ISO-8859-1"}
-								    ]
-						    }),
-						    queryMode: 'local',
-						    displayField: 'name',
-						    valueField: 'name'
-						});
-						impWin.show();
+						}).show();
 					}
 				});

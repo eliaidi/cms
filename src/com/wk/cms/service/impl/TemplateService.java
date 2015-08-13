@@ -177,4 +177,23 @@ public class TemplateService implements ITemplateService {
 		return tf;
 	}
 
+	@Override
+	public TempFile saveFile(TempFile tempFile) {
+
+		if(StringUtils.hasLength(tempFile.getId())){
+			TempFile persistTempFile = templateDao.findFileByFId(tempFile.getId());
+			persistTempFile.getFile().setContent(tempFile.getFile().getContent());
+			persistTempFile.getFile().setEncode("UTF-8");
+			
+			templateDao.saveFile(persistTempFile);
+			return persistTempFile;
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteFiles(String[] ids) {
+		templateDao.deleteFiles(ids);
+	}
+
 }

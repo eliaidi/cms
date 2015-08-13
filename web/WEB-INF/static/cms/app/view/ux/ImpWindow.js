@@ -1,7 +1,7 @@
 Ext.define('MyCms.view.ux.ImpWindow',{
 	extend:'MyCms.view.ux.MyWindow',
 	width:463,
-	height:140,
+	height:178,
 	title:'导入',
 	modal:true,
 	initComponent:function(){
@@ -19,6 +19,23 @@ Ext.define('MyCms.view.ux.ImpWindow',{
     				anchor:'100%',
     				allowBlank: false,
     				buttonText: '选择文件'
+    			},{
+    				xtype:'combobox',
+        			fieldLabel: '编码',
+        			name:'encode',
+        			forceSelection:true,
+        		    store: Ext.create('Ext.data.Store', {
+        		        fields: [ 'name'],
+        		        data : [
+        				        {"name":"UTF-8"},
+        				        {"name":"GBK"},
+        				        {"name":"ISO-8859-1"}
+        				    ]
+        		    }),
+        		    queryMode: 'local',
+        		    allowBlank:false,
+        		    displayField: 'name',
+        		    valueField: 'name'
     			}]
     		}],
     		buttons:[{

@@ -13,6 +13,7 @@ var channel_imp = RootPath+'/channel/imp';
 var channel_delete_multi = RootPath+'/channel/deleteMulti';
 var channel_copy = RootPath+'/channel/copy';
 var channel_cut = RootPath+'/channel/cut';
+var channel_move = RootPath+'/channel/move';
 
 var document_list = RootPath+'/document/list';
 var document_save = RootPath+'/document/save';
@@ -35,3 +36,5 @@ var template_remote = RootPath+'/template/remote';
 var template_imp = RootPath+'/template/imp';
 var tempfile_list = RootPath+'/template/file/list';
 var tempfile_upload = RootPath+'/template/file/upload';
+var tempfile_save = RootPath+'/template/file/save';
+var tempfile_delete = RootPath+'/template/file/delete';

@@ -3,6 +3,15 @@ Ext.define('MyCms.model.TempFile', {
 	fields : [ {
 		name : 'id'
 	},{
+		name : 'fileId',
+		convert : function(v, r) {
+			var f = r.get('file');
+			if (f) {
+				v = f.id;
+			}
+			return v;
+		}
+	},{
 		name : 'content',
 		convert : function(v, r) {
 			var f = r.get('file');

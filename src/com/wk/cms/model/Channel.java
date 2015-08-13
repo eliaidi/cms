@@ -17,11 +17,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 @Entity
-@JsonIgnoreProperties({"children","documents"})
+@JsonIgnoreProperties({ "children", "documents" })
 @Cacheable
-@Cache(region="channel",usage=CacheConcurrencyStrategy.READ_WRITE)
+@Cache(region = "channel", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Channel {
 
 	@Id
@@ -33,28 +32,30 @@ public class Channel {
 	private String folder;
 	private String otempIds;
 	private String dtempIds;
+	private Integer sort;
 	@ManyToOne
 	private Site site;
 	@ManyToOne
 	private Channel parent;
-	
-	@OneToMany(mappedBy="parent",cascade={CascadeType.REMOVE})
+
+	@OneToMany(mappedBy = "parent", cascade = { CascadeType.REMOVE })
 	private Set<Channel> children;
-	@OneToMany(mappedBy="channel",cascade={CascadeType.REMOVE})
+	@OneToMany(mappedBy = "channel", cascade = { CascadeType.REMOVE })
 	private Set<Document> documents;
-	
+
 	@ManyToOne
 	private User crUser;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date crTime;
+
 	public Channel() {
 		super();
 	}
-	
-	public Channel(String id, String name, String descr,String folder, Site site,
-			Channel parent, Set<Channel> children, Set<Document> documents,
-			User crUser, Date crTime) {
+
+	public Channel(String id, String name, String descr, String folder,
+			Integer sort, Site site, Channel parent, Set<Channel> children,
+			Set<Document> documents, User crUser, Date crTime) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -66,6 +67,15 @@ public class Channel {
 		this.documents = documents;
 		this.crUser = crUser;
 		this.crTime = crTime;
+		this.sort = sort;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
 	}
 
 	public String getOtempIds() {
@@ -99,7 +109,7 @@ public class Channel {
 	public Date getCrTime() {
 		return crTime;
 	}
-	
+
 	public User getCrUser() {
 		return crUser;
 	}
@@ -111,7 +121,7 @@ public class Channel {
 	public String getFolder() {
 		return folder;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -135,11 +145,11 @@ public class Channel {
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
 	}
-	
+
 	public void setCrUser(User crUser) {
 		this.crUser = crUser;
 	}
-	
+
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
@@ -163,6 +173,5 @@ public class Channel {
 	public void setSite(Site site) {
 		this.site = site;
 	}
-	
-	
+
 }

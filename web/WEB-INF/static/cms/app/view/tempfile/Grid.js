@@ -129,6 +129,12 @@ Ext.define('MyCms.view.tempfile.Grid',{
 				me.delete(record);
 			},
 			scope : me
+		},{
+			text : '下载文件',
+			handler : function() {
+				me.download(record);
+			},
+			scope : me
 		}];
 		if(!record.isPic()){
 			showItems.splice(1,0,{
@@ -146,6 +152,48 @@ Ext.define('MyCms.view.tempfile.Grid',{
 
 		e.stopEvent();
 		e.stopPropagation();
+	},
+	download:function(r){
+		var me = this,rs = me.getSelectionModel().getSelection(),ids = [];
+		if(rs.length==0){
+			ids.push(r.get('fileId'));
+		}else{
+			for(var i=0;i<rs.length;i++){
+				ids.push(rs[i].get('fileId'));
+			}
+		}
+		window.open(RootPath+'/file/'+ids.join(','));
+	},
+	delete:function(r){
+		var me = this,rs = me.getSelectionModel().getSelection(),ids = [];
+		if(rs.length==0){
+			ids.push(r.get('id'));
+		}else{
+			for(var i=0;i<rs.length;i++){
+				ids.push(rs[i].get('id'));
+			}
+		}
+		Ext.Msg.confirm('警告','您确认删除该项吗？',function(m) {
+			if (m == 'yes') {
+				Ext.Ajax.request({
+					url : tempfile_delete,
+					params : {
+						ids : ids.join(',')
+					},
+					success : function(response,opts) {
+						var obj = Ext.decode(response.responseText);
+						if (!obj.success) {
+							Ext.Msg.alert('错误',obj.message);
+							return;
+						}
+						me.fireEvent('refresh',me);
+					},
+					failure : function(response,opts) {
+						console.log('server-side failure with status code '+ response.status);
+					}
+				});
+			}
+		});
 	},
 	upload:function(r){
 		var me = this;

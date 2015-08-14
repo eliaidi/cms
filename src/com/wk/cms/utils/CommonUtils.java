@@ -402,4 +402,17 @@ public class CommonUtils {
 		}
 		return sb.toString();
 	}
+
+	public static <T> List<T> push(List<T> templates, T[] arr) {
+		if(templates == null){
+			templates = new ArrayList<T>();
+		}
+		if(!CommonUtils.isEmpty(arr)){
+			for(T t : arr){
+				if(t==null||t.toString().equals("")) continue;
+				templates.add(t);
+			}
+		}
+		return templates;
+	}
 }

@@ -23,6 +23,7 @@ var document_remote = RootPath+'/document/remote';
 var document_detail = RootPath+'/document/detail';
 var document_copy = RootPath+'/document/copy';
 var document_cut = RootPath+'/document/cut';
+var document_move = RootPath+'/document/move';
 
 var appendix_list = RootPath+'/appendix/list';
 var appendix_save = RootPath+'/appendix/save';

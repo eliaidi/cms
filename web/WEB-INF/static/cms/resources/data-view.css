@@ -78,3 +78,6 @@
 .view-target-hover{
 	border-left: 5px green solid;
 }
+.grid-target-hover{
+	border-top: 3px green solid !important;
+}

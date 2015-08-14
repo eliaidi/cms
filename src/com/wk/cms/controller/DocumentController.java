@@ -112,5 +112,12 @@ public class DocumentController {
 		documentService.cut(objIds, channelId);
 		return new Message(true, "剪切成功！", null);
 	}
+	
+	@RequestMapping("/move")
+	public @ResponseBody Message move(String currId,String targetId) throws ServiceException{
+		
+		documentService.move(currId,targetId);
+		return new Message(true, "移动成功！", null);
+	}
 }
 

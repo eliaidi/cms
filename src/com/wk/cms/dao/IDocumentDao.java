@@ -34,4 +34,10 @@ public interface IDocumentDao {
 
 	List<Document> findByMap(Channel currChnl, Map<String, String> params);
 
+	Integer findMaxSortOf(Channel channel);
+
+	void move(String currId, String targetId);
+
+	void move(Document currDoc, Document targetDoc);
+
 }

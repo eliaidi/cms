@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 
 public interface IChannelDao  {
 
@@ -31,4 +32,6 @@ public interface IChannelDao  {
 	void move2Site(Channel currChnl, Site site);
 
 	Integer findMaxSortOf(Channel parent, Site site);
+
+	List<Template> findTemps(Channel channel, Integer type);
 }

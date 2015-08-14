@@ -13,6 +13,7 @@ import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
 import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.publish.server.PublishServer;
+import com.wk.cms.publish.vo.PubObj;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
@@ -56,8 +57,9 @@ public class DocumentsParser extends AbstractTagParser {
 		
 		List<Document> documents = documentService.findByMap(currChnl,params);
 		StringBuilder sb = new StringBuilder();
-		for(Document doc : documents){
-			sb.append(PublishServer.parse(doc, base, e.getHtml()));
+		for(int i=0;i<documents.size();i++){
+			Document doc = documents.get(i);
+			sb.append(PublishServer.parse(new PubObj((i+1),doc), base, e.getHtml()));
 		}
 		return sb.toString();
 	}

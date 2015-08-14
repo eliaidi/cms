@@ -1,9 +1,11 @@
 package com.wk.cms.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -16,6 +18,8 @@ import org.springframework.util.StringUtils;
 import com.wk.cms.dao.IChannelDao;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
+import com.wk.cms.model.Template.Type;
 import com.wk.cms.utils.CommonUtils;
 
 @Repository
@@ -206,6 +210,33 @@ public class ChannelDao implements IChannelDao {
 		}
 		
 		return vals.get(0)==null?0:Integer.parseInt(vals.get(0).toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Template> findTemps(Channel channel, Integer type) {
+		
+		List<Template> templates = null;
+		List<String> tidArr = new ArrayList<String>();
+		if(type==null||type.equals(Type.DETAIL)){
+			String tids = channel.getDtempIds();
+			if(StringUtils.hasLength(tids)){
+				CommonUtils.push(tidArr,tids.split(","));
+			}
+		}
+		if(type==null||type.equals(Type.OUTLINE)){
+			String tids = channel.getOtempIds();
+			if(StringUtils.hasLength(tids)){
+				CommonUtils.push(tidArr,tids.split(","));
+			}
+		}
+		templates = hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createCriteria(Template.class)
+				.add(Restrictions.in("id", tidArr))
+				.list();
+		
+		return templates;
 	}
 
 }

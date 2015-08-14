@@ -6,6 +6,10 @@ Ext.define('MyCms.view.document.Grid', {
 			 'MyCms.view.ux.MyMenu'],
 	border : true,
 	title : '文档列表',
+	mixins : {
+		dragSelector : 'Ext.ux.DataView.DragSelector',
+		draggable : 'Ext.ux.DataView.Draggable'
+	},
 	loadMask : true,
 
 	selModel: {
@@ -112,6 +116,8 @@ Ext.define('MyCms.view.document.Grid', {
 				} ]
 			} ]
 		});
+		
+		me.on('render', me.initDragDrop);
 
 		me.on('containercontextmenu', 'showCmpMenu', me);
 		me.on('itemcontextmenu', 'showItemMenu', me);
@@ -332,5 +338,90 @@ Ext.define('MyCms.view.document.Grid', {
 				});
 			}
 		});
+	},
+	initDragDrop:function(){
+		var me = this,view = me.getView();
+		initDragZone(me);
+		initDropZone(me);
+
+		function initDragZone(v) {
+			v.dragZone = Ext.create('Ext.dd.DragZone',v.getEl(),
+				{
+					getDragData : function(e) {
+						var sourceEl = e.getTarget('.x-grid-item', 10), d;
+						if (sourceEl) {
+							d = sourceEl.cloneNode(true);
+			                d.id = Ext.id();
+							return (v.dragData = {
+									sourceEl: sourceEl,
+				                    repairXY: Ext.fly(sourceEl).getXY(),
+				                    ddel: d,
+				                    rec: getDataByDom(sourceEl)
+							});
+						}
+					},
+					getRepairXY : function() {
+						return this.dragData.repairXY;
+					}
+				});
+		}
+
+		function initDropZone(v) {
+			v.dropZone = Ext.create('Ext.dd.DropZone',v.el,
+				{
+					getTargetFromEvent : function(e) {
+						return e.getTarget('.x-grid-item');
+					},
+					onNodeEnter : function(target,dd, e, data) {
+						if(this.onNodeOver(target,dd, e, data)==Ext.dd.DropZone.prototype.dropAllowed){
+							Ext.fly(target).addCls('grid-target-hover');
+						}
+					},
+					onNodeOut : function(target,dd, e, data) {
+						Ext.fly(target).removeCls('grid-target-hover');
+					},
+					onNodeOver : function(target,dd, e, data) {
+						var  proto = Ext.dd.DropZone.prototype,tData = getDataByDom(target),nextData = target.previousSibling?getDataByDom(target.previousSibling):null;
+						return  tData.get('id')==data.rec.get('id')||(nextData?nextData.get('id')==data.rec.get('id'):false)?proto.dropNotAllowed:proto.dropAllowed;
+						//return Ext.dd.DropZone.prototype.dropAllowed
+					},
+
+					onNodeDrop : function(target,dd, e, data) {
+						if(this.onNodeOver(target,dd, e, data)==Ext.dd.DropZone.prototype.dropAllowed){
+							var tRec = getDataByDom(target),cRec = data.rec;
+							doResort(cRec,tRec);
+							return true;
+						}
+						return false;
+					}
+				});
+			
+		}
+		
+		function getDataByDom(t){
+			return view.getRecord(t);
+		}
+		
+		function doResort(c,t){
+			Ext.Ajax.request({
+				url : document_move,
+				params : {
+					currId : c.get('id'),
+					targetId : t.get('id')
+				},
+				success : function(response, opts) {
+					var obj = Ext.decode(response.responseText);
+					if (!obj.success) {
+						Ext.Msg.alert('错误', obj.message);
+						return;
+					}
+					me.fireEvent('refresh',me);
+				},
+				failure : function(response, opts) {
+					console.log('server-side failure with status code '
+							+ response.status);
+				}
+			});
+		}
 	}
 });

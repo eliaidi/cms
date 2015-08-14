@@ -95,9 +95,12 @@ Ext
 									},
 
 									onNodeDrop : function(target,dd, e, data) {
-										var tRec = getDataByDom(target),cRec = data.rec;
-										doResort(cRec,tRec);
-										return true;
+										if(this.onNodeOver(target,dd, e, data)==Ext.dd.DropZone.prototype.dropAllowed){
+											var tRec = getDataByDom(target),cRec = data.rec;
+											doResort(cRec,tRec);
+											return true;
+										}
+										return false;
 									}
 								});
 							

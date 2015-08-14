@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.wk.cms.dao.IChannelDao;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.ISiteService;
@@ -222,6 +223,10 @@ public class ChannelService implements IChannelService {
 	public void move(String currId, String targetId) {
 		
 		channelDao.move(currId,targetId);
+	}
+	@Override
+	public List<Template> findTemps(Channel channel, Integer type) {
+		return channelDao.findTemps(channel,type);
 	}
 
 }

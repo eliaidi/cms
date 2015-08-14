@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Site;
+import com.wk.cms.model.Template;
 import com.wk.cms.service.exception.ServiceException;
 
 public interface IChannelService {
@@ -76,4 +77,6 @@ public interface IChannelService {
 	List<Channel> findByMap(@NotNull Site obj, @NotNull Map<String, String> params);
 
 	void move(@NotEmpty String currId, @NotEmpty String targetId);
+
+	List<Template> findTemps(@NotNull Channel channel, Integer type);
 }

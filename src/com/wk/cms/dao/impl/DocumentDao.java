@@ -51,7 +51,7 @@ public class DocumentDao implements IDocumentDao {
 				.uniqueResult();
 
 		List<Document> documents = c
-				.addOrder(Order.desc("crTime"))
+				.addOrder(Order.desc("sort"))
 				.setProjection(
 						HibernateUtils.getProjections(Document.class,
 								ShowArea.LIST))
@@ -153,6 +153,7 @@ public class DocumentDao implements IDocumentDao {
 		}
 		
 		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql);
+		q.setParameter(0, currChnl);
 		
 		if(StringUtils.hasLength(startpos)){
 			q.setFirstResult(Integer.parseInt(startpos));
@@ -161,6 +162,40 @@ public class DocumentDao implements IDocumentDao {
 			q.setMaxResults(Integer.parseInt(num));
 		}
 		return q.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer findMaxSortOf(Channel channel) {
+		
+		List<Object> list = (List<Object>) hibernateTemplate.find("select max(sort) from Document where channel=?", channel);
+		if(CommonUtils.isEmpty(list)){
+			return 0;
+		}
+		return list.get(0)==null?0:Integer.parseInt(list.get(0).toString());
+	}
+
+	@Override
+	public void move(String currId, String targetId) {
+		
+		Document currDoc = findById(currId);
+		Document targetDoc = findById(targetId);
+		
+		move(currDoc, targetDoc);
+	}
+
+	@Override
+	public void move(Document currDoc, Document targetDoc) {
+		
+		if(!currDoc.getChannel().equals(targetDoc.getChannel())){
+			currDoc.setChannel(targetDoc.getChannel());
+			currDoc.setSite(targetDoc.getSite());
+		}
+		currDoc.setSort(targetDoc.getSort());
+		
+		hibernateTemplate.bulkUpdate("update Document set sort=sort-1 where channel.id=? and sort<=?", targetDoc.getChannel().getId(),targetDoc.getSort());
+		
+		hibernateTemplate.update(currDoc);
 	}
 
 }

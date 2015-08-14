@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Hibernate;
-import org.hibernate.Query;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +58,7 @@ public class DocumentService implements IDocumentService {
 			document.setSite(channel.getSite());
 			document.setCrTime(new Date());
 			document.setCrUser(null);
+			document.setSort(documentDao.findMaxSortOf(channel)+1);
 			
 			documentDao.save(document);
 		}else{
@@ -140,6 +140,7 @@ public class DocumentService implements IDocumentService {
 		newDoc.setSite(newChannel.getSite());
 		newDoc.setCrTime(new Date());
 		newDoc.setCrUser(null);
+		newDoc.setSort(documentDao.findMaxSortOf(newChannel)+1);
 		documentDao.save(newDoc);
 	}
 	@Override
@@ -188,6 +189,7 @@ public class DocumentService implements IDocumentService {
 		
 		document.setChannel(channel);
 		document.setSite(channel.getSite());
+		document.setSort(documentDao.findMaxSortOf(channel));
 		documentDao.save(document);
 	}
 	@Override
@@ -212,6 +214,14 @@ public class DocumentService implements IDocumentService {
 	public List<Document> findByMap(Channel currChnl, Map<String, String> params) {
 		
 		return documentDao.findByMap(currChnl,params);
+	}
+	@Override
+	public void move(String currId, String targetId) throws ServiceException {
+		
+//		documentDao.move(currId,targetId);
+		Document currDoc = findById(currId);
+		Document targetDoc = findById(targetId);
+		documentDao.move(currDoc, targetDoc);
 	}
 
 }

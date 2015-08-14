@@ -63,4 +63,6 @@ public interface IDocumentService {
 
 	List<Document> findByMap(@NotNull Channel currChnl, Map<String, String> params);
 
+	void move(@NotEmpty String currId, @NotEmpty String targetId) throws ServiceException;
+
 }

@@ -5,6 +5,7 @@ Ext.define('MyCms.model.Document', {
         { name: 'title' },
         { name: 'abst' },
         { name: 'content' },
+        { name: 'sort' },
         { name: 'status',type:'int',convert:function(v){
         	if(v){
         		v = MyCms.model.Document.StatusMapping[v];

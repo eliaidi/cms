@@ -42,6 +42,8 @@ public class Channel {
 	private Set<Channel> children;
 	@OneToMany(mappedBy = "channel", cascade = { CascadeType.REMOVE })
 	private Set<Document> documents;
+	@OneToMany(mappedBy = "channel", cascade = { CascadeType.ALL })
+	private Set<ExtField> extFields;
 
 	@ManyToOne
 	private User crUser;

@@ -39,3 +39,5 @@ var tempfile_list = RootPath+'/template/file/list';
 var tempfile_upload = RootPath+'/template/file/upload';
 var tempfile_save = RootPath+'/template/file/save';
 var tempfile_delete = RootPath+'/template/file/delete';
+
+var extfield_list = RootPath+'/extfield/list';

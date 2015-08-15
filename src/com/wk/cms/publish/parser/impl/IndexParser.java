@@ -9,7 +9,7 @@ import com.wk.cms.service.exception.ServiceException;
 public class IndexParser extends AbstractTagParser {
 
 	@Override
-	protected String parseInternal(Object obj, Object base, String con)
+	protected String parseInternal(Object obj)
 			throws ServiceException {
 		// needn't implement this method,it has been done in super class,and never come into this method
 		return null;

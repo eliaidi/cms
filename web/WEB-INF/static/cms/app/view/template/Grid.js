@@ -72,7 +72,7 @@ Ext
 							scope : me
 						},{
 							text : '导入',
-							handler : 'import',
+							handler : 'imp',
 							scope : me
 						},{
 							text : '模板附件',
@@ -294,7 +294,7 @@ Ext
 											}
 										});
 					},
-					import : function(){
+					imp : function(){
 						var me = this;
 						Ext.create('MyCms.view.ux.ImpWindow',{
 							view : me,

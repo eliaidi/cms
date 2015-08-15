@@ -1,23 +1,38 @@
 package com.wk.cms.model;
 
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import org.springframework.util.StringUtils;
+
 @Entity
 public class Appendix {
 
+	public static class Type {
+
+		public static final Integer PIC = 1;
+		public static final Integer FILE = 2;
+		public static final Integer OTHER = 3;
+
+		public static Integer valueOf(String type) {
+			if (!StringUtils.hasLength(type))
+				return null;
+			return Integer.parseInt(type);
+		}
+
+	}
+
 	@Id
 	private String id;
-	
+
 	@ManyToOne
 	private Document document;
 	private int type;
 	private String name;
 	private String addition;
-	
+
 	@OneToOne
 	private File file;
 
@@ -68,5 +83,5 @@ public class Appendix {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

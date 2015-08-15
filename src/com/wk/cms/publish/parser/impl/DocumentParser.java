@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Template;
 import com.wk.cms.model.Template.Type;
+import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
@@ -28,9 +29,11 @@ public class DocumentParser extends AbstractTagParser {
 	private IChannelService channelService;
 
 	@Override
-	protected String parseInternal(Object obj, Object base, String con)
+	protected String parseInternal(Object obj)
 			throws ServiceException {
 
+		HtmlTag e = getTag();
+		
 		String id = e.attr("id");// id of the document
 		String field = e.attr("field");// default:title
 		String num = e.attr("num");// number of the results

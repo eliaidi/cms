@@ -230,11 +230,13 @@ public class ChannelDao implements IChannelDao {
 				CommonUtils.push(tidArr,tids.split(","));
 			}
 		}
-		templates = hibernateTemplate.getSessionFactory()
-				.getCurrentSession()
-				.createCriteria(Template.class)
-				.add(Restrictions.in("id", tidArr))
-				.list();
+		if(tidArr.size()>0){
+			templates = hibernateTemplate.getSessionFactory()
+					.getCurrentSession()
+					.createCriteria(Template.class)
+					.add(Restrictions.in("id", tidArr))
+					.list();
+		}
 		
 		return templates;
 	}

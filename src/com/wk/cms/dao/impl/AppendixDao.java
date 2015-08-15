@@ -1,6 +1,5 @@
 package com.wk.cms.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,10 +21,7 @@ public class AppendixDao implements IAppendixDao {
 	@Override
 	public PageInfo find(String documentId, Integer type, PageInfo pageInfo) {
 		
-		List<Appendix > appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? and a.type=?", documentId,type);
-		if(appendixs==null){
-			appendixs = new ArrayList<Appendix>();
-		}
+		List<Appendix > appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? "+(type==null?"":" and a.type="+type), documentId);
 		return new PageInfo(appendixs,(long) appendixs.size());
 	}
 

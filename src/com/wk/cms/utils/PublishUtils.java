@@ -2,7 +2,8 @@ package com.wk.cms.utils;
 
 import java.io.File;
 
-import net.sourceforge.pinyin4j.PinyinHelper;
+
+
 
 import org.springframework.util.StringUtils;
 
@@ -10,6 +11,7 @@ import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
+import com.wk.cms.service.ITemplateService;
 
 public class PublishUtils {
 
@@ -66,6 +68,22 @@ public class PublishUtils {
 			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
 		}
 		return template.getPrefix()+"."+template.getExt();
+	}
+	
+	public static String getPreviewDir(Object obj) {
+		String dir = PublishUtils.getDir(obj);
+		dir = CommonUtils.getAppPath("cms") + File.separator + ITemplateService.PREVIEW_FOLDER + dir;
+		
+		File f = new File(dir);
+		if(!f.exists()){
+			f.mkdirs();
+		}
+		return dir;
+	}
+
+	public static String getPublishDir(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

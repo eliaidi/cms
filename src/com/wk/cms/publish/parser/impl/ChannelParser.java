@@ -8,6 +8,7 @@ import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
+import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.exception.ServiceException;
@@ -19,9 +20,10 @@ public class ChannelParser extends AbstractTagParser {
 	@Autowired
 	private IChannelService channelService;
 	@Override
-	protected String parseInternal(Object obj, Object base, String con)
+	protected String parseInternal(Object obj)
 			throws ServiceException {
 		
+		HtmlTag e = getTag();
 		String name = e.attr("name");
 		Channel channel = null;
 		Site currSite = getSite(obj);

@@ -10,12 +10,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+
+
+
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.model.Channel;
@@ -38,6 +45,7 @@ import com.wk.cms.utils.PublishUtils;
 
 @Component
 @Transactional(readOnly = true)
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PublishServer implements IPublishServer {
 
 	private static final int MAX_POOL_SIZE = 10;
@@ -47,6 +55,7 @@ public class PublishServer implements IPublishServer {
 			.getLogger(PublishServer.class);
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
+	private static boolean isPreivew = false;
 	
 	static{
 		pubCompCfg = new Properties();
@@ -61,6 +70,7 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
+		LOGGER.debug(this.toString());
 		if (isPreview)
 			return preview(obj);
 		return null;
@@ -68,6 +78,7 @@ public class PublishServer implements IPublishServer {
 
 	private String preview(Object obj) throws PublishException {
 
+		isPreivew = true;
 		if (obj instanceof Site)
 			return previewSite((Site) obj);
 		if (obj instanceof Channel)
@@ -96,10 +107,9 @@ public class PublishServer implements IPublishServer {
 		if (CommonUtils.isEmpty(templates))
 			throw new PublishException("站点【" + obj.getName() + "】未配置模板！！");
 		
-		final String pDir = getPreviewDir(obj);
-		publishTempFile(obj,getPreviewDir(PublishUtils.getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
+		//publishTempFile(obj,getPreviewDir(PublishUtils.getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
 		for (final Template template : templates) {
-			publishInternal(obj, template, pDir);
+			publishInternal(obj, template);
 			/*EXECUTOR.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -114,33 +124,38 @@ public class PublishServer implements IPublishServer {
 		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
 	}
 
-	private void publishTempFile(Object obj, String pDir) {
+	private void publishTempFile(Object obj) {
 		
 		ITemplateService templateService = BeanFactory.getBean(ITemplateService.class);
 		List<TempFile> tempFiles = templateService.findTempFilesBySite(PublishUtils.getSite(obj));
 		
 		for(TempFile tf : tempFiles){
 			try {
-				FileUtils.witeFile(tf,pDir);
+				FileUtils.witeFile(tf,getAbsoluteDir(obj));
 			} catch (ServiceException e) {
 				LOGGER.error("模板附件生成失败！",e);
 			}
 		}
 	}
 
-	private void publishInternal(Object obj, Template template, String pDir) throws PublishException {
+	private void publishInternal(Object obj, Template template) throws PublishException {
 		
 		try {
+			publishTempFile(obj);
 			String content = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
 			
 			content = parse(obj,obj,content);
-			content = updateContentTempFile(obj,content,pDir);
+			content = updateContentTempFile(obj,content);
 			
-			FileUtils.writeFile(content,PublishUtils.getPubFileName(obj,template),pDir);
+			FileUtils.writeFile(content,PublishUtils.getPubFileName(obj,template),getAbsoluteDir(obj));
 		} catch (Exception e) {
 			throw new PublishException(e.getMessage(),e);
 		} 
 
+	}
+
+	private String getAbsoluteDir(Object obj) {
+		return isPreivew?PublishUtils.getPreviewDir(obj):PublishUtils.getPublishDir(obj);
 	}
 
 	/**
@@ -170,8 +185,9 @@ public class PublishServer implements IPublishServer {
 			}
 			int end = m.start()+header.length()+innerHtml.length()+endTag.length();
 			
-			TagParser parser = getParser(new HtmlTag(tagName,attrStr,innerHtml));
-			String newCon = parser.parse(obj,base, content);
+			PublishContext ctx = new PublishContext(base,isPreivew,new HtmlTag(tagName,attrStr,innerHtml));
+			TagParser parser = getParser(ctx);
+			String newCon = parser.parse(obj);
 			
 			sb.append(content.substring(0, m.start()));
 			sb.append(newCon);
@@ -183,7 +199,8 @@ public class PublishServer implements IPublishServer {
 		return content;
 	}
 
-	private static TagParser getParser(HtmlTag tag) throws PublishException {
+	private static TagParser getParser(PublishContext ctx) throws PublishException {
+		HtmlTag tag = ctx.getTag();
 		String tagName = tag.getName();
 		tagName = tagName.split("\\$")[0];
 		String pubBeanName = pubCompCfg.getProperty(tag.getName());
@@ -194,11 +211,11 @@ public class PublishServer implements IPublishServer {
 		if(parser==null){
 			throw new PublishException("未找到beanName为【"+pubBeanName+"】的发布组件，【k="+tagName+"】的项！");
 		}
-		parser.setTag(tag);
+		parser.setContext(ctx);
 		return parser;
 	}
 
-	private String updateContentTempFile(Object obj,String content, String pDir) throws ServiceException {
+	private String updateContentTempFile(Object obj,String content) throws ServiceException {
 		
 		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+File.separator+"images");
 		Map<String, String> parseTags = SysCfg.getSupportParseTags();
@@ -220,17 +237,7 @@ public class PublishServer implements IPublishServer {
 		m.appendTail(sb);
 		return sb.toString();
 	}
-
 	
-	private String getPreviewDir(Object obj) {
-		String dir = PublishUtils.getDir(obj);
-		dir = CommonUtils.getAppPath("cms") + File.separator + ITemplateService.PREVIEW_FOLDER + dir;
-		
-		File f = new File(dir);
-		if(!f.exists()){
-			f.mkdirs();
-		}
-		return dir;
-	}
+	
 
 }

@@ -14,6 +14,8 @@ import com.wk.cms.utils.PageInfo;
 
 public interface IAppendixService {
 
+	int MAX_FETCH_NUM = 500;
+
 	PageInfo list(String documentId, Integer type, PageInfo pageInfo) throws ServiceException;
 
 	void save(MultipartFile file, Appendix appendix) throws ServiceException, IOException;
@@ -37,5 +39,7 @@ public interface IAppendixService {
 	void copy(@NotNull Document document, @NotNull Document newDoc) throws ServiceException;
 
 	void copy(@NotNull Appendix appendix,@NotNull Document newDoc) throws ServiceException;
+
+	List<Appendix> find(Document doc, Integer valueOf);
 
 }

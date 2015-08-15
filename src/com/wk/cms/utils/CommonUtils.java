@@ -398,7 +398,7 @@ public class CommonUtils {
 			sb.append(sp+s);
 		}
 		if(sb.length()>0){
-			sb.delete(0, 1);
+			sb.delete(0, sp.length());
 		}
 		return sb.toString();
 	}

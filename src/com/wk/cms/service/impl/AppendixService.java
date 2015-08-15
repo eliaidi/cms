@@ -141,5 +141,10 @@ public class AppendixService implements IAppendixService{
 		newApp.setFile(newFile);
 		appendixDao.save(newApp);
 	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Appendix> find(Document doc, Integer type) {
+		return (List<Appendix>) appendixDao.find(doc.getId(), type, new PageInfo(0,IAppendixService.MAX_FETCH_NUM)).getList();
+	}
 
 }

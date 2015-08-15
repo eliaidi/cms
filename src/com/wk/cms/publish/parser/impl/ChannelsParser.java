@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
+import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.publish.parser.AbstractTagParser;
 import com.wk.cms.publish.server.PublishServer;
 import com.wk.cms.service.IChannelService;
@@ -23,9 +24,10 @@ public class ChannelsParser extends AbstractTagParser {
 	@Autowired
 	private IChannelService channelService;
 	@Override
-	protected String parseInternal(Object obj,Object base, String con)
+	protected String parseInternal(Object obj)
 			throws ServiceException {
-		
+		HtmlTag e = getTag();
+		Object base = ctx.getBase();
 		String name = e.attr("name");
 		String num = e.attr("num");
 		String order = e.attr("order");

@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IExtFieldDao;
 import com.wk.cms.model.ExtField;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Repository
@@ -42,4 +43,35 @@ public class ExtFieldDao implements IExtFieldDao {
 		return pageInfo;
 	}
 
+	@Override
+	public void save(ExtField extField) {
+		hibernateTemplate.saveOrUpdate(extField);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ExtField find(String name, String channelId) {
+		List<ExtField> extFields = (List<ExtField>) hibernateTemplate.find(
+				"from ExtField where name=? and channel.id=?", name, channelId);
+		if (CommonUtils.isEmpty(extFields)) {
+			return null;
+		}
+		return extFields.get(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ExtField findByName(String name) {
+		List<ExtField> extFields = (List<ExtField>) hibernateTemplate.find(
+				"from ExtField where name=? ", name);
+		if (CommonUtils.isEmpty(extFields)) {
+			return null;
+		}
+		return extFields.get(0);
+	}
+
+	@Override
+	public ExtField findById(String id) {
+		return hibernateTemplate.get(ExtField.class, id);
+	}
 }

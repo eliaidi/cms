@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 
+
+import java.util.UUID;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import com.wk.cms.dao.IDocumentDao;
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.FieldValue;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
@@ -59,6 +63,12 @@ public class DocumentService implements IDocumentService {
 			document.setCrTime(new Date());
 			document.setCrUser(null);
 			document.setSort(documentDao.findMaxSortOf(channel)+1);
+			if(!CommonUtils.isEmpty(document.getFieldValues())){
+				for(FieldValue fv : document.getFieldValues()){
+					fv.setId(UUID.randomUUID().toString());
+					fv.setDocument(document);
+				}
+			}
 			
 			documentDao.save(document);
 		}else{

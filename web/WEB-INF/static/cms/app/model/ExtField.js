@@ -1,4 +1,4 @@
-Ext.define('MyCms.model.Site', {
+Ext.define('MyCms.model.ExtField', {
 	extend : 'Ext.data.Model',
 	fields : [ {
 		name : 'id'

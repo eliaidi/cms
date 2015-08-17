@@ -27,6 +27,13 @@ Ext.define('MyCms.view.document.Window',{
     	Ext.apply(me,{
     		items:[me.form,{
     			xtype:'button',
+    			text: '扩展字段',
+    			margin:'5px 10px',
+    			width:237,
+	            handler:'fieldValueMgt',
+	            scope:me
+    		},{
+    			xtype:'button',
     			text: '附件管理',
     			margin:'5px 10px',
     			width:237,
@@ -57,8 +64,21 @@ Ext.define('MyCms.view.document.Window',{
     	}
     	
     	me.on('remoteComplete',me.remoteDocComplete);
+    	me.on('extFieldComplete','doExtFieldComplete',me);
     	
     	this.callParent();
+    },
+    doExtFieldComplete:function(me,fieldWin,rs){
+    	me.fieldValues = rs;
+    	fieldWin.close();
+    },
+    fieldValueMgt:function(){
+    	var me = this;
+    	
+    	Ext.create('MyCms.view.fieldvalue.Window',{
+    		from:me,
+    		channel:me.channel
+    	}).show();
     },
     loadDoc:function(){
     	var me = this;
@@ -105,11 +125,16 @@ Ext.define('MyCms.view.document.Window',{
     	me.appWin.show();
     },
     onOk : function(){
-    	var me = this;
+    	var me = this,pms;
+    	pms = me.document?{id:me.document.get('id')}:(me.channel?{channelId:me.channel.get('id')}:{});
+    	if(me.fieldValues){
+    		pms['fieldValues'] = me.fieldValues;
+    	}
+    	console.log(pms);
     	me.form.getForm().submit({
     		clientValidation: true,
     	    url: document_save,
-    	    params:me.document?{id:me.document.get('id')}:(me.channel?{channelId:me.channel.get('id')}:null),
+    	    params:pms,
             success: 'onSuccess',
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');

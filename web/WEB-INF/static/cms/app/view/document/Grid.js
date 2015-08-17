@@ -64,10 +64,6 @@ Ext.define('MyCms.view.document.Grid', {
 			handler : 'paste',
 			scope : me/*,
 			disabled:!MyCms.Application.clipBoard*/
-		},{
-			text : '扩展字段',
-			handler : 'extFieldMgt',
-			scope : me
 		} ];
 
 		var store = Ext.create('Ext.data.BufferedStore', {
@@ -427,12 +423,5 @@ Ext.define('MyCms.view.document.Grid', {
 				}
 			});
 		}
-	},
-	extFieldMgt:function(){
-		var me = this;
-		
-		Ext.create('MyCms.view.extfield.Window',{
-			from:me
-		}).show();
 	}
 });

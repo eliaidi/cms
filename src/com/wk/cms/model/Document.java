@@ -7,6 +7,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -19,8 +20,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wk.cms.model.annotations.Show;
 import com.wk.cms.model.annotations.ShowArea;
+import com.wk.cms.mvc.json.OneToManyFieldSerializer;
 
 @Entity
 @JsonIgnoreProperties({ "appendixs" })
@@ -46,6 +49,10 @@ public class Document {
 	private Integer status;
 	@OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
 	private Set<Appendix> appendixs;
+	
+	@OneToMany(mappedBy="document" ,cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JsonSerialize(using=OneToManyFieldSerializer.class)
+	private Set<FieldValue> fieldValues;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date writeTime;
@@ -174,6 +181,14 @@ public class Document {
 
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
+	}
+
+	public Set<FieldValue> getFieldValues() {
+		return fieldValues;
+	}
+
+	public void setFieldValues(Set<FieldValue> fieldValues) {
+		this.fieldValues = fieldValues;
 	}
 
 }

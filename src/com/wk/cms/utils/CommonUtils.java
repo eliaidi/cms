@@ -2,13 +2,13 @@ package com.wk.cms.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 
-import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
+import org.hibernate.mapping.OneToMany;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,6 @@ import com.wk.cms.model.Document;
 import com.wk.cms.model.File;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
-import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.parser.NeteaseDocParser;
 import com.wk.cms.utils.parser.RemoteDocParser;
@@ -36,14 +35,6 @@ import com.wk.cms.utils.parser.RemoteDocParser;
 public class CommonUtils {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
-
-	public static boolean isEmpty(List<?> list) {
-		
-		if(list==null||list.size()==0){
-			return true;
-		}
-		return false;
-	}
 
 	public static <T> Set<T> list2Set(List<T> list) {
 		
@@ -415,4 +406,9 @@ public class CommonUtils {
 		}
 		return templates;
 	}
+
+	public static <T> boolean isEmpty(Collection<T> value) {
+		return value==null||value.size()==0;
+	}
+
 }

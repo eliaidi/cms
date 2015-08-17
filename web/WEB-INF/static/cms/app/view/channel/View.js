@@ -68,6 +68,12 @@ Ext.define('MyCms.view.channel.View', {
 				},
 				scope : me
 			},{
+				text : '扩展字段',
+				handler : function() {
+					me.extFieldMgt(record);
+				},
+				scope : me
+			},{
 				text : '复制',
 				handler : function(){
 					me.copy(record);
@@ -276,6 +282,14 @@ Ext.define('MyCms.view.channel.View', {
 				});
 			}
 		});
+	},
+	extFieldMgt:function(r){
+		var me = this;
+		
+		Ext.create('MyCms.view.extfield.Window',{
+			from:me,
+			channel:r
+		}).show();
 	},
 	statics:{
 		ENAME : 'channel'

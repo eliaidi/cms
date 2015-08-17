@@ -32,14 +32,6 @@ Ext.define('MyCms.view.extfield.Grid',{
 		text : "字段名",
 		dataIndex : 'name',
 		flex : 2,
-		sortable : false,
-		renderer:function(v){
-			return MyCms.model.Template.Type[v]||'未知';
-		}
-	},{
-		text : "所属栏目",
-		dataIndex : 'chnlName',
-		flex : 1,
 		sortable : false
 	}, {
 		text : "字段类型",
@@ -67,9 +59,17 @@ Ext.define('MyCms.view.extfield.Grid',{
 		sortable : false
 	} ],
 	initComponent : function() {
-		var me = this,win = me.up('window');
+		var me = this,win = me.from;
 		
-		me.cmpContextItems = [];
+		me.cmpContextItems = [{
+			text : '刷新',
+			handler : 'doRefresh',
+			scope : me
+		},{
+			text : '添加扩展字段',
+			handler : 'addField',
+			scope : me
+		}];
 		var store = Ext.create('Ext.data.BufferedStore', {
 			model : 'MyCms.model.ExtField',
 			pageSize : 20,
@@ -78,7 +78,7 @@ Ext.define('MyCms.view.extfield.Grid',{
 				type : 'ajax',
 				url : extfield_list,
 				extraParams : {
-					channelId:win.from.channel.get('id')
+					channelId:win.channel.get('id')
 				},
 				reader : {
 					rootProperty : 'list',
@@ -121,10 +121,31 @@ Ext.define('MyCms.view.extfield.Grid',{
 			} ]
 		});
 
-//		me.on('containercontextmenu', 'showCmpMenu', me);
+		me.on('containercontextmenu', 'showCmpMenu', me);
 //		me.on('itemcontextmenu', 'showItemMenu', me);
-//		me.on('refresh', 'doRefresh', me);
+		me.on('refresh', 'doRefresh', me);
 		me.callParent();
 		
+	},
+	doRefresh:function(){
+		
+		this.getStore().load();
+	},
+	addField:function(){
+		var me = this;
+		
+		Ext.create('MyCms.view.extfield.AddEdit',{
+			from : me
+		}).show();
+	},
+	showCmpMenu : function(_this, e, eOpts) {
+		var me = this;
+
+		Ext.create('MyCms.view.ux.MyMenu', {
+			items : me.cmpContextItems
+		}).showAt(e.getXY());
+
+		e.stopEvent();
+		e.stopPropagation();
 	}
 });

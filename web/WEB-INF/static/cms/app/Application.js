@@ -13,6 +13,18 @@ Ext.define('MyCms.Application', {
     
     launch: function () {
        
+    	Ext.apply(Ext.form.field.VTypes, {
+    	    int: function(val, field) {
+    	        return /^\d+$/g.test(val);
+    	    },
+    	    intText: '必须是正整数！',
+    	    intMask: '干啥的',
+    	    float: function(val, field) {
+    	        return !isNaN(val);
+    	    },
+    	    floatText: '必须是数字！',
+    	    floatMask: '干啥的'
+    	});
     },
     statics:{
     	copy:function(record){

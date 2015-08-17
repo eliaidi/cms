@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -16,6 +17,8 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wk.cms.mvc.json.OneToManyFieldSerializer;
 
 @Entity
 @JsonIgnoreProperties({ "children", "documents" })
@@ -42,7 +45,8 @@ public class Channel {
 	private Set<Channel> children;
 	@OneToMany(mappedBy = "channel", cascade = { CascadeType.REMOVE })
 	private Set<Document> documents;
-	@OneToMany(mappedBy = "channel", cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "channel", cascade = { CascadeType.ALL },fetch=FetchType.EAGER)
+	@JsonSerialize(using=OneToManyFieldSerializer.class)
 	private Set<ExtField> extFields;
 
 	@ManyToOne
@@ -176,4 +180,13 @@ public class Channel {
 		this.site = site;
 	}
 
+	public Set<ExtField> getExtFields() {
+		return extFields;
+	}
+
+	public void setExtFields(Set<ExtField> extFields) {
+		this.extFields = extFields;
+	}
+
+	
 }

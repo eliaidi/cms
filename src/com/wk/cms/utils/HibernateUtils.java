@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import org.hibernate.criterion.Projection;
@@ -35,7 +36,7 @@ public class HibernateUtils {
 		Field[] fields = class1.getDeclaredFields();
 
 		for (Field field : fields) {
-			if (field.getAnnotation(OneToMany.class) != null) {
+			if (field.getAnnotation(OneToMany.class) != null&&field.getAnnotation(OneToMany.class).fetch()!=FetchType.EAGER) {
 				continue;
 			}
 			Show show = field.getAnnotation(Show.class);

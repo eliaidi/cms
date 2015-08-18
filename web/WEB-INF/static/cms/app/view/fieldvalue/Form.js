@@ -25,11 +25,10 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 			if(extField.type==4){
 				fObj = {
 						xtype:'datefield',
-						format:'Y-m-d H:i:s',
+						format:'Y-m-d',
 						fieldLabel: extField.label,
 				        name: extField.name,
-				        allowBlank: true,
-				        _eId : extField.id
+				        allowBlank: true
 				};
 				
 			}else if(extField.type==5){
@@ -38,8 +37,7 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 						fieldLabel: extField.label,
 				        name: extField.name,
 				        height:118,
-				        allowBlank: true,
-				        _eId : extField.id
+				        allowBlank: true
 				};
 				
 			}else{
@@ -48,8 +46,7 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 						fieldLabel: extField.label,
 				        name: extField.name,
 				        vtype:getVType(extField.type),
-				        allowBlank: true,
-				        _eId : extField.id
+				        allowBlank: true
 				};
 			}
 			
@@ -61,7 +58,7 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 			
 			switch (type) {
 			case 1: return "int";
-			case 2: return "alphanum";
+			case 2: return null;
 			case 3: return "float";
 			case 4: return null;
 			case 5: return null;

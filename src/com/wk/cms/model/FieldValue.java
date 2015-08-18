@@ -10,39 +10,54 @@ public class FieldValue {
 
 	@Id
 	private String id;
-	
+
 	@ManyToOne
 	private Document document;
-	
+
 	@ManyToOne
 	private ExtField extField;
-	
-	@Column(length=2000)
+
+	@Column(length = 2000)
 	private String value;
+
+	public FieldValue() {
+	}
+
+	public FieldValue(String id, Document document2) {
+		this.id = id;
+		this.document = document2;
+	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public Document getDocument() {
 		return document;
 	}
+
 	public void setDocument(Document document) {
 		this.document = document;
 	}
+
 	public ExtField getExtField() {
 		return extField;
 	}
+
 	public void setExtField(ExtField extField) {
 		this.extField = extField;
 	}
+
 	public String getValue() {
 		return value;
 	}
+
 	public void setValue(String value) {
 		this.value = value;
 	}
 
-	
 }

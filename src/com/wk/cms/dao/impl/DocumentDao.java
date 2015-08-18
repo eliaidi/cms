@@ -12,6 +12,9 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
+import org.hibernate.transform.AliasToBeanResultTransformer;
+import org.hibernate.transform.ResultTransformer;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -38,26 +41,28 @@ public class DocumentDao implements IDocumentDao {
 
 		Session s = hibernateTemplate.getSessionFactory().getCurrentSession();
 
-		Criteria c = s.createCriteria(Document.class);
-		c.add(Restrictions.eq("channel.id", channelId));
-
+		StringBuilder hql = new StringBuilder(
+				" from Document where channel.id=?");
 		if (StringUtils.hasLength(query)) {
-			c.add(Restrictions.or(
-					Restrictions.like("title", query, MatchMode.ANYWHERE),
-					Restrictions.like("abst", query, MatchMode.ANYWHERE),
-					Restrictions.like("content", query, MatchMode.ANYWHERE)));
+			hql.append(" and ( title like ? or abst like ? or content like ?)");
 		}
-		Long count = (Long) c.setProjection(Projections.rowCount())
-				.uniqueResult();
+		hql.append(" order by sort desc");
+		Query cq = s.createQuery("select count(*) " + hql.toString())
+				.setParameter(0, channelId);
+		Query lq = s.createQuery(hql.toString()).setParameter(0, channelId);
+		if (StringUtils.hasLength(query)) {
+			cq.setParameter(1, "%"+query+"%").setParameter(2, "%"+query+"%")
+					.setParameter(3, "%"+query+"%");
+			lq.setParameter(1, "%"+query+"%").setParameter(2, "%"+query+"%")
+					.setParameter(3, "%"+query+"%");
+		}
 
-		List<Document> documents = c
-				.addOrder(Order.desc("sort"))
-				.setProjection(
-						HibernateUtils.getProjections(Document.class,
-								ShowArea.LIST))
-				.setResultTransformer(Transformers.aliasToBean(Document.class))
-				.setFirstResult(pageInfo.getStart())
-				.setMaxResults(pageInfo.getLimit()).list();
+		Long count = (Long) cq.uniqueResult();
+		List<Document> documents = lq.list();
+		// List<Document> documents = s.createQuery("from Document")
+		// .setFirstResult(pageInfo.getStart())
+		// .setMaxResults(pageInfo.getLimit())
+		// .list();
 
 		return new PageInfo(documents, count);
 	}
@@ -121,9 +126,10 @@ public class DocumentDao implements IDocumentDao {
 	@Override
 	public List<Document> find(String hql, Object[] params, PageInfo pageInfo) {
 
-		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql);
-		if(!CommonUtils.isEmpty(params)){
-			for(int i=0;i<params.length;i++){
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createQuery(hql);
+		if (!CommonUtils.isEmpty(params)) {
+			for (int i = 0; i < params.length; i++) {
 				q.setParameter(i, params[i]);
 			}
 		}
@@ -139,26 +145,27 @@ public class DocumentDao implements IDocumentDao {
 		String num = params.get("num");
 		String startpos = params.get("startpos");
 		String hql = "from Document where channel=?";
-		if(StringUtils.hasLength(currChnl.getSite().getCanPubSta())){
-			hql += " and status in ("+currChnl.getSite().getCanPubSta()+")";
-		}else{
+		if (StringUtils.hasLength(currChnl.getSite().getCanPubSta())) {
+			hql += " and status in (" + currChnl.getSite().getCanPubSta() + ")";
+		} else {
 			hql += " and status <> 5";
 		}
-		
-		if(StringUtils.hasLength(where)){
-			hql += " and "+where;
+
+		if (StringUtils.hasLength(where)) {
+			hql += " and " + where;
 		}
-		if(StringUtils.hasLength(order)){
-			hql += " order by "+order;
+		if (StringUtils.hasLength(order)) {
+			hql += " order by " + order;
 		}
-		
-		Query q = hibernateTemplate.getSessionFactory().getCurrentSession().createQuery(hql);
+
+		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
+				.createQuery(hql);
 		q.setParameter(0, currChnl);
-		
-		if(StringUtils.hasLength(startpos)){
+
+		if (StringUtils.hasLength(startpos)) {
 			q.setFirstResult(Integer.parseInt(startpos));
 		}
-		if(StringUtils.hasLength(num)){
+		if (StringUtils.hasLength(num)) {
 			q.setMaxResults(Integer.parseInt(num));
 		}
 		return q.list();
@@ -167,34 +174,39 @@ public class DocumentDao implements IDocumentDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Integer findMaxSortOf(Channel channel) {
-		
-		List<Object> list = (List<Object>) hibernateTemplate.find("select max(sort) from Document where channel=?", channel);
-		if(CommonUtils.isEmpty(list)){
+
+		List<Object> list = (List<Object>) hibernateTemplate.find(
+				"select max(sort) from Document where channel=?", channel);
+		if (CommonUtils.isEmpty(list)) {
 			return 0;
 		}
-		return list.get(0)==null?0:Integer.parseInt(list.get(0).toString());
+		return list.get(0) == null ? 0 : Integer.parseInt(list.get(0)
+				.toString());
 	}
 
 	@Override
 	public void move(String currId, String targetId) {
-		
+
 		Document currDoc = findById(currId);
 		Document targetDoc = findById(targetId);
-		
+
 		move(currDoc, targetDoc);
 	}
 
 	@Override
 	public void move(Document currDoc, Document targetDoc) {
-		
-		if(!currDoc.getChannel().equals(targetDoc.getChannel())){
+
+		if (!currDoc.getChannel().equals(targetDoc.getChannel())) {
 			currDoc.setChannel(targetDoc.getChannel());
 			currDoc.setSite(targetDoc.getSite());
 		}
 		currDoc.setSort(targetDoc.getSort());
-		
-		hibernateTemplate.bulkUpdate("update Document set sort=sort-1 where channel.id=? and sort<=?", targetDoc.getChannel().getId(),targetDoc.getSort());
-		
+
+		hibernateTemplate
+				.bulkUpdate(
+						"update Document set sort=sort-1 where channel.id=? and sort<=?",
+						targetDoc.getChannel().getId(), targetDoc.getSort());
+
 		hibernateTemplate.update(currDoc);
 	}
 

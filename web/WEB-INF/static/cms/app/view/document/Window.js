@@ -69,7 +69,18 @@ Ext.define('MyCms.view.document.Window',{
     	this.callParent();
     },
     doExtFieldComplete:function(me,fieldWin,rs){
-    	me.fieldValues = rs;
+    	var hfs = [];
+    	for(var i=0;i<rs.length;i++){
+    		var r = rs[i];
+    		for(var k in r){
+    			hfs.push({
+    				xtype:'hidden',
+			        name: 'fieldValues['+i+'].'+k,
+			        value:r[k]
+    			})
+    		}
+    	}
+    	me.form.add(hfs);
     	fieldWin.close();
     },
     fieldValueMgt:function(){
@@ -77,7 +88,8 @@ Ext.define('MyCms.view.document.Window',{
     	
     	Ext.create('MyCms.view.fieldvalue.Window',{
     		from:me,
-    		channel:me.channel
+    		channel:me.channel,
+    		document:me.document
     	}).show();
     },
     loadDoc:function(){
@@ -127,10 +139,6 @@ Ext.define('MyCms.view.document.Window',{
     onOk : function(){
     	var me = this,pms;
     	pms = me.document?{id:me.document.get('id')}:(me.channel?{channelId:me.channel.get('id')}:{});
-    	if(me.fieldValues){
-    		pms['fieldValues'] = me.fieldValues;
-    	}
-    	console.log(pms);
     	me.form.getForm().submit({
     		clientValidation: true,
     	    url: document_save,

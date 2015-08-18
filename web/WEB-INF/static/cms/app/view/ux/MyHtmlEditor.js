@@ -43,12 +43,19 @@ Ext.define('MyCms.view.ux.MyHtmlEditor',{
     	win.show();
     },
     onOk:function(_this){
-    	var me = this;
-    	
-    	var form = _this.up('window').down('form').getForm();
-    	if(form.isValid()){
-    		me.insertAtCursor('<img src="'+form.findField('url').getValue()+'" width="'+form.findField('width').getValue()+'" height="'+form.findField('height').getValue()+'" />');
-    		_this.up('window').close();
+//    	var me = this;
+//    	
+//    	var form = _this.up('window').down('form').getForm();
+//    	if(form.isValid()){
+//    		me.insertAtCursor('<img src="'+form.findField('url').getValue()+'" width="'+form.findField('width').getValue()+'" height="'+form.findField('height').getValue()+'" />');
+//    		_this.up('window').close();
+//    	}
+    	var me = this,window = _this.up('window'),tab = window.down('tabpanel'),currForm = tab.getActiveTab();
+    	console.log(currForm);
+    	if(currForm.title == '添加远程图片'){
+    		
+    	}else{
+    		
     	}
     },
     onCancel:function(_this){
@@ -57,23 +64,43 @@ Ext.define('MyCms.view.ux.MyHtmlEditor',{
     createUploadPicPanel:function(){
     	var me = this;
     	
-    	return Ext.create('Ext.form.Panel',{
-    		layout:'anchor',
-    		margin:'10px 10px',
-    		defaults:{
-    			xtype:'textfield',
-    			allowBlank:false,
-    			anchor:'100%'
-    		},
+    	return Ext.create('Ext.tab.Panel',{
     		items:[{
-    			fieldLabel:'图片地址',
-    			name:'url'
+    			title:'添加远程图片',
+    			xtype:'form',
+    			layout:'anchor',
+        		margin:'10px 10px',
+        		defaults:{
+        			xtype:'textfield',
+        			allowBlank:false,
+        			anchor:'100%'
+        		},
+        		items:[{
+        			fieldLabel:'图片地址',
+        			name:'url'
+        		},{
+        			fieldLabel:'图片宽度',
+        			name:'width'
+        		},{
+        			fieldLabel:'图片高度',
+        			name:'height'
+        		}]
     		},{
-    			fieldLabel:'图片宽度',
-    			name:'width'
-    		},{
-    			fieldLabel:'图片高度',
-    			name:'height'
+    			title:'上传本地图片',
+    			xtype:'form',
+    			layout:'anchor',
+        		margin:'10px 10px',
+        		defaults:{
+        			xtype:'textfield',
+        			allowBlank:false,
+        			anchor:'100%'
+        		},
+        		items:[{
+        			xtype: 'filefield',
+    		        name: 'file',
+    		        fieldLabel: '文件',
+    		        buttonText: '选择文件'
+        		}]
     		}]
     	});
     }

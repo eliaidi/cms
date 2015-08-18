@@ -15,6 +15,10 @@ Ext.define('MyCms.view.extfield.Window',{
 			layout:'fit',
 			items:[grid]
 		});
+		me.on('close','doAfterClose',me);
 		me.callParent();
+	},
+	doAfterClose:function(){
+		this.from.fireEvent('refresh',this.from,this);
 	}
 });

@@ -1,6 +1,8 @@
 package com.wk.cms.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -45,14 +47,16 @@ public class Document {
 	@Show(ShowArea.Detail)
 	private String content;
 	private String author;
-	private Integer sort;
+	private Integer sort = 0;
 	private Integer status;
 	@OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
 	private Set<Appendix> appendixs;
-	
-	@OneToMany(mappedBy="document" ,cascade=CascadeType.ALL,fetch=FetchType.EAGER)
-	@JsonSerialize(using=OneToManyFieldSerializer.class)
-	private Set<FieldValue> fieldValues;
+
+	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonSerialize(using = OneToManyFieldSerializer.class)
+	// i use type<Set> before,but type<Set> performed badly in SpringMvc arguments resolver,so i changed to type<List>
+	// in fact,type<Set>'s meaning is more closer to what i want to express, because type<List>'s elements may be repeatable ,but type<Set> will never be
+	private List<FieldValue> fieldValues = new ArrayList<FieldValue>();
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date writeTime;
@@ -85,7 +89,6 @@ public class Document {
 	public void setId(String id) {
 		this.id = id;
 	}
-
 
 	public Integer getSort() {
 		return sort;
@@ -183,11 +186,11 @@ public class Document {
 		this.crTime = crTime;
 	}
 
-	public Set<FieldValue> getFieldValues() {
+	public List<FieldValue> getFieldValues() {
 		return fieldValues;
 	}
 
-	public void setFieldValues(Set<FieldValue> fieldValues) {
+	public void setFieldValues(List<FieldValue> fieldValues) {
 		this.fieldValues = fieldValues;
 	}
 

@@ -95,7 +95,9 @@ Ext.define('MyCms.view.document.Window',{
     loadDoc:function(){
     	var me = this;
     	
-    	Ext.Ajax.request({
+    	me.form.loadRecord(me.document);
+    	
+    	/*Ext.Ajax.request({
 			url : document_detail,
 			params : {
 				docId : me.document.get('id')
@@ -113,7 +115,7 @@ Ext.define('MyCms.view.document.Window',{
 				console.log('server-side failure with status code '
 						+ response.status);
 			}
-		});
+		});*/
     },
     remoteDocComplete:function(me,doc){
     	me.form.getForm().loadRecord(new MyCms.model.Document(doc));

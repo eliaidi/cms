@@ -31,6 +31,12 @@ public class DocumentController {
 
 	@Autowired
 	private IAppendixService appendixService;
+	
+	@RequestMapping("/fckeditor")
+	public String fckeditor(){
+		
+		return "document/editor/fckeditor";
+	}
 
 	@RequestMapping("/view/{docId}")
 	public ModelAndView view(@PathVariable("docId") String documentId) {

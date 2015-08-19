@@ -1,17 +1,10 @@
 Ext.define('MyCms.view.document.Form',{
-	extend : 'Ext.form.Panel',
+	extend : 'MyCms.view.ux.MyForm',
 	requires:['MyCms.view.ux.MyHtmlEditor'],
 	bodyPadding: 5,
 	initComponent:function(){
 		
 		var me = this;
-		
-		var htmleditor = Ext.create('MyCms.view.ux.MyHtmlEditor',{
-			fieldLabel: '内容',
-	        name: 'content',
-	        height:350,
-	        allowBlank: false
-		});
 		
 		Ext.apply(me,{
 			layout: 'anchor',
@@ -45,12 +38,18 @@ Ext.define('MyCms.view.document.Form',{
 			        allowBlank: true
 				}]
 			},{
-				xtype: 'htmleditor',
+				xtype: 'fckeditor',
 				fieldLabel: '摘要',
 		        name: 'abst',
-		        height:118,
+		        height:150,
 		        allowBlank: true
-			},htmleditor,{
+			},{
+				xtype:'fckeditor',
+				fieldLabel: '内容',
+		        name: 'content',
+		        height:300,
+		        allowBlank: false
+			},{
 				xtype: 'hidden',
 		        name: 'appIds',
 		        height:350,

@@ -36,10 +36,10 @@ CKEDITOR.editorConfig = function( config ) {
 	// Simplify the dialog windows.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 	
-	config.filebrowserImageBrowseUrl = '/editor/ckfinder/ckfinder.html?Type=Images';
+//	config.filebrowserImageBrowseUrl = RootPath+'/editor/ckfinder/ckfinder.html?Type=Images';
 //	config.filebrowserFlashBrowseUrl = '/editor/ckfinder/ckfinder.html?Type=Flash';
 //	config.filebrowserUploadUrl = '/editor/ckfinder/core/connector/aspx/connector.aspx?command=QuickUpload&type=Files';
-	config.filebrowserImageUploadUrl = '/editor/ckfinder/core/connector/aspx/connector.aspx?command=QuickUpload&type=Images';
+	config.filebrowserImageUploadUrl = RootPath+'/file/upload?command=QuickUpload&type=Images';
 //	config.filebrowserFlashUploadUrl = '/editor/ckfinder/core/connector/aspx/connector.aspx?command=QuickUpload&type=Flash';
 	config.filebrowserWindowWidth = '800';  //“浏览服务器”弹出框的size设置
 	config.filebrowserWindowHeight = '500';

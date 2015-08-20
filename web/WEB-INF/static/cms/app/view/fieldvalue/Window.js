@@ -32,7 +32,7 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 		me.callParent();
 	},
 	initDate:function(){
-		var me = this,form = me.form.getForm(),fieldValues = me.document.get('fieldValues');
+		var me = this,form = me.form,fieldValues = me.document.get('fieldValues');
 		for(var i=0;i<fieldValues.length;i++){
 			var fieldValue = fieldValues[i],formField = form.findField(fieldValue.extField.name);
 			formField.setValue(fieldValue.value);
@@ -41,7 +41,7 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 		
 	},
 	onOk:function(){
-		var me = this,form = me.form.getForm(),fields = me.channel.get('extFields'),rs = [];
+		var me = this,form = me.form,fields = me.channel.get('extFields'),rs = [];
 		for(var i=0;i<fields.length;i++){
 			var field = fields[i],f = form.findField(field.name);
 			rs.push({

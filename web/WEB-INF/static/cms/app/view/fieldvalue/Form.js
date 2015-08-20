@@ -1,5 +1,5 @@
 Ext.define('MyCms.view.fieldvalue.Form',{
-	extend:'Ext.form.Panel',
+	extend:'MyCms.view.ux.MyForm',
 	bodyPadding: 5,
 	layout: 'anchor',
     defaults: {
@@ -19,6 +19,9 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 	getFields:function(){
 		var me = this,extFields = me.from.channel.get('extFields'),fields = [];
 		
+		extFields.sort(function(a,b){
+			return b.crTime - a.crTime;
+		});
 		for(var i=0;i<extFields.length;i++){
 			var extField = extFields[i],fObj;
 			
@@ -33,10 +36,10 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 				
 			}else if(extField.type==5){
 				fObj = {
-						xtype: 'htmleditor',
+						xtype: 'fckeditor',
 						fieldLabel: extField.label,
 				        name: extField.name,
-				        height:118,
+				        height:150,
 				        allowBlank: true
 				};
 				

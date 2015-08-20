@@ -77,15 +77,17 @@
 				</c:forEach>
 			</div>
 		</div>
-		<!-- <div class="row">
-			<div class="col-md-4">.col-md-4</div>
-			<div class="col-md-4">.col-md-4</div>
-			<div class="col-md-4">.col-md-4</div>
-		</div>
 		<div class="row">
-			<div class="col-md-6">.col-md-6</div>
-			<div class="col-md-6">.col-md-6</div>
-		</div> -->
+			<div class="col-md-3 text-right">
+				<strong>扩展字段：</strong>
+			</div>
+			<div class="col-md-9 text-left">
+				<c:forEach items="${obj.fieldValues }" var="fv"  >
+					<p><b>${fv.extField.label}:</b> ${fv.value} </p>
+
+				</c:forEach>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

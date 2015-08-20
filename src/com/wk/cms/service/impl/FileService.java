@@ -2,17 +2,20 @@ package com.wk.cms.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.dao.IFileDao;
 import com.wk.cms.model.File;
 import com.wk.cms.service.IFileService;
+import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.FileUtils;
 
@@ -79,6 +82,16 @@ public class FileService implements IFileService {
 			FileUtils.writeFile(f, dir);
 		}
 		return dir;
+	}
+	@Override
+	public File upload(MultipartFile file, String type) throws ServiceException {
+		try {
+			File f = new File(null, file, null);
+			fileDao.save(f);
+			return f;
+		} catch (FileParseException e) {
+			throw new ServiceException("上传文件失败！", e);
+		}
 	}
 
 }

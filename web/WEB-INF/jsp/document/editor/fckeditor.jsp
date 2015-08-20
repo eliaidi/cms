@@ -11,7 +11,7 @@
 <head>
 <base href="<%=basePath%>">
 
-<title><%=request.getParameter("label") %></title>
+<title>富文本编辑器</title>
 
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
@@ -21,25 +21,25 @@
 <!--
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
+<script type="text/javascript">
+var RootPath = '<%=request.getContextPath()%>';
+</script>
 <script type="text/javascript"
 	src="<%=path%>/static/cms/ckeditor/ckeditor.js"></script>
 </head>
 
 <body>
 
-	<textarea name="editor1" id="editor1" rows="10" cols="80">
-                This is my textarea to be replaced with CKEditor.
+	<form action="" name="form1">
+		<textarea name="editor1" id="editor1" rows="10" cols="80">
+                
             </textarea>
-	<script>
+	</form>
 
-		
+	<script>
 		
 		window.onload = function(e){
 			
-			var label = '<%=request.getParameter("label")==null?"":new String(request.getParameter("label").getBytes("ISO-8859-1"),"UTF-8")%>';
-			if(label){
-				document.getElementById("editor1").value = '请输入'+label+'！';
-			}
 			CKEDITOR.replace('editor1',{
 				height:'<%=request.getParameter("height")%>'
 			});

@@ -83,7 +83,7 @@ public class DocumentService implements IDocumentService {
 			}
 
 			BeanUtils.copyProperties(document, persistDoc, new String[] { "id",
-					"channel", "site", "fieldValues", "crUser", "crTime" });
+					"channel", "site", "fieldValues", "crUser", "crTime","sort" });
 			for (FieldValue fv : document.getFieldValues()) {
 				FieldValue pFv = CommonUtils.findFromList(
 						persistDoc.getFieldValues(), new String[] { "id" },

@@ -74,4 +74,16 @@ public class ExtFieldDao implements IExtFieldDao {
 	public ExtField findById(String id) {
 		return hibernateTemplate.get(ExtField.class, id);
 	}
+
+
+	@Override
+	public void delete(ExtField extField) {
+		delete(extField.getId());
+	}
+
+	@Override
+	public void delete(String id) {
+		hibernateTemplate.bulkUpdate("delete from FieldValue where extField.id=?", id);
+		hibernateTemplate.bulkUpdate("delete from ExtField where id=?", id);
+	}
 }

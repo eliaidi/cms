@@ -42,7 +42,7 @@ public class FieldValue {
 
 	public void setDocument(Document document) {
 		this.document = document;
-	}
+	} 
 
 	public ExtField getExtField() {
 		return extField;

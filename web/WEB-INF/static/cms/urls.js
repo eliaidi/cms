@@ -42,3 +42,4 @@ var tempfile_delete = RootPath+'/template/file/delete';
 
 var extfield_list = RootPath+'/extfield/list';
 var extfield_save = RootPath+'/extfield/save';
+var extfield_delete = RootPath+'/extfield/delete';

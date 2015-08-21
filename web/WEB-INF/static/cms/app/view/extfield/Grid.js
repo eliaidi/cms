@@ -122,10 +122,66 @@ Ext.define('MyCms.view.extfield.Grid',{
 		});
 
 		me.on('containercontextmenu', 'showCmpMenu', me);
-//		me.on('itemcontextmenu', 'showItemMenu', me);
+		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'doRefresh', me);
 		me.callParent();
 		
+	},
+	modifyDoc:function(r){
+		Ext.create('MyCms.view.extfield.AddEdit',{
+			from:this,
+			extField:r
+		}).show();
+	},
+	del:function(r){
+		var me = this,rs = me.getSelectionModel().getSelection(),ids = [];
+		for(var i=0;i<rs.length;i++){
+			ids.push(rs[i].get('id'));
+		}
+		Ext.Msg.confirm('警告','您确认删除该项吗？',function(m){
+			if(m=='yes'){
+				Ext.Ajax.request({
+					url : extfield_delete,
+					params : {
+						ids : ids.join(',')
+					},
+					success : function(response, opts) {
+						var obj = Ext.decode(response.responseText);
+						if (!obj.success) {
+							Ext.Msg.alert('错误', obj.message);
+							return;
+						}
+						me.fireEvent('refresh', me);
+					},
+					failure : function(response, opts) {
+						console.log('server-side failure with status code '
+								+ response.status);
+					}
+				});
+			}
+		});
+	},
+	showItemMenu : function(_this, record, item, index, e, eOpts) {
+		var me = this;
+
+		Ext.create('MyCms.view.ux.MyMenu', {
+			items : [ {
+				text : '修改',
+				handler : function() {
+					me.modifyDoc(record);
+				},
+				scope : me
+			},{
+				text : '删除',
+				handler : function() {
+					me.del(record);
+				},
+				scope : me
+			} ]
+		}).showAt(e.getXY());
+
+		e.stopEvent();
+		e.stopPropagation();
 	},
 	doRefresh:function(){
 		

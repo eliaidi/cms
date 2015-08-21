@@ -20,4 +20,6 @@ public interface IExtFieldService {
 
 	ExtField findById(@NotNull String id);
 
+	void delete(String[] ids);
+
 }

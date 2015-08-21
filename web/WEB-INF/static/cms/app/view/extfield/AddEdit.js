@@ -23,7 +23,10 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 		});
 		
 		if(me.extField){
+			form.getForm().loadRecord(me.extField);
 			form.getForm().findField('name').setReadOnly(true);
+			form.getForm().findField('type').setReadOnly(true);
+			form.getForm().findField('length').setReadOnly(true);
 		}
 		
 		me.callParent();
@@ -51,7 +54,10 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 		var me = this,form = me.down('form');
 		form.getForm().reset();
 		if(me.extField){
+			form.getForm().loadRecord(me.extField);
 			form.getForm().findField('name').setReadOnly(true);
+			form.getForm().findField('type').setReadOnly(true);
+			form.getForm().findField('length').setReadOnly(true);
 		}
 	}
 });

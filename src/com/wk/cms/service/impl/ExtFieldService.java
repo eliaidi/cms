@@ -1,5 +1,6 @@
 package com.wk.cms.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.UUID;
 
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IExtFieldDao;
+import com.wk.cms.model.Document;
 import com.wk.cms.model.ExtField;
 import com.wk.cms.service.IExtFieldService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.service.exception.ValidationException;
 import com.wk.cms.utils.PageInfo;
 
 @Service
@@ -26,6 +29,7 @@ public class ExtFieldService implements IExtFieldService {
 	@Override
 	public ExtField save(ExtField extField) throws ServiceException {
 		
+		validateField(extField.getName());
 		if(!StringUtils.hasLength(extField.getId())){
 			
 			if(find(extField.getName(), extField.getChannel().getId())!=null){
@@ -45,6 +49,15 @@ public class ExtFieldService implements IExtFieldService {
 			return persistEf;
 		}
 	}
+	private void validateField(String name) throws ValidationException {
+		
+		Field[] fields = Document.class.getDeclaredFields();
+		for(Field f : fields){
+			if(f.getName().equals(name)){
+				throw new ValidationException("字段【"+name+"】是内置字段，不允许复用，请重新输入字段名！");
+			}
+		}
+	}
 	@Override
 	public ExtField findById(String id) {
 		return extFieldDao.findById(id);
@@ -56,6 +69,13 @@ public class ExtFieldService implements IExtFieldService {
 	@Override
 	public ExtField find(String name, String channelId) {
 		return extFieldDao.find(name, channelId);
+	}
+	@Override
+	public void delete(String[] ids) {
+		
+		for(String id : ids){
+			extFieldDao.delete(id);
+		}
 	}
 
 }

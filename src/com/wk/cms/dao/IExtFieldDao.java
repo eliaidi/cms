@@ -15,4 +15,8 @@ public interface IExtFieldDao {
 
 	ExtField findById(String id);
 
+	void delete(ExtField extField);
+
+	void delete(String id);
+
 }

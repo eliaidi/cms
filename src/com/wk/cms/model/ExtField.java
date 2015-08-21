@@ -1,13 +1,21 @@
 package com.wk.cms.model;
 
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
+@JsonIgnoreProperties({ "fieldValues" })
 public class ExtField {
 
 	public class Type {
@@ -24,13 +32,20 @@ public class ExtField {
 	private String id;
 	@ManyToOne
 	private Channel channel;
+	@NotEmpty
+	@Length(min = 2, max = 10)
 	private String label;
+	@NotEmpty
+	@Length(min = 2, max = 10)
 	private String name;
-	private Integer type;
+	private Integer type = Type.STRING;
 	private Integer length;
 	@ManyToOne
 	private User crUser;
 	private Date crTime;
+
+	@OneToMany(mappedBy = "extField")
+	private Set<FieldValue> fieldValues;
 
 	public String getId() {
 		return id;
@@ -64,7 +79,6 @@ public class ExtField {
 		this.name = name;
 	}
 
-	
 	public Integer getType() {
 		return type;
 	}
@@ -95,6 +109,14 @@ public class ExtField {
 
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
+	}
+
+	public Set<FieldValue> getFieldValues() {
+		return fieldValues;
+	}
+
+	public void setFieldValues(Set<FieldValue> fieldValues) {
+		this.fieldValues = fieldValues;
 	}
 
 }

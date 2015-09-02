@@ -1,6 +1,6 @@
-Ext.define('MyCms.view.extfield.Grid',{
+Ext.define('MyCms.view.field.Grid',{
 	extend : 'Ext.grid.Panel',
-	uses : [ 'MyCms.model.ExtField',
+	uses : [ 'MyCms.model.Field',
 			 ],
 	border : true,
 	loadMask : true,
@@ -24,18 +24,13 @@ Ext.define('MyCms.view.extfield.Grid',{
 		sortable : false
 	}, {
 		tdCls : 'x-grid-cell-topic',
-		text : "名称",
+		text : "字段名称",
 		dataIndex : 'name',
-		flex : 2,
-		sortable : false
-	},{
-		text : "字段名",
-		dataIndex : 'fieldName',
 		flex : 2,
 		sortable : false
 	}, {
 		text : "字段类型",
-		dataIndex : 'fieldType',
+		dataIndex : 'type',
 		flex : 1,
 		sortable : false,
 		renderer:function(v){
@@ -43,19 +38,18 @@ Ext.define('MyCms.view.extfield.Grid',{
 		}
 	},{
 		text : "字段长度",
-		dataIndex : 'fieldLength',
+		dataIndex : 'length',
 		flex : 1,
 		sortable : false
-	}, {
+	},{
 		text : "创建人",
 		dataIndex : 'crUser',
 		flex : 1,
 		sortable : false
-	}, {
+	},{
 		text : "创建时间",
 		dataIndex : 'crTime',
-		align : 'center',
-		flex : 2,
+		flex : 1,
 		sortable : false
 	} ],
 	initComponent : function() {
@@ -66,23 +60,19 @@ Ext.define('MyCms.view.extfield.Grid',{
 			handler : 'doRefresh',
 			scope : me
 		},{
-			text : '添加扩展字段',
+			text : '添加自定义字段',
 			handler : 'addField',
-			scope : me
-		},{
-			text : '自定义字段类型',
-			handler : 'customField',
 			scope : me
 		}];
 		var store = Ext.create('Ext.data.BufferedStore', {
-			model : 'MyCms.model.ExtField',
+			model : 'MyCms.model.Field',
 			pageSize : 20,
 			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
-				url : extfield_list,
+				url : field_list,
 				extraParams : {
-					channelId:win.channel.get('id')
+					siteId : win.site.get('id')
 				},
 				reader : {
 					rootProperty : 'list',
@@ -131,17 +121,11 @@ Ext.define('MyCms.view.extfield.Grid',{
 		me.callParent();
 		
 	},
-	customField:function(){
-		
-		Ext.create('MyCms.view.field.Window',{
-			from:this,
-			site:new MyCms.model.Site(this.from.channel.get('site'))
-		});
-	},
 	modifyDoc:function(r){
-		Ext.create('MyCms.view.extfield.AddEdit',{
+		Ext.create('MyCms.view.field.AddEdit',{
 			from:this,
-			extField:r
+			site:this.from.site,
+			field:r
 		}).show();
 	},
 	del:function(r){
@@ -152,7 +136,7 @@ Ext.define('MyCms.view.extfield.Grid',{
 		Ext.Msg.confirm('警告','您确认删除该项吗？',function(m){
 			if(m=='yes'){
 				Ext.Ajax.request({
-					url : extfield_delete,
+					url : field_delete,
 					params : {
 						ids : ids.join(',')
 					},
@@ -201,8 +185,9 @@ Ext.define('MyCms.view.extfield.Grid',{
 	addField:function(){
 		var me = this;
 		
-		Ext.create('MyCms.view.extfield.AddEdit',{
-			from : me
+		Ext.create('MyCms.view.field.AddEdit',{
+			from : me,
+			site : me.from.site
 		}).show();
 	},
 	showCmpMenu : function(_this, e, eOpts) {

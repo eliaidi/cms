@@ -72,6 +72,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 	me.tempMgt(record);
                 },
                 scope:me
+            },{
+            	text: '字段管理',
+                handler:function(){
+                	me.fieldMgt(record);
+                },
+                scope:me
             }]
     	}).showAt(e.getXY());
     	
@@ -258,6 +264,12 @@ Ext.define('MyCms.view.desktop.Desktop', {
 	    if (win) {
 	        me.desktop.restoreWindow(win);
 	    }
+    },
+    fieldMgt:function(r){
+    	
+    	Ext.create('MyCms.view.field.Window',{
+    		site : r
+    	}).show();
     }
     
 });

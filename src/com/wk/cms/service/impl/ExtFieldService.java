@@ -35,6 +35,10 @@ public class ExtFieldService implements IExtFieldService {
 			if(find(extField.getName(), extField.getChannel().getId())!=null){
 				throw new ServiceException("栏目【ID:"+extField.getChannel().getId()+"】下已经存在名称为【NAME:"+extField.getName()+"】的扩展字段！");
 			}
+			extField.getField().setId(UUID.randomUUID().toString());
+			extField.getField().setCrTime(new Date());
+			extField.getField().setCrUser(null);
+			extField.getField().setExtField(extField);
 			
 			extField.setId(UUID.randomUUID().toString());
 			extField.setCrTime(new Date());

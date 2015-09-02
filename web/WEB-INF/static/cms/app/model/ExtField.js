@@ -5,13 +5,34 @@ Ext.define('MyCms.model.ExtField', {
 	}, {
 		name : 'channel'
 	}, {
-		name : 'label'
-	}, {
 		name : 'name'
-	},{
-		name : 'type'
 	}, {
-		name : 'length'
+		name : 'fieldName',
+		convert : function(v, r) {
+			var v = r.get('field');
+			if (v) {
+				v = v.name;
+			}
+			return v;
+		}
+	},{
+		name : 'fieldType',
+		convert : function(v, r) {
+			var v = r.get('field');
+			if (v) {
+				v = v.type;
+			}
+			return v;
+		}
+	}, {
+		name : 'fieldLength',
+		convert : function(v, r) {
+			var v = r.get('field');
+			if (v) {
+				v = v.length;
+			}
+			return v;
+		}
 	}, {
 		name : 'crUser'
 	},{
@@ -33,14 +54,5 @@ Ext.define('MyCms.model.ExtField', {
 			}
 			return v;
 		}
-	} ],
-	statics:{
-		Type:{
-			1:'整型',
-			2:'字符型',
-			3:'浮点型',
-			4:'日期',
-			5:'文本'
-		}
-	}
+	} ]
 });

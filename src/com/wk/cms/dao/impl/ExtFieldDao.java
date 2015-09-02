@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IExtFieldDao;
 import com.wk.cms.model.ExtField;
+import com.wk.cms.model.Field;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
@@ -83,7 +84,11 @@ public class ExtFieldDao implements IExtFieldDao {
 
 	@Override
 	public void delete(String id) {
-		hibernateTemplate.bulkUpdate("delete from FieldValue where extField.id=?", id);
-		hibernateTemplate.bulkUpdate("delete from ExtField where id=?", id);
+//		hibernateTemplate.bulkUpdate("delete from FieldValue where extField.id=?", id);
+//		hibernateTemplate.bulkUpdate("delete from ExtField where id=?", id);
+		ExtField extField = findById(id);
+		extField.setChannel(null);
+		hibernateTemplate.delete(extField);
+		
 	}
 }

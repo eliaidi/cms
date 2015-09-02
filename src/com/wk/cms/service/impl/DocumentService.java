@@ -69,7 +69,6 @@ public class DocumentService implements IDocumentService {
 			if (!CommonUtils.isEmpty(document.getFieldValues())) {
 				for (FieldValue fv : document.getFieldValues()) {
 					fv.setId(UUID.randomUUID().toString());
-					fv.setDocument(document);
 				}
 			}
 
@@ -89,8 +88,8 @@ public class DocumentService implements IDocumentService {
 						persistDoc.getFieldValues(), new String[] { "id" },
 						new String[] { fv.getId() });
 				if(pFv==null){
-					pFv = new FieldValue(UUID.randomUUID().toString(),document);
-					persistDoc.getFieldValues().add(pFv);
+//					pFv = new FieldValue(UUID.randomUUID().toString(),document);
+//					persistDoc.getFieldValues().add(pFv);
 				}
 				BeanUtils.copyProperties(fv, pFv, new String[] {"id",
 						"document" });

@@ -6,7 +6,9 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 	initComponent:function(){
 		var me = this;
 		me.title = '新增栏目【'+me.from.from.channel.get('name')+'】扩展字段';
-		var form = Ext.create('MyCms.view.extfield.Form');
+		var form = Ext.create('MyCms.view.extfield.Form',{
+			from : me
+		});
 		var btns = [{
 			text : '保存',
 			handler : 'doSave',

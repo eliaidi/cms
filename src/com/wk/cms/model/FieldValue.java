@@ -13,19 +13,12 @@ public class FieldValue {
 
 	@ManyToOne
 	private Document document;
-
 	@ManyToOne
-	private ExtField extField;
-
+	private Field field;
 	@Column(length = 2000)
 	private String value;
 
 	public FieldValue() {
-	}
-
-	public FieldValue(String id, Document document2) {
-		this.id = id;
-		this.document = document2;
 	}
 
 	public String getId() {
@@ -36,20 +29,12 @@ public class FieldValue {
 		this.id = id;
 	}
 
-	public Document getDocument() {
-		return document;
+	public Field getField() {
+		return field;
 	}
 
-	public void setDocument(Document document) {
-		this.document = document;
-	} 
-
-	public ExtField getExtField() {
-		return extField;
-	}
-
-	public void setExtField(ExtField extField) {
-		this.extField = extField;
+	public void setField(Field field) {
+		this.field = field;
 	}
 
 	public String getValue() {

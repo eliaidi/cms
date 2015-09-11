@@ -116,4 +116,21 @@ public class FieldService implements IFieldService {
 		return fieldDao.find(ids);
 	}
 
+	@Override
+	public boolean isCustomField(String type) {
+		
+		java.lang.reflect.Field[] fields = Field.Type.class.getDeclaredFields();
+		for(java.lang.reflect.Field field : fields){
+			try {
+				Object val = field.get(null);
+				if(type.equals(val)){
+					return false;
+				}
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(),e);
+			} 
+		}
+		return true;
+	}
+
 }

@@ -18,11 +18,13 @@ import javax.persistence.TemporalType;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wk.cms.mvc.json.OneToManyFieldSerializer;
 
 @Entity
 @Table(name = "Sys_Field", schema = "Cms")
+@JsonIgnoreProperties("fieldValues")
 public class Field {
 
 	public final class Type {
@@ -40,7 +42,7 @@ public class Field {
 	private String name;
 	private String type = Type.STRING;
 	private Integer length;
-	@OneToOne(mappedBy = "field")
+	@OneToOne(mappedBy = "field",cascade=CascadeType.ALL)
 	private ExtField extField;
 	@ManyToOne
 	private Site site;
@@ -52,12 +54,17 @@ public class Field {
 	@JsonSerialize(using=OneToManyFieldSerializer.class)
 	private List<Field> children = new ArrayList<Field>();
 	
+	@OneToMany(mappedBy="field",cascade=CascadeType.REMOVE)
+	private List<FieldValue> fieldValues = new ArrayList<FieldValue>();
 	
 	@ManyToOne
 	private User crUser;
 	
 	@Temporal(TemporalType.DATE)
 	private Date crTime;
+	
+	@org.hibernate.annotations.Type(type="yes_no")
+	private boolean isCustom = false;
 
 	public Field(){}
 	public Field(String id, String name2) {
@@ -143,6 +150,12 @@ public class Field {
 
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
+	}
+	public boolean isCustom() {
+		return isCustom;
+	}
+	public void setCustom(boolean isCustom) {
+		this.isCustom = isCustom;
 	}
 
 	

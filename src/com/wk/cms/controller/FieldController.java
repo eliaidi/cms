@@ -48,4 +48,10 @@ public class FieldController {
 		fieldService.delete(ids);
 		return new Message(true, "删除成功！", null);
 	}
+	
+	@RequestMapping("/detail")
+	@ResponseBody
+	public Message detail(String id) throws ServiceException {
+		return new Message(true, "操作成功！", fieldService.findById(id));
+	}
 }

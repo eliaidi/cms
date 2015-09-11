@@ -1,6 +1,7 @@
 Ext.define('MyCms.view.extfield.Grid',{
 	extend : 'Ext.grid.Panel',
-	uses : [ 'MyCms.model.ExtField',
+	requires : [ 'MyCms.model.ExtField',
+	         'MyCms.model.Field',
 			 ],
 	border : true,
 	loadMask : true,
@@ -39,6 +40,7 @@ Ext.define('MyCms.view.extfield.Grid',{
 		flex : 1,
 		sortable : false,
 		renderer:function(v){
+			console.log(v)
 			return MyCms.model.Field.Type[v]||'自定义';
 		}
 	},{
@@ -68,10 +70,6 @@ Ext.define('MyCms.view.extfield.Grid',{
 		},{
 			text : '添加扩展字段',
 			handler : 'addField',
-			scope : me
-		},{
-			text : '自定义字段类型',
-			handler : 'customField',
 			scope : me
 		}];
 		var store = Ext.create('Ext.data.BufferedStore', {
@@ -130,13 +128,6 @@ Ext.define('MyCms.view.extfield.Grid',{
 		me.on('refresh', 'doRefresh', me);
 		me.callParent();
 		
-	},
-	customField:function(){
-		
-		Ext.create('MyCms.view.field.Window',{
-			from:this,
-			site:new MyCms.model.Site(this.from.channel.get('site'))
-		});
 	},
 	modifyDoc:function(r){
 		Ext.create('MyCms.view.extfield.AddEdit',{

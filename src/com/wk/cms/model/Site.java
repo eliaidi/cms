@@ -19,7 +19,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@JsonIgnoreProperties({ "channels", "documents", "templates", "tempFiles" })
+@JsonIgnoreProperties({ "channels", "documents", "templates", "tempFiles","fields" })
 @Cacheable
 @Cache(region = "site", usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Site {
@@ -52,6 +52,9 @@ public class Site {
 	private Set<Template> templates;
 	@OneToMany(mappedBy = "site", cascade = { CascadeType.REMOVE })
 	private Set<TempFile> tempFiles;
+	
+	@OneToMany(mappedBy="site",cascade={CascadeType.REMOVE})
+	private Set<Field> fields;
 
 	public Site() {
 		super();
@@ -173,5 +176,14 @@ public class Site {
 	public void setTempFiles(Set<TempFile> tempFiles) {
 		this.tempFiles = tempFiles;
 	}
+
+	public Set<Field> getFields() {
+		return fields;
+	}
+
+	public void setFields(Set<Field> fields) {
+		this.fields = fields;
+	}
+	
 	
 }

@@ -16,7 +16,7 @@ public class ExtField {
 
 	@Id
 	private String id;
-	@ManyToOne
+	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private Channel channel;
 
 	private String name;

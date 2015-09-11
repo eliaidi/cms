@@ -69,6 +69,7 @@ public class DocumentService implements IDocumentService {
 			if (!CommonUtils.isEmpty(document.getFieldValues())) {
 				for (FieldValue fv : document.getFieldValues()) {
 					fv.setId(UUID.randomUUID().toString());
+					fv.setDocument(document);
 				}
 			}
 

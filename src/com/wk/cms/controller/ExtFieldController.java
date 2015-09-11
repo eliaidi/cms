@@ -30,7 +30,7 @@ public class ExtFieldController {
 	
 	@RequestMapping("/save")
 	@ResponseBody
-	public Message save(@Valid ExtField extField,BindingResult result) throws ServiceException{
+	public Message save(@Valid ExtField extField, BindingResult result) throws ServiceException{
 		
 		if(result.hasErrors()){
 			throw new ValidationException(result);

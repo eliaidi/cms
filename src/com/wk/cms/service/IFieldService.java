@@ -26,4 +26,6 @@ public interface IFieldService {
 
 	List<Field> find(@NotEmpty String[] ids);
 
+	boolean isCustomField(@NotEmpty String type);
+
 }

@@ -43,11 +43,14 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 	onOk:function(){
 		var me = this,form = me.form,fields = me.channel.get('extFields'),rs = [];
 		for(var i=0;i<fields.length;i++){
-			var field = fields[i],f = form.findField(field.name);
+			var field = fields[i],f = form.findField(field.field.name);
+			if(field.field.custom){
+				continue;
+			}
 			rs.push({
-				"id":f.fvId,
 				"extField.id" : field.id,
-				"value" : field.type==4?f.formatDate(f.getValue()):f.getValue()
+				"field.id":field.field.id,
+				"value" : field.field.type=='date'?f.formatDate(f.getValue()):f.getValue()
 			});
 		}
 		me.from.fireEvent('extFieldComplete',me.from,me,rs);

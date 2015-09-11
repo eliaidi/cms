@@ -13,6 +13,7 @@ import com.wk.cms.dao.IExtFieldDao;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.ExtField;
 import com.wk.cms.service.IExtFieldService;
+import com.wk.cms.service.IFieldService;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.service.exception.ValidationException;
 import com.wk.cms.utils.PageInfo;
@@ -22,6 +23,9 @@ public class ExtFieldService implements IExtFieldService {
 
 	@Autowired
 	private IExtFieldDao extFieldDao;
+	
+	@Autowired
+	private IFieldService fieldService;
 	@Override
 	public PageInfo find(String channelId,PageInfo pageInfo ,String query) {
 		return extFieldDao.find(channelId,pageInfo,query);
@@ -35,12 +39,13 @@ public class ExtFieldService implements IExtFieldService {
 			if(find(extField.getName(), extField.getChannel().getId())!=null){
 				throw new ServiceException("栏目【ID:"+extField.getChannel().getId()+"】下已经存在名称为【NAME:"+extField.getName()+"】的扩展字段！");
 			}
-			extField.getField().setId(UUID.randomUUID().toString());
+//			extField.getField().setId(UUID.randomUUID().toString());
 			extField.getField().setCrTime(new Date());
 			extField.getField().setCrUser(null);
 			extField.getField().setExtField(extField);
+			extField.getField().setCustom(fieldService.isCustomField(extField.getField().getType()));
 			
-			extField.setId(UUID.randomUUID().toString());
+//			extField.setId(UUID.randomUUID().toString());
 			extField.setCrTime(new Date());
 			extField.setCrUser(null);
 			extFieldDao.save(extField);
@@ -48,7 +53,9 @@ public class ExtFieldService implements IExtFieldService {
 		}else{
 			ExtField persistEf = findById(extField.getId());
 			
-			BeanUtils.copyProperties(extField, persistEf, new String[]{"id","channel","crTime","crUser"});
+			persistEf.getField().setName(extField.getField().getName());
+			
+			BeanUtils.copyProperties(extField, persistEf, new String[]{"id","field","channel","crTime","crUser"});
 			extFieldDao.save(persistEf);
 			return persistEf;
 		}

@@ -7,6 +7,9 @@ Ext.define('MyCms.model.Field',{
 	},{
 		name : 'type'
 	},{
+		name : 'isCustom',
+		type : 'boolean'
+	},{
 		name : 'length'
 	},{
 		name : 'site'

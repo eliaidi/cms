@@ -17,6 +17,12 @@ public class FieldValue {
 	private Field field;
 	@Column(length = 2000)
 	private String value;
+	
+	@Column(name="t_group")
+	private Integer group;
+	
+	@ManyToOne
+	private ExtField extField;
 
 	public FieldValue() {
 	}
@@ -43,6 +49,30 @@ public class FieldValue {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
+	public Integer getGroup() {
+		return group;
+	}
+
+	public void setGroup(Integer group) {
+		this.group = group;
+	}
+
+	public ExtField getExtField() {
+		return extField;
+	}
+
+	public void setExtField(ExtField extField) {
+		this.extField = extField;
 	}
 
 }

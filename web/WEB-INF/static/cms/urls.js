@@ -48,3 +48,4 @@ var field_list = RootPath+'/field/list';
 var field_save = RootPath+'/field/save';
 var field_delete = RootPath+'/field/delete';
 var field_list_type = RootPath+'/field/listTypes';
+var field_detail = RootPath+'/field/detail';

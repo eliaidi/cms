@@ -69,18 +69,38 @@ Ext.define('MyCms.view.document.Window',{
     	this.callParent();
     },
     doExtFieldComplete:function(me,fieldWin,rs){
-    	var hfs = [];
-    	for(var i=0;i<rs.length;i++){
+    	
+    	console.log(rs);
+    	console.log(fieldWin.extraValue)
+    	var hfs = [],index = 0;
+    	for(var i=0;i<rs.length;i++,index++){
     		var r = rs[i];
     		for(var k in r){
     			hfs.push({
     				xtype:'hidden',
-			        name: 'fieldValues['+i+'].'+k,
+			        name: 'fieldValues['+(index)+'].'+k,
 			        value:r[k]
     			})
     		}
     	}
+    	if(fieldWin.extraValue){
+    		for(var k in fieldWin.extraValue){
+    			for(var i=0;i<fieldWin.extraValue[k].length;i++,index++){
+    	    		var r = fieldWin.extraValue[k][i];
+    	    		for(var k1 in r){
+    	    			hfs.push({
+    	    				xtype:'hidden',
+    				        name: 'fieldValues['+(index)+'].'+k1,
+    				        value:r[k1]
+    	    			});
+    	    		}
+    	    	}
+    		}
+    	}
+    	
+    	console.log(hfs);
     	me.form.add(hfs);
+    	
     	fieldWin.close();
     },
     fieldValueMgt:function(){

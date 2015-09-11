@@ -6,6 +6,9 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 	initComponent:function(){
 		var me = this;
 		me.title = '新增栏目【'+me.from.from.channel.get('name')+'】扩展字段';
+		if(me.extField){
+			me.title = '修改栏目【'+me.from.from.channel.get('name')+'】扩展字段【'+me.extField.get('name')+'】';
+		}
 		var form = Ext.create('MyCms.view.extfield.Form',{
 			from : me
 		});
@@ -24,21 +27,19 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 			buttons:btns
 		});
 		
-		if(me.extField){
-			form.getForm().loadRecord(me.extField);
-			form.getForm().findField('name').setReadOnly(true);
-			form.getForm().findField('type').setReadOnly(true);
-			form.getForm().findField('length').setReadOnly(true);
-		}
-		
+		me.on('afterrender','doAfterRender',me);
 		me.callParent();
+	},
+	doAfterRender:function(){
+		
+		this.doReset();
 	},
 	doSave:function(){
 		var me = this,form = me.down('form');
 		form.getForm().submit({
     		clientValidation: true,
     	    url: extfield_save,
-    	    params:me.extField?{id:me.extField.get('id')}:{'channel.id' : me.from.from.channel.get('id') },
+    	    params:me.extField?{id:me.extField.get('id'),'field.id':me.extField.get('field').id}:{'channel.id' : me.from.from.channel.get('id') },
             success: 'onSuccess',
             failure: function(form, action) {
                Ext.Msg.alert('失败', action.result ? action.result.message : 'No response');
@@ -53,13 +54,14 @@ Ext.define('MyCms.view.extfield.AddEdit',{
 	},
 	doReset:function(){
 		
-		var me = this,form = me.down('form');
-		form.getForm().reset();
+		var me = this,form = me.down('form').getForm();
+		form.reset();
 		if(me.extField){
-			form.getForm().loadRecord(me.extField);
-			form.getForm().findField('name').setReadOnly(true);
-			form.getForm().findField('type').setReadOnly(true);
-			form.getForm().findField('length').setReadOnly(true);
+			form.loadRecord(me.extField);
+			form.findField('field.name').setValue(me.extField.get('fieldName'));
+//			form.getForm().findField('field.name').setReadOnly(true);
+			form.findField('field.type').setConfig('hidden',true).setDisabled(true);
+			form.findField('field.length').setConfig('hidden',true).setDisabled(true);
 		}
 	}
 });

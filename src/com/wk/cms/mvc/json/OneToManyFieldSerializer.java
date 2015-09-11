@@ -33,6 +33,8 @@ public class OneToManyFieldSerializer extends JsonSerializer<Object> {
 						((ExtField) t).setChannel(null);
 					} else if (t instanceof Field) {
 						((Field) t).setParent(null);
+					}else if(t instanceof FieldValue){
+						((FieldValue)t).setDocument(null);
 					}
 				}
 			}

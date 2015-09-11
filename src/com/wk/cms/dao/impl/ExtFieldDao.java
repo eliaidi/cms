@@ -1,6 +1,7 @@
 package com.wk.cms.dao.impl;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
@@ -46,7 +47,15 @@ public class ExtFieldDao implements IExtFieldDao {
 
 	@Override
 	public void save(ExtField extField) {
-		hibernateTemplate.saveOrUpdate(extField);
+		
+		if(StringUtils.hasLength(extField.getId())){
+			hibernateTemplate.update(extField);
+		}else{
+			extField.setId(UUID.randomUUID().toString());
+			extField.getField().setId(UUID.randomUUID().toString());
+			hibernateTemplate.save(extField);
+		}
+//		hibernateTemplate.saveOrUpdate(extField);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,17 +87,15 @@ public class ExtFieldDao implements IExtFieldDao {
 
 
 	@Override
-	public void delete(ExtField extField) {
-		delete(extField.getId());
+	public void delete(ExtField ef) {
+		ef.getChannel().getExtFields().remove(ef);
+		ef.setChannel(null);
+		hibernateTemplate.delete(ef);
 	}
 
 	@Override
 	public void delete(String id) {
-//		hibernateTemplate.bulkUpdate("delete from FieldValue where extField.id=?", id);
-//		hibernateTemplate.bulkUpdate("delete from ExtField where id=?", id);
-		ExtField extField = findById(id);
-		extField.setChannel(null);
-		hibernateTemplate.delete(extField);
+		delete(findById(id));
 		
 	}
 }

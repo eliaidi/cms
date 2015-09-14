@@ -86,9 +86,7 @@ public class DocumentDao implements IDocumentDao {
 	@Override
 	public void deleteById(String id) {
 
-		Session s = hibernateTemplate.getSessionFactory().getCurrentSession();
-
-		s.delete(findById(id));
+		hibernateTemplate.delete(findById(id));
 	}
 
 	@Override
@@ -208,6 +206,12 @@ public class DocumentDao implements IDocumentDao {
 						targetDoc.getChannel().getId(), targetDoc.getSort());
 
 		hibernateTemplate.update(currDoc);
+	}
+
+	@Override
+	public void removeFields(Document persistDoc) {
+		
+		hibernateTemplate.bulkUpdate("delete from FieldValue where document=?", persistDoc);
 	}
 
 }

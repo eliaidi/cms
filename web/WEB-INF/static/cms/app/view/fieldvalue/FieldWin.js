@@ -42,95 +42,59 @@ Ext.define('MyCms.view.fieldvalue.FieldWin',{
 		
 		me.callParent();
 	},
+	onCancel:function(){
+		this.close();
+	},
 	onOk:function(){
-		var me = this,grid = me.down('grid'),store = grid.getStore(),pWin = me.from.from,rs = [],group = 0;
+		var me = this,grid = me.down('grid'),store = grid.getStore(),pWin = me.from.from;
 		
-		store.each(function(r){
-			for(var k in r.data){
-				if(k=='id'){
-					continue;
-				}
-				var v = r.get(k);
-				if(typeof v =='object'){
-					v = Ext.Date.format(new Date(v.getTime()),'Y-m-d');
-				}
-				rs.push({
-					"field.id":k,
-					"extField.id":me.extFieldId,
-					"value":v,
-					"group":group
-				})
-			}
-			group++;
-		});
-		if(!pWin.extraValue){
-			pWin.extraValue = {};
-		}
-		pWin.extraValue[me.extFieldId] = rs;
-		me.close();
+		pWin.fireEvent('fieldWinOk',pWin,me,store);
 	},
 	renderGrid:function(f){
-		var me = this,gridColumn = [],fields = f.children,fs = [];
+		var me = this,pWin = me.from.from,gridColumn = [],fields = f.children,fs = [];
 		
 		for(var i=0;i<fields.length;i++){
-			var field = fields[i],item;
+			var field = fields[i],item = {};
 			
 			fs.push({
 				name : field.id,
 				type:field.type
 			});
+			item.editor = {};
 			if(field.type=='int'||field.type=='float'){
 				item = {
 						xtype: 'numbercolumn',
-			            header: field.name,
-			            dataIndex: field.id,
-			            width: 135,
 			            editor: {
-			            	xtype: 'numberfield',
-			                allowBlank: false,
-			                minValue: 1,
-			                maxValue: 150000
+			            	xtype: 'numberfield'
 			            }	
 				};
 			}else if(field.type=='date'){
 				item = {
 						xtype: 'datecolumn',
-			            header: field.name,
-			            dataIndex: field.id,
 			            format:'Y-m-d',
-			            width: 135,
 			            editor: {
 			            	xtype: 'datefield',
-			                allowBlank: false,
 			                format:'Y-m-d'
 			            }	
 				};
-			}else if(field.type=='text'){
-				item = {
-			            header: field.name,
-			            dataIndex: field.id,
-			            width: 135,
-			            editor: {
-			            	xtype: 'textarea',
-			                allowBlank: false
-			            }	
-				};
 			}else{
-				item = {
-			            header: field.name,
-			            dataIndex: field.id,
-			            width: 135,
-			            editor: {
-			            	xtype: 'textfield',
-			                allowBlank: false
-			            }	
-				};
+				item.editor.xtype = 'textfield';
 			}
+			item.header = field.name;
+			item.dataIndex = field.id;
+			item.width = 135;
+			item.editor.vtype = 'customField';
+			item.editor.maxLength = field.length;
+			
 			gridColumn.push(item);
 		}
 		if(typeof FieldModel =='undefined'){
 			Ext.define('FieldModel',{
 				extend:'Ext.data.Model',
+				fields:fs
+			});
+		}else{
+			Ext.apply(FieldModel,{
 				fields:fs
 			});
 		}
@@ -179,6 +143,10 @@ Ext.define('MyCms.view.fieldvalue.FieldWin',{
 	            }
 	        }],
 	        plugins: [rowEditing]
-		})
+		});
+		
+		if(pWin.extraStore&&pWin.extraStore[me.extFieldId]){
+			store.loadData(pWin.extraStore[me.extFieldId]);
+		}
 	}
 });

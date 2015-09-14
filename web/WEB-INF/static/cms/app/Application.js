@@ -23,7 +23,16 @@ Ext.define('MyCms.Application', {
     	        return !isNaN(val);
     	    },
     	    floatText: '必须是数字！',
-    	    floatMask: '干啥的'
+    	    floatMask: '干啥的',
+    	    customField:function(val,field){
+    	    	if(field.maxLength){
+    	    		if(val&&val.length>field.maxLength){
+    	    			return false;
+    	    		}
+    	    	}
+    	    	return true;
+    	    },
+    	    customFieldText:'字段不合法！'
     	});
     },
     statics:{

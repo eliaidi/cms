@@ -38,7 +38,7 @@ public class Field {
 	@Id
 	private String id;
 	@NotEmpty
-	@Length(min = 2, max = 10)
+	@Length(min = 2, max = 100)
 	private String name;
 	private String type = Type.STRING;
 	private Integer length;

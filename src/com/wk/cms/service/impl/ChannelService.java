@@ -3,6 +3,7 @@ package com.wk.cms.service.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wk.cms.dao.IChannelDao;
 import com.wk.cms.model.Channel;
+import com.wk.cms.model.ExtField;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
 import com.wk.cms.service.IChannelService;
@@ -150,6 +152,11 @@ public class ChannelService implements IChannelService {
 		//复制本栏目
 		Channel newChannel = new Channel();
 		BeanUtils.copyProperties(channel, newChannel, new String[]{"id","crTime","crUser","children","documents"});
+		
+		for(ExtField ef : newChannel.getExtFields()){
+			ef.getField().setId(UUID.randomUUID().toString());
+			ef.setId(UUID.randomUUID().toString());
+		}
 		save(newChannel, parentId, siteId);
 		//复制栏目下的文档
 		documentService.copy(channel,newChannel);
@@ -228,5 +235,4 @@ public class ChannelService implements IChannelService {
 	public List<Template> findTemps(Channel channel, Integer type) {
 		return channelDao.findTemps(channel,type);
 	}
-
 }

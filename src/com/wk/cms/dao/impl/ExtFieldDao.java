@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class ExtFieldDao implements IExtFieldDao {
 	public PageInfo find(String channelId, PageInfo pageInfo, String query) {
 		Criteria cri = hibernateTemplate.getSessionFactory()
 				.getCurrentSession().createCriteria(ExtField.class)
-				.add(Restrictions.eq("channel.id", channelId));
+				.add(Restrictions.eq("channel.id", channelId)).addOrder(Order.asc("crTime"));
 		if (StringUtils.hasLength(query)) {
 			cri.add(Restrictions.or(
 					Restrictions.like("label", query, MatchMode.ANYWHERE),

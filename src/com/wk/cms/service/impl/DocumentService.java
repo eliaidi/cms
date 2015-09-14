@@ -81,25 +81,24 @@ public class DocumentService implements IDocumentService {
 				throw new ServiceException("未找到id为【" + document.getId()
 						+ "】的文档！");
 			}
+			removeFieldsFrom(persistDoc);
 
 			BeanUtils.copyProperties(document, persistDoc, new String[] { "id",
-					"channel", "site", "fieldValues", "crUser", "crTime","sort" });
+					"channel", "site", "crUser", "crTime","sort" });
 			for (FieldValue fv : document.getFieldValues()) {
-				FieldValue pFv = CommonUtils.findFromList(
-						persistDoc.getFieldValues(), new String[] { "id" },
-						new String[] { fv.getId() });
-				if(pFv==null){
-//					pFv = new FieldValue(UUID.randomUUID().toString(),document);
-//					persistDoc.getFieldValues().add(pFv);
-				}
-				BeanUtils.copyProperties(fv, pFv, new String[] {"id",
-						"document" });
+				fv.setId(UUID.randomUUID().toString());
+				fv.setDocument(persistDoc);
 			}
 
 			persistDoc.setStatus(2);
 			documentDao.save(persistDoc);
 		}
 
+	}
+
+	@Override
+	public void removeFieldsFrom(Document persistDoc) {
+		documentDao.removeFields(persistDoc);
 	}
 
 	@Override
@@ -162,6 +161,11 @@ public class DocumentService implements IDocumentService {
 		Document newDoc = new Document();
 		BeanUtils.copyProperties(document, newDoc, new String[] { "id",
 				"crTime", "crUser", "appendixs" });
+		
+		for(FieldValue fv : newDoc.getFieldValues()){
+			fv.setId(UUID.randomUUID().toString());
+			fv.setDocument(newDoc);
+		}
 		save(newDoc, newChannel);
 
 		// 拷贝本文档下所有的附件

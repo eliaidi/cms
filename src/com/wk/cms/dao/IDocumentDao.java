@@ -40,4 +40,6 @@ public interface IDocumentDao {
 
 	void move(Document currDoc, Document targetDoc);
 
+	void removeFields(Document persistDoc);
+
 }

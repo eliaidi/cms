@@ -65,4 +65,6 @@ public interface IDocumentService {
 
 	void move(@NotEmpty String currId, @NotEmpty String targetId) throws ServiceException;
 
+	void removeFieldsFrom(@NotNull Document persistDoc);
+
 }

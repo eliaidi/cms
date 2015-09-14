@@ -6,6 +6,7 @@ Ext.define('MyCms.view.fieldvalue.Form',{
         anchor: '100%'
     },
     defaultType: 'textfield',
+    autoScroll:true,
 	initComponent:function(){
 		var me = this;
 		
@@ -96,7 +97,9 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 		
 		function getVType(type){
 			
-			return type;
+			console.log(type);
+			if(type=='int'||type=='float') return type;
+			return type=='int';
 //			switch (type) {
 //			case 1: return "int";
 //			case 2: return null;

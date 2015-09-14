@@ -1,3 +1,5 @@
+<%@page import="com.wk.cms.model.FieldValue"%>
+<%@page import="com.wk.cms.model.Document"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
@@ -82,10 +84,44 @@
 				<strong>扩展字段：</strong>
 			</div>
 			<div class="col-md-9 text-left">
-				<c:forEach items="${obj.fieldValues }" var="fv"  >
-					<p><b>${fv.extField.label}:</b> ${fv.value} </p>
-
-				</c:forEach>
+				
+				<%
+					Document document = (Document)request.getAttribute("obj");
+					
+					List<FieldValue> fieldValues = document.getFieldValues();
+					Map<String,Object> renderVal = new HashMap<String,Object>();
+					if(!fieldValues.isEmpty()){
+						
+						for(FieldValue fv : fieldValues){
+							
+							if(!fv.getExtField().getField().isCustom()){
+								renderVal.put(fv.getExtField().getName(), fv.getValue());
+							}else{
+								String k = fv.getExtField().getName()+"-"+fv.getGroup();
+								Object v = renderVal.get(k);
+								if(v==null){
+									v = new HashMap<String,Object>();
+								}
+								((Map)v).put(fv.getField().getName(), fv.getValue());
+								renderVal.put(k, v);
+							}
+						}
+					}
+					
+					for(String fn : renderVal.keySet()){
+						Object val = renderVal.get(fn);
+						out.println("<p>");
+						out.println("<span><b>"+fn+"：</b>"+renderVal.get(fn)+"</span>::::");
+						if(Map.class.isAssignableFrom(val.getClass())){
+							Map<String,Object> v = (Map<String,Object>)val;
+							for(String n : v.keySet()){
+								out.println("<span><b>"+n+"：</b>"+v.get(n)+"</span>");
+							}
+							
+						}
+						out.println("</p>");
+					}
+				%>
 			</div>
 		</div>
 	</div>

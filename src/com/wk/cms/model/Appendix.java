@@ -7,6 +7,9 @@ import javax.persistence.OneToOne;
 
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wk.cms.mvc.json.FileJsonSerializer;
+
 @Entity
 public class Appendix {
 
@@ -34,6 +37,7 @@ public class Appendix {
 	private String addition;
 
 	@OneToOne
+	@JsonSerialize(using=FileJsonSerializer.class)
 	private File file;
 
 	public String getId() {

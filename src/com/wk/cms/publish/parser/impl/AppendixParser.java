@@ -65,7 +65,7 @@ public class AppendixParser extends AbstractTagParser {
 		return CommonUtils.join(objList, "<br/>");
 	}
 	private void downLoadApp(Appendix app) {
-		String fileStr = ctx.isPreview()?PublishUtils.getPreviewDir(app.getDocument()):PublishUtils.getPublishDir(app.getDocument());
+		String fileStr = ctx.getServer().isPreview()?PublishUtils.getPreviewDir(app.getDocument()):PublishUtils.getPublishDir(app.getDocument());
 //		fileStr += app.getFile().getFileName();
 		
 		File destFolder = new File(fileStr);

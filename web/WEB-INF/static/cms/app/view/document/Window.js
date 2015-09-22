@@ -68,10 +68,18 @@ Ext.define('MyCms.view.document.Window',{
     	
     	this.callParent();
     },
+    clearFieldValues:function(){
+    	var me = this,form = me.form.getForm(),fields = form.getFields();
+    	
+    	fields.each(function(f){
+    		if(f.name.indexOf('fieldValues')>=0&&f.hidden){
+    			me.form.remove(f);
+    		}
+    	});
+    },
     doExtFieldComplete:function(me,fieldWin,rs){
     	
-    	console.log(rs);
-    	console.log(fieldWin.extraValue)
+    	me.clearFieldValues();
     	var hfs = [],index = 0;
     	for(var i=0;i<rs.length;i++,index++){
     		var r = rs[i];
@@ -98,7 +106,6 @@ Ext.define('MyCms.view.document.Window',{
     		}
     	}
     	
-    	console.log(hfs);
     	me.form.add(hfs);
     	
     	fieldWin.close();
@@ -117,25 +124,39 @@ Ext.define('MyCms.view.document.Window',{
     	
     	me.form.loadRecord(me.document);
     	
-    	/*Ext.Ajax.request({
-			url : document_detail,
-			params : {
-				docId : me.document.get('id')
-			},
-			success : function(response, opts) {
-				var obj = Ext.decode(response.responseText);
-				if (!obj.success) {
-					Ext.Msg.alert('错误', obj.message);
-					return;
-				}
-				me.document = new MyCms.model.Document(obj.obj);
-				me.form.getForm().loadRecord(me.document);
-			},
-			failure : function(response, opts) {
-				console.log('server-side failure with status code '
-						+ response.status);
-			}
-		});*/
+    	if(me.document){
+    		var fvs = me.document.get('fieldValues');
+    		console.log('fvs::',fvs);
+    		if(fvs&&fvs.length>0){
+    			for(var i=0;i<fvs.length;i++){
+    				var fv = fvs[i];
+    				
+    				me.form.add({
+    					xtype:'hidden',
+				        name: 'fieldValues['+(i)+'].value',
+				        value:fv.value
+    				});
+    				me.form.add({
+    					xtype:'hidden',
+				        name: 'fieldValues['+(i)+'].field.id',
+				        value:fv.field.id
+    				});
+    				me.form.add({
+    					xtype:'hidden',
+				        name: 'fieldValues['+(i)+'].extField.id',
+				        value:fv.extField.id
+    				});
+    				if(fv.extField.field.custom){
+    					me.form.add({
+        					xtype:'hidden',
+    				        name: 'fieldValues['+(i)+'].group',
+    				        value:fv.group
+        				});
+    				}
+    			}
+    		}
+    	}
+    	
     },
     remoteDocComplete:function(me,doc){
     	me.form.getForm().loadRecord(new MyCms.model.Document(doc));

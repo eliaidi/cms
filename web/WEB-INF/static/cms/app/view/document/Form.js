@@ -1,6 +1,6 @@
 Ext.define('MyCms.view.document.Form',{
 	extend : 'MyCms.view.ux.MyForm',
-	requires:['MyCms.view.ux.MyHtmlEditor'],
+	requires:['MyCms.view.ux.MyHtmlEditor','MyCms.view.ux.DatetimeField'],
 	bodyPadding: 5,
 	initComponent:function(){
 		
@@ -35,7 +35,13 @@ Ext.define('MyCms.view.document.Form',{
 					format:'Y-m-d',
 					fieldLabel: '撰写时间',
 			        name: 'writeTime',
-			        allowBlank: true
+//			        cls:'Wdate',
+			        allowBlank: true,
+			        listeners:{
+			        	focus:function(_this,_e){
+			        		//WdatePicker();
+			        	}
+			        }
 				}]
 			},{
 				xtype: 'fckeditor',

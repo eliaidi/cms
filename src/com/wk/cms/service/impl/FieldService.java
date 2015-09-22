@@ -46,7 +46,8 @@ public class FieldService implements IFieldService {
 				Object val = f.get(null);
 				pFields.add(0, new Field(val.toString(), f.getName()));
 			} catch (Exception e) {
-				LOGGER.error("查询字段类型出错！", e);
+//				LOGGER.error("查询字段类型出错！", e);
+				//ignore
 			}
 		}
 

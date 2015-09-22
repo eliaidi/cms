@@ -343,10 +343,10 @@ public class CommonUtils {
 		return false;
 	}
 
-	public static String join(Set<String> keySet, String sp) {
+	public static String join(Set<?> keySet, String sp) {
 		
 		StringBuffer sb = new StringBuffer();
-		for(String o : keySet){
+		for(Object o : keySet){
 			sb.append(sp+o);
 		}
 		if(sb.length()>0){
@@ -382,10 +382,10 @@ public class CommonUtils {
 		return sList;
 	}
 
-	public static String join(List<String> list, String sp) {
+	public static String join(List<?> list, String sp) {
 		StringBuilder sb = new StringBuilder();
 		
-		for(String s : list){
+		for(Object s : list){
 			sb.append(sp+s);
 		}
 		if(sb.length()>0){

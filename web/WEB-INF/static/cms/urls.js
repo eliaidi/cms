@@ -14,6 +14,7 @@ var channel_delete_multi = RootPath+'/channel/deleteMulti';
 var channel_copy = RootPath+'/channel/copy';
 var channel_cut = RootPath+'/channel/cut';
 var channel_move = RootPath+'/channel/move';
+var channel_preview = RootPath+'/channel/preview';
 
 var document_list = RootPath+'/document/list';
 var document_save = RootPath+'/document/save';

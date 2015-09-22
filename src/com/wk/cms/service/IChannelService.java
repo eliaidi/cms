@@ -79,4 +79,8 @@ public interface IChannelService {
 	void move(@NotEmpty String currId, @NotEmpty String targetId);
 
 	List<Template> findTemps(@NotNull Channel channel, Integer type);
+
+	List<Channel> findSubChannels(@NotNull Site site, @NotEmpty String pName, String level) throws ServiceException;
+
+	String preview(@NotEmpty String id) throws ServiceException;
 }

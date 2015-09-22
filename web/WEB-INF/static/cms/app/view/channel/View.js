@@ -56,6 +56,12 @@ Ext.define('MyCms.view.channel.View', {
 		Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'channel-item-menu',
 			items : [ {
+				text : '预览',
+				handler : function() {
+					me.previewChannel(record);
+				},
+				scope : me
+			},{
 				text : '打开',
 				handler : function(){
 					me.openChannel(_this, record, item, index, e, eOpts);
@@ -162,6 +168,27 @@ Ext.define('MyCms.view.channel.View', {
 
 		view.getStore().load();
 		view.mixins.dragSelector.init(view);
+	},
+	previewChannel:function(r){
+		
+		Ext.Ajax.request({
+			url : channel_preview,
+			params : {
+				id : r.get('id')
+			},
+			success : function(response, opts) {
+				var obj = Ext.decode(response.responseText);
+				if (!obj.success) {
+					Ext.Msg.alert('错误', obj.message);
+					return;
+				}
+				window.open(obj.obj);
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	},
 	copy:function(r){
 		var me = this,rs = me.down('dataview').getSelectionModel().getSelection();

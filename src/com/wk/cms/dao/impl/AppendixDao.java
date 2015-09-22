@@ -48,7 +48,7 @@ public class AppendixDao implements IAppendixDao {
 	@Override
 	public List<Appendix> findByDocId(String documentId) {
 		
-		List<Appendix> appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? order by a.type", documentId);
+		List<Appendix> appendixs = (List<Appendix>) hibernateTemplate.find("select a from Appendix a where a.document.id=? order by a.type,a.file.crTime ", documentId);
 		return appendixs;
 	}
 

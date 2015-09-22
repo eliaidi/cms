@@ -5,6 +5,7 @@ import java.io.File;
 
 
 
+
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.model.Channel;
@@ -27,18 +28,22 @@ public class PublishUtils {
 		String dir = "";
 		String sep = File.separator;
 		if (obj instanceof Site) {
+			
+			dir = sep + currSite.getFolder() + dir;
 		} else if (obj instanceof Channel) {
 			Channel chnl = (Channel) obj;
 			while (chnl != null) {
 				dir = sep + chnl.getFolder() + dir;
 				chnl = chnl.getParent();
 			}
+			
+			dir = sep + currSite.getFolder() + dir;
 		} else if (obj instanceof Document) {
 			Document doc = (Document) obj;
 			Channel currChnl = doc.getChannel();
 			dir = getDir(currChnl);
 		}
-		dir = sep + currSite.getFolder() + dir;
+		
 		return dir;
 	}
 	
@@ -64,10 +69,7 @@ public class PublishUtils {
 	
 	public static String getPubFileName(Object obj, Template template) {
 		
-		if(obj instanceof Document){
-			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
-		}
-		return template.getPrefix()+"."+template.getExt();
+		return getPubFileName(obj, template, -1);
 	}
 	
 	public static String getPreviewDir(Object obj) {
@@ -84,6 +86,18 @@ public class PublishUtils {
 	public static String getPublishDir(Object obj) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public static String getPubFileName(Object obj, Template template,
+			int page) {
+		if(obj instanceof Document){
+			return template.getPrefix()+"-"+((Document)obj).getId()+"."+template.getExt();
+		}else{
+			if(page>1){
+				return template.getPrefix()+'-'+page+"."+template.getExt();
+			}
+		}
+		return template.getPrefix()+"."+template.getExt();
 	}
 	
 }

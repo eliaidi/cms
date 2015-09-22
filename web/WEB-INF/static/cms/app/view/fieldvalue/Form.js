@@ -97,7 +97,7 @@ Ext.define('MyCms.view.fieldvalue.Form',{
 		
 		function getVType(type){
 			
-			console.log(type);
+			//console.log(type);
 			if(type=='int'||type=='float') return type;
 			return type=='int';
 //			switch (type) {

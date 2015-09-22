@@ -1,5 +1,6 @@
 package com.wk.cms.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import com.wk.cms.model.Channel;
 import com.wk.cms.model.ExtField;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
+import com.wk.cms.publish.server.PublishServer;
+import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.ISiteService;
@@ -33,6 +36,9 @@ public class ChannelService implements IChannelService {
 	private ISiteService siteService;
 	@Autowired
 	private IDocumentService documentService;
+	
+	@Autowired
+	PublishServer publishServer;
 	
 	@Override
 	public List<Channel> findBySiteId(String siteId) throws ServiceException {
@@ -80,7 +86,7 @@ public class ChannelService implements IChannelService {
 			if(persistChannel==null){
 				throw new ServiceException("参数错误！id为【"+channel.getId()+"】的栏目不存在");
 			}
-			BeanUtils.copyProperties(channel, persistChannel, new String[]{"id","parent","site","crUser","crTime"});
+			BeanUtils.copyProperties(channel, persistChannel, new String[]{"id","sort","parent","site","crUser","crTime"});
 			
 			channelDao.save(persistChannel);
 		}
@@ -234,5 +240,40 @@ public class ChannelService implements IChannelService {
 	@Override
 	public List<Template> findTemps(Channel channel, Integer type) {
 		return channelDao.findTemps(channel,type);
+	}
+	@Override
+	public List<Channel> findSubChannels(Site site, String pName, String level) throws ServiceException {
+
+		int lv = StringUtils.hasLength(level)?Integer.parseInt(level):3;
+		Channel parent = findByName(pName, site);
+		
+		return findSub(site,parent,lv);
+	}
+	private List<Channel> findSub(Site site, Channel parent, Integer level) throws ServiceException {
+		
+		List<Channel> channels = new ArrayList<Channel>();
+		List<Channel> children = findByParentId(parent.getId());
+		
+		if(CommonUtils.isEmpty(children)||level<=0){
+			return null;
+		}
+		channels.addAll(children);
+		for(Channel channel : children){
+			List<Channel> cs = findSub(site, channel, level--);
+			if(!CommonUtils.isEmpty(cs)){
+				channels.addAll(cs);
+			}
+			
+		}
+		return channels;
+	}
+	@Override
+	public String preview(String id) throws ServiceException {
+		
+		Channel channel = findById(id);
+		if(channel==null){
+			throw new ServiceException("id为【"+id+"】的栏目不存在！");
+		}
+		return publishServer.publish(channel, true, PublishType.INDEX);
 	}
 }

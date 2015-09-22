@@ -1,5 +1,6 @@
 package com.wk.cms.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -7,15 +8,9 @@ import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
-import org.hibernate.transform.AliasToBeanResultTransformer;
-import org.hibernate.transform.ResultTransformer;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,9 +19,9 @@ import org.springframework.util.StringUtils;
 import com.wk.cms.dao.IDocumentDao;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
-import com.wk.cms.model.annotations.ShowArea;
+import com.wk.cms.model.Site;
+import com.wk.cms.service.IDocumentService;
 import com.wk.cms.utils.CommonUtils;
-import com.wk.cms.utils.HibernateUtils;
 import com.wk.cms.utils.PageInfo;
 
 @Repository
@@ -46,7 +41,7 @@ public class DocumentDao implements IDocumentDao {
 		if (StringUtils.hasLength(query)) {
 			hql.append(" and ( title like ? or abst like ? or content like ?)");
 		}
-		hql.append(" order by sort desc");
+		hql.append(" order by sort ");
 		Query cq = s.createQuery("select count(*) " + hql.toString())
 				.setParameter(0, channelId);
 		Query lq = s.createQuery(hql.toString()).setParameter(0, channelId);
@@ -102,7 +97,9 @@ public class DocumentDao implements IDocumentDao {
 	public List<Document> findByIds(String[] objIds) {
 		return hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createCriteria(Document.class)
-				.add(Restrictions.in("id", objIds)).list();
+				.add(Restrictions.in("id", objIds))
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,12 +134,17 @@ public class DocumentDao implements IDocumentDao {
 	}
 
 	@Override
-	public List<Document> findByMap(Channel currChnl, Map<String, String> params) {
+	public PageInfo findByMap(Channel currChnl, Map<String, String> params) {
 		String where = params.get("where");
 		String order = params.get("order");
 		String num = params.get("num");
 		String startpos = params.get("startpos");
 		String hql = "from Document where channel=?";
+		
+		if(!StringUtils.hasLength(startpos)){
+			startpos = "0";
+		}
+		
 		if (StringUtils.hasLength(currChnl.getSite().getCanPubSta())) {
 			hql += " and status in (" + currChnl.getSite().getCanPubSta() + ")";
 		} else {
@@ -166,7 +168,16 @@ public class DocumentDao implements IDocumentDao {
 		if (StringUtils.hasLength(num)) {
 			q.setMaxResults(Integer.parseInt(num));
 		}
-		return q.list();
+		
+		long count = (Long) hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createQuery("select count(*) "+hql)
+				.setParameter(0, currChnl)
+				.uniqueResult();
+		
+		int stpos = Integer.parseInt(startpos);
+		int lmt = (int) (StringUtils.hasLength(num)?Integer.parseInt(num):IDocumentService.MAX_FETCH_SIZE);
+		return new PageInfo(stpos, lmt, q.list(), count);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -198,13 +209,14 @@ public class DocumentDao implements IDocumentDao {
 			currDoc.setChannel(targetDoc.getChannel());
 			currDoc.setSite(targetDoc.getSite());
 		}
-		currDoc.setSort(targetDoc.getSort());
+		Integer tSort = targetDoc.getSort();
 
 		hibernateTemplate
 				.bulkUpdate(
-						"update Document set sort=sort-1 where channel.id=? and sort<=?",
+						"update Document set sort=sort+1 where channel.id=? and sort>=?",
 						targetDoc.getChannel().getId(), targetDoc.getSort());
 
+		currDoc.setSort(tSort);
 		hibernateTemplate.update(currDoc);
 	}
 
@@ -212,6 +224,98 @@ public class DocumentDao implements IDocumentDao {
 	public void removeFields(Document persistDoc) {
 		
 		hibernateTemplate.bulkUpdate("delete from FieldValue where document=?", persistDoc);
+	}
+
+
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public PageInfo findByChnlNames(Site site, Map<String, String> params) {
+		String cNames = params.get("channels");
+		String num = params.get("num");
+		String order = params.get("order");
+		String where = params.get("where");
+		String startpos = params.get("startpos");
+		StringBuilder hql = new StringBuilder("from Document where ");
+		
+		String[] cNameArr = cNames.split(",");
+		hql.append("site.id='"+site.getId()+"' and channel.name in ('"+CommonUtils.join(cNameArr, "','")+"')");
+		if(StringUtils.hasLength(site.getCanPubSta())){
+			hql.append(" and status in ("+site.getCanPubSta()+")");
+		}else{
+			hql.append(" and status<> 5 ");
+		}
+		if(StringUtils.hasLength(where)){
+			hql.append(" and "+where);
+		}
+		if(StringUtils.hasLength(order)){
+			hql.append(" order by " + order);
+		}else{
+			hql.append(" order by sort ");
+		}
+		
+		List<Document> list = hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createQuery(hql.toString())
+				.setFirstResult(StringUtils.hasLength(startpos)?Integer.parseInt(startpos):0)
+				.setMaxResults(StringUtils.hasLength(num)?Integer.parseInt(num):IDocumentService.MAX_FETCH_SIZE)
+				.list();
+		
+		long count = (Long) hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createQuery("select count(*) "+hql.toString())
+				.uniqueResult();
+		
+		int stpos = StringUtils.hasLength(startpos)?Integer.parseInt(startpos):0;
+		int lmt = (int) (StringUtils.hasLength(num)?Integer.parseInt(num):IDocumentService.MAX_FETCH_SIZE);
+		return new PageInfo(stpos, lmt, list, count);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public PageInfo findByChannels(Site site, List<Channel> channels,
+			Map<String, String> params) {
+		
+		String num = params.get("num");
+		String order = params.get("order");
+		String where = params.get("where");
+		String startpos = params.get("startpos");
+		StringBuilder hql = new StringBuilder("from Document where site.id='"+site.getId()+"'");
+		StringBuilder ids = new StringBuilder();
+		for(Channel c :channels){
+			ids.append(",'"+c.getId()+"'");
+		}
+		if(ids.length()>0){
+			ids.delete(0, 1);
+		}
+		hql.append(" and channel.id in ("+ids+")");
+		
+		if(StringUtils.hasLength(site.getCanPubSta())){
+			hql.append(" and status in ("+site.getCanPubSta()+")");
+		}else{
+			hql.append(" and status<> 5 ");
+		}
+		if(StringUtils.hasLength(where)){
+			hql.append(" and "+where);
+		}
+		if(StringUtils.hasLength(order)){
+			hql.append(" order by " + order);
+		}else{
+			hql.append(" order by sort ");
+		}
+		List<Document> list = hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createQuery(hql.toString())
+				.setFirstResult(StringUtils.hasLength(startpos)?Integer.parseInt(startpos):0)
+				.setMaxResults(StringUtils.hasLength(num)?Integer.parseInt(num):IDocumentService.MAX_FETCH_SIZE)
+				.list();
+		
+		long count = (Long) hibernateTemplate.getSessionFactory()
+				.getCurrentSession()
+				.createQuery("select count(*) "+hql.toString())
+				.uniqueResult();
+		int stpos = StringUtils.hasLength(startpos)?Integer.parseInt(startpos):0;
+		int lmt = StringUtils.hasLength(num)?Integer.parseInt(num):IDocumentService.MAX_FETCH_SIZE;
+		return new PageInfo(stpos, lmt, list, count);
 	}
 
 }

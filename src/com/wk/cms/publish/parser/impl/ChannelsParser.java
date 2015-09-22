@@ -27,7 +27,6 @@ public class ChannelsParser extends AbstractTagParser {
 	protected String parseInternal(Object obj)
 			throws ServiceException {
 		HtmlTag e = getTag();
-		Object base = ctx.getBase();
 		String name = e.attr("name");
 		String num = e.attr("num");
 		String order = e.attr("order");
@@ -41,11 +40,20 @@ public class ChannelsParser extends AbstractTagParser {
 		params.put("startpos", startpos);
 		
 		List<Channel> channels = null;
-		Site currSite = PublishUtils.getSite(obj);
+		Site currSite = getSite(obj);
 		
 		if(StringUtils.hasLength(name)){
-			Channel pChannel = channelService.findByName(name,currSite);
-			channels = channelService.findByMap(pChannel,params);
+			if("_site".equalsIgnoreCase(name)){
+				params.put("name", "_site");
+				Channel tmp = new Channel();
+				tmp.setSite(currSite);
+				channels = channelService.findByMap(tmp,params);
+			}else{
+				Channel pChannel = channelService.findByName(name,currSite);
+				channels = channelService.findByMap(pChannel,params);
+			}
+			
+			
 		}else{
 			if(obj instanceof Site){
 				channels = channelService.findByMap((Site)obj,params);
@@ -61,7 +69,7 @@ public class ChannelsParser extends AbstractTagParser {
 		StringBuilder sb = new StringBuilder();
 		if(channels!=null){
 			for(Channel c : channels){
-				sb.append(PublishServer.parse(c,base, e.getHtml()));
+				sb.append(ctx.getServer().parse(c,ctx.getBase(), e.getHtml(),ctx.getBaseHtml(),null));
 			}
 		}
 		

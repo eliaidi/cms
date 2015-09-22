@@ -1,9 +1,10 @@
 package com.wk.cms.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
 
 import org.hibernate.criterion.DetachedCriteria;
@@ -17,7 +18,9 @@ import com.wk.cms.dao.IDocumentDao;
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.Field.Type;
 import com.wk.cms.model.FieldValue;
+import com.wk.cms.model.Site;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
@@ -160,12 +163,8 @@ public class DocumentService implements IDocumentService {
 		// 拷贝本文档
 		Document newDoc = new Document();
 		BeanUtils.copyProperties(document, newDoc, new String[] { "id",
-				"crTime", "crUser", "appendixs" });
+				"crTime", "crUser", "appendixs","fieldValues" });
 		
-		for(FieldValue fv : newDoc.getFieldValues()){
-			fv.setId(UUID.randomUUID().toString());
-			fv.setDocument(newDoc);
-		}
 		save(newDoc, newChannel);
 
 		// 拷贝本文档下所有的附件
@@ -260,7 +259,7 @@ public class DocumentService implements IDocumentService {
 	}
 
 	@Override
-	public List<Document> findByMap(Channel currChnl, Map<String, String> params) {
+	public PageInfo findByMap(Channel currChnl, Map<String, String> params) {
 
 		return documentDao.findByMap(currChnl, params);
 	}
@@ -272,6 +271,105 @@ public class DocumentService implements IDocumentService {
 		Document currDoc = findById(currId);
 		Document targetDoc = findById(targetId);
 		documentDao.move(currDoc, targetDoc);
+	}
+
+	@Override
+	public Object getDocProperty(Document doc,String field,Integer index) throws ServiceException {
+		
+		Object val = null;
+		try {
+			val = CommonUtils.getDeepFieldValue(doc, field);
+		} catch (ServiceException e) {
+			
+			if(e.getCause() instanceof NoSuchMethodException){
+				List<FieldValue> fvs = doc.getFieldValues();
+				String[] fields = field.split("\\.");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				if(fields.length==1){
+					for(FieldValue fv : fvs ){
+						if(!fv.getExtField().getField().isCustom()&&fv.getExtField().getField().getName().equalsIgnoreCase(fields[0])){
+							
+							if(fv.getValue()!=null){
+								if(Type.INT.equals(fv.getField().getType())){
+									val = Integer.parseInt(fv.getValue());
+								}else if(Type.FLOAT.equals(fv.getField().getType())){
+									val = Float.parseFloat(fv.getValue());
+								}else if(Type.DATE.equals(fv.getField().getType())){
+									try {
+										val = sdf.parse(fv.getValue());
+									} catch (java.text.ParseException e1) {
+										throw new ServiceException(e.getMessage(),e);
+									}
+								}else{
+									val = fv.getValue();
+								}
+							}
+							
+						}
+					}
+				}else if(fields.length==2){
+					List<Object> vl = null;
+					if(index==null){
+						vl= new ArrayList<Object>();
+					}
+					for(FieldValue fv : fvs ){
+						if(fv.getExtField().getField().isCustom()&&fv.getExtField().getField().getName().equalsIgnoreCase(fields[0])&&fv.getField().getName().equalsIgnoreCase(fields[1])){
+							Object v = null;
+							if(fv.getValue()!=null){
+								if(Type.INT.equals(fv.getField().getType())){
+									v = Integer.parseInt(fv.getValue());
+								}else if(Type.FLOAT.equals(fv.getField().getType())){
+									v = Float.parseFloat(fv.getValue());
+								}else if(Type.DATE.equals(fv.getField().getType())){
+									try {
+										v = sdf.parse(fv.getValue());
+									} catch (java.text.ParseException e1) {
+										throw new ServiceException(e.getMessage(),e);
+									}
+								}else{
+									v = fv.getValue();
+								}
+								
+								if(index==null){
+									vl.add(v);
+								}else{
+									if(index==fv.getGroup()){
+										val = v;
+									}
+								}
+							}
+						}
+					}
+					
+					if(index==null){
+						val = vl;
+					}
+				}
+				
+			}else{
+				throw new ServiceException(e.getMessage(), e);
+			}
+		}
+		return val;
+	}
+
+	@Override
+	public PageInfo findRollDocuments(Site site,Map<String, String> params) throws ServiceException {
+		String cNames = params.get("channels");
+		String pName = params.get("parent");
+		
+		
+		if(StringUtils.hasLength(cNames)){
+			
+			return documentDao.findByChnlNames(site,params);
+			
+		}else if(StringUtils.hasLength(pName)){
+			String level = params.get("level");
+			List<Channel> channels = channelService.findSubChannels(site,pName,level);
+			
+			return documentDao.findByChannels(site,channels,params);
+		}
+		throw new ServiceException("channels属性和parent属性至少需要一个！");
 	}
 
 }

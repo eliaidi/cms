@@ -38,7 +38,7 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 	},
 	onAfterRender:function(){
 		var me = this;
-		console.log(me.document);
+		//console.log(me.document);
 	},
 	onFieldWinOK:function(me,fWin,store){
 		var rs = [],originRs = [],group = 0;
@@ -80,9 +80,7 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 		var me = this,form = me.form,fieldValues = me.document.get('fieldValues');
 		for(var i=0;i<fieldValues.length;i++){
 			var fieldValue = fieldValues[i],formField = form.findField(fieldValue.extField.field.name);
-			if(!formField){
-				continue;
-			}
+			//if(!formField) continue;
 			if(!fieldValue.extField.field.custom){
 				formField.setValue(fieldValue.value);
 			}else{
@@ -107,15 +105,16 @@ Ext.define('MyCms.view.fieldvalue.Window', {
 				me.extraStore[fieldValue.extField.id][group][fieldValue.field.id] = fieldValue.value;
 			}
 		}
-		console.log(me.document)
-		console.log(me.extraStore);
-		console.log(me.extraValue);
+//		console.log(me.document)
+		console.log('extraStore',me.extraStore);
+		console.log('extraValue',me.extraValue);
 		
 		for(var i=0;i<fieldValues.length;i++){
 			var fieldValue = fieldValues[i];
-			if(!fieldValue.extField.field.custom){
+			if(fieldValue.extField.field.custom){
 				var formField = form.findField(fieldValue.extField.field.name+'-show');
-				formField.setValue(me.extraStore[fieldValue.extField.id].length);
+				if(!formField) continue;
+				formField.setValue('已输入'+me.extraStore[fieldValue.extField.id].length+'条记录！');
 			}
 		}
 	},

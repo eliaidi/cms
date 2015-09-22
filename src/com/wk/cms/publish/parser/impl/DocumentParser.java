@@ -40,6 +40,7 @@ public class DocumentParser extends AbstractTagParser {
 		String type = e.attr("type");// HTML、TEXT
 		String format = e.attr("format");// HTML、JS
 		String dateFormat = e.attr("dateformat");// etc:yyyy-MM-dd HH:mm:ss
+		String index = e.attr("index"); // extfield's value index
 		Document currDoc = null;
 		if (StringUtils.hasLength(id)) {
 			currDoc = documentService.findById(id);
@@ -54,13 +55,15 @@ public class DocumentParser extends AbstractTagParser {
 			field = "title";
 		}
 
-		Object val = CommonUtils.getDeepFieldValue(currDoc, field);
+		Object val = documentService.getDocProperty(currDoc ,field,StringUtils.hasLength(index)?Integer.parseInt(index):null);
 		String valStr = null;
 		if ((val instanceof Date)) {
 			if (!StringUtils.hasLength(dateFormat)) {
 				dateFormat = "yyyy-MM-dd HH:mm:ss";
 			}
 			valStr = new SimpleDateFormat(dateFormat).format(val);
+		}else if(val instanceof List){
+			valStr = CommonUtils.join((List)val, ",");
 		} else {
 			valStr = val.toString();
 			if ("text".equalsIgnoreCase(type)) {

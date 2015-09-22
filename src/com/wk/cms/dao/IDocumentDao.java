@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.Site;
 import com.wk.cms.utils.PageInfo;
 
 public interface IDocumentDao {
@@ -32,7 +33,7 @@ public interface IDocumentDao {
 
 	List<Document> find(@NotEmpty String hql, Object[] params, @NotNull PageInfo pageInfo);
 
-	List<Document> findByMap(Channel currChnl, Map<String, String> params);
+	PageInfo findByMap(Channel currChnl, Map<String, String> params);
 
 	Integer findMaxSortOf(Channel channel);
 
@@ -41,5 +42,10 @@ public interface IDocumentDao {
 	void move(Document currDoc, Document targetDoc);
 
 	void removeFields(Document persistDoc);
+
+	PageInfo findByChnlNames(Site site, Map<String, String> params);
+
+	PageInfo findByChannels(Site site, List<Channel> channels,
+			Map<String, String> params);
 
 }

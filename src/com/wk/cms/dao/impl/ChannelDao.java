@@ -36,6 +36,7 @@ public class ChannelDao implements IChannelDao {
 				.createCriteria(Channel.class).createAlias("site", "s")
 				.add(Restrictions.eq("s.id", siteId))
 				.add(Restrictions.isNull("parent")).addOrder(Order.asc("sort"))
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.list();
 	}
 
@@ -109,17 +110,24 @@ public class ChannelDao implements IChannelDao {
 		if (!StringUtils.hasLength(startpos))
 			startpos = "0";
 
-		StringBuilder hql = new StringBuilder("from Channel where parent=? ");
+		StringBuilder hql = new StringBuilder("from Channel  ");
+		if("_site".equalsIgnoreCase(params.get("name"))){
+			hql.append(" where site.id='"+pChannel.getSite().getId()+"' and parent is null ");
+		}else{
+			hql.append(" where parent.id='"+pChannel.getId()+"'");
+		}
 		if (StringUtils.hasLength(where)) {
 			hql.append(" and " + where);
 		}
 		if (StringUtils.hasLength(order)) {
 			hql.append(" order by " + order);
+		}else{
+			hql.append(" order by sort ");
 		}
 
 		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
 				.createQuery(hql.toString());
-		q.setParameter(0, pChannel);
+//		q.setParameter(0, pChannel);
 		q.setFirstResult(Integer.parseInt(startpos));
 		q.setMaxResults(Integer.parseInt(num));
 		return q.list();

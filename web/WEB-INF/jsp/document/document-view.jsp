@@ -111,7 +111,8 @@
 					for(String fn : renderVal.keySet()){
 						Object val = renderVal.get(fn);
 						out.println("<p>");
-						out.println("<span><b>"+fn+"：</b>"+renderVal.get(fn)+"</span>::::");
+						out.println("<span><b>"+fn+"：</b>"+val+"</span>::::");
+						if(val==null) continue;
 						if(Map.class.isAssignableFrom(val.getClass())){
 							Map<String,Object> v = (Map<String,Object>)val;
 							for(String n : v.keySet()){

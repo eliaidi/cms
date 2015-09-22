@@ -10,10 +10,19 @@ public class HtmlTag {
 	private String name;
 	private Map<String, String> attrs = new HashMap<String, String>();
 	private String html;
+	private int startpos;
+	private int endpos;
 	
 	public HtmlTag(){}
-	public HtmlTag(String tagName, String attrStr, String html) {
+	public HtmlTag(String tagName, String attrStr, String html,int sp,int ep) {
 		
+		this.name = tagName;
+		this.html = html;
+		this.startpos = sp;
+		this.endpos = ep;
+		parseAttr(attrStr);
+	}
+	public HtmlTag(String tagName, String attrStr, String html) {
 		this.name = tagName;
 		this.html = html;
 		parseAttr(attrStr);
@@ -61,6 +70,18 @@ public class HtmlTag {
 	}
 	public void setHtml(String html) {
 		this.html = html;
+	}
+	public int getStartpos() {
+		return startpos;
+	}
+	public void setStartpos(int startpos) {
+		this.startpos = startpos;
+	}
+	public int getEndpos() {
+		return endpos;
+	}
+	public void setEndpos(int endpos) {
+		this.endpos = endpos;
 	}
 
 	

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class PageInfo {
 
+	private Integer page;
 	private Integer start = new Integer(1);
 	private Integer limit = new Integer(20);
 	private List<?> list;
@@ -52,6 +53,12 @@ public class PageInfo {
 	}
 	public void setTotalCount(Long totalCount) {
 		this.totalCount = totalCount;
+	}
+	public Integer getPage() {
+		return page;
+	}
+	public void setPage(Integer page) {
+		this.page = page;
 	}
 	
 	

@@ -19,6 +19,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -54,6 +56,7 @@ public class Document {
 
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonSerialize(using = OneToManyFieldSerializer.class)
+	@Fetch(FetchMode.SUBSELECT)
 	// i use type<Set> before,but type<Set> performed badly in SpringMvc arguments resolver,so i changed to type<List>
 	// in fact,type<Set>'s meaning is more closer to what i want to express, because type<List>'s elements may be repeatable ,but type<Set> will never be
 	private List<FieldValue> fieldValues = new ArrayList<FieldValue>();

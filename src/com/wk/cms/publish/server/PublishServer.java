@@ -9,11 +9,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
-
-
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.model.Channel;
@@ -35,6 +29,7 @@ import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.exceptions.PublishException;
 import com.wk.cms.publish.parser.TagParser;
 import com.wk.cms.publish.type.PublishType;
+import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.ServiceException;
@@ -55,8 +50,17 @@ public class PublishServer implements IPublishServer {
 			.getLogger(PublishServer.class);
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
-	private static boolean isPreivew = false;
+	private boolean isPreview ;
 	
+	
+	public boolean isPreview() {
+		return isPreview;
+	}
+
+	public void setPreview(boolean isPreview) {
+		this.isPreview = isPreview;
+	}
+
 	static{
 		pubCompCfg = new Properties();
 		try {
@@ -70,15 +74,20 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
-		LOGGER.debug(this.toString());
+		this.isPreview = isPreview;
 		if (isPreview)
 			return preview(obj);
+		return publish(obj);
+	}
+
+	private String publish(Object obj) {
+		// TODO Auto-generated method stub
+		LOGGER.debug(obj+"---"+isPreview);
 		return null;
 	}
 
 	private String preview(Object obj) throws PublishException {
 
-		isPreivew = true;
 		if (obj instanceof Site)
 			return previewSite((Site) obj);
 		if (obj instanceof Channel)
@@ -94,9 +103,20 @@ public class PublishServer implements IPublishServer {
 		return null;
 	}
 
-	private String previewChannel(Channel obj) {
-		// TODO Auto-generated method stub
-		return null;
+	private String previewChannel(Channel obj) throws PublishException {
+		
+		if(!StringUtils.hasLength(obj.getOtempIds())){
+			throw new PublishException("该栏目【"+obj.getId()+"】没有配置概览模板！");
+		}
+		IChannelService channelService = BeanFactory.getBean(IChannelService.class);
+		List<Template> otemps = channelService.findTemps(obj, Template.Type.OUTLINE);
+		if(CommonUtils.isEmpty(otemps)){
+			throw new PublishException("未找到栏目【"+obj.getId()+"】的概览模板[otempids::"+obj.getOtempIds()+"]！");
+		}
+		Template tpl = otemps.get(0);
+		publishInternal(obj, tpl);
+		
+		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
 	}
 
 	private String previewSite(final Site obj) throws PublishException {
@@ -107,19 +127,8 @@ public class PublishServer implements IPublishServer {
 		if (CommonUtils.isEmpty(templates))
 			throw new PublishException("站点【" + obj.getName() + "】未配置模板！！");
 		
-		//publishTempFile(obj,getPreviewDir(PublishUtils.getSite(obj))+File.separator+ITemplateService.TEMPFILE_FOLDER);
 		for (final Template template : templates) {
 			publishInternal(obj, template);
-			/*EXECUTOR.execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						publishInternal(obj, template, pDir);
-					} catch (PublishException e) {
-						LOGGER.error(e.getMessage(), e);
-					}
-				}
-			});*/
 		}
 		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
 	}
@@ -131,7 +140,7 @@ public class PublishServer implements IPublishServer {
 		
 		for(TempFile tf : tempFiles){
 			try {
-				FileUtils.witeFile(tf,getAbsoluteDir(obj));
+				FileUtils.witeFile(tf,getAbsoluteDir(PublishUtils.getSite(obj))+File.separator+IPublishServer.TEMPFILE_FOLDER);
 			} catch (ServiceException e) {
 				LOGGER.error("模板附件生成失败！",e);
 			}
@@ -144,18 +153,23 @@ public class PublishServer implements IPublishServer {
 			publishTempFile(obj);
 			String content = CommonUtils.getContent(template.getFile().getContent().getBinaryStream());
 			
-			content = parse(obj,obj,content);
-			content = updateContentTempFile(obj,content);
+			StringBuilder baseHtml = new StringBuilder(content);
+			content = parse(obj,obj,content,baseHtml,template);
 			
-			FileUtils.writeFile(content,PublishUtils.getPubFileName(obj,template),getAbsoluteDir(obj));
+			if(content!=null){
+				content = updateContentTempFile(obj,content);
+				FileUtils.writeFile(content,PublishUtils.getPubFileName(obj,template),getAbsoluteDir(obj));
+			}
+			
+			
 		} catch (Exception e) {
 			throw new PublishException(e.getMessage(),e);
 		} 
 
 	}
 
-	private String getAbsoluteDir(Object obj) {
-		return isPreivew?PublishUtils.getPreviewDir(obj):PublishUtils.getPublishDir(obj);
+	public String getAbsoluteDir(Object obj) {
+		return isPreview?PublishUtils.getPreviewDir(obj):PublishUtils.getPublishDir(obj);
 	}
 
 	/**
@@ -166,13 +180,14 @@ public class PublishServer implements IPublishServer {
 	 * @return
 	 * @throws ServiceException 
 	 */
-	public static String parse(Object obj,Object base, String content) throws ServiceException {
+	public String parse(Object obj,Object base, String content,StringBuilder baseHtml,Template template) throws ServiceException {
 		
+		Pattern pattern = Pattern.compile("<(wk_[a-z0-9\\$]+)\\s+([^>]*)>",Pattern.CASE_INSENSITIVE);
 		Matcher m = null;
-		StringBuffer sb = null;
+		StringBuilder sb = new StringBuilder();
 		while(true){
-			sb = new StringBuffer();
-			m = Pattern.compile("<(wk_[a-z0-9\\$]+)\\s+([^>]*)>",Pattern.CASE_INSENSITIVE).matcher(content);
+			sb.delete(0, sb.length());
+			m = pattern.matcher(content);
 			if(!m.find()){
 				break;
 			}
@@ -185,9 +200,13 @@ public class PublishServer implements IPublishServer {
 			}
 			int end = m.start()+header.length()+innerHtml.length()+endTag.length();
 			
-			PublishContext ctx = new PublishContext(base,isPreivew,new HtmlTag(tagName,attrStr,innerHtml));
+			HtmlTag tag = new HtmlTag(tagName,attrStr,innerHtml,m.start(),m.start()+header.length());
+			PublishContext ctx = new PublishContext(obj,base,new StringBuilder(content),tag,this,template);
 			TagParser parser = getParser(ctx);
-			String newCon = parser.parse(obj);
+			String newCon = parser.parse();
+			if(newCon==null){
+				return null;
+			}
 			
 			sb.append(content.substring(0, m.start()));
 			sb.append(newCon);
@@ -203,7 +222,7 @@ public class PublishServer implements IPublishServer {
 		HtmlTag tag = ctx.getTag();
 		String tagName = tag.getName();
 		tagName = tagName.split("\\$")[0];
-		String pubBeanName = pubCompCfg.getProperty(tag.getName());
+		String pubBeanName = pubCompCfg.getProperty(tagName);
 		if(!StringUtils.hasLength(pubBeanName)){
 			throw new PublishException("未在配置文件中找到【k="+tagName+"】的项！");
 		}
@@ -215,7 +234,7 @@ public class PublishServer implements IPublishServer {
 		return parser;
 	}
 
-	private String updateContentTempFile(Object obj,String content) throws ServiceException {
+	public String updateContentTempFile(Object obj,String content) throws ServiceException {
 		
 		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+File.separator+"images");
 		Map<String, String> parseTags = SysCfg.getSupportParseTags();
@@ -228,6 +247,9 @@ public class PublishServer implements IPublishServer {
 			String attrName = parseTags.get(tagName);
 			
 			HtmlTag tag = new HtmlTag(tagName, attrStr,"");
+			if("true".equalsIgnoreCase(tag.attr("ignore"))){
+				continue;
+			}
 			tag.removeAttr("hasDone");
 			if(StringUtils.hasLength(tag.attr(attrName))){
 				tag.attr(attrName,tfPath+tag.attr(attrName));
@@ -238,6 +260,8 @@ public class PublishServer implements IPublishServer {
 		return sb.toString();
 	}
 	
-	
+	public static void main(String[] args) {
+		
+	}
 
 }

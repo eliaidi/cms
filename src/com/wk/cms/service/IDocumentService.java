@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
+import com.wk.cms.model.Site;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.PageInfo;
 
@@ -61,10 +62,14 @@ public interface IDocumentService {
 
 	List<Document> findCanPub(@NotNull Channel currChnl, int pageSize, String where, String order,Object[] params);
 
-	List<Document> findByMap(@NotNull Channel currChnl, Map<String, String> params);
+	PageInfo findByMap(@NotNull Channel currChnl, Map<String, String> params);
 
 	void move(@NotEmpty String currId, @NotEmpty String targetId) throws ServiceException;
 
 	void removeFieldsFrom(@NotNull Document persistDoc);
+
+	Object getDocProperty(@NotNull Document currDoc, @NotEmpty String field,  Integer index) throws ServiceException;
+
+	PageInfo findRollDocuments(@NotNull Site site, @NotNull Map<String, String> params) throws ServiceException;
 
 }

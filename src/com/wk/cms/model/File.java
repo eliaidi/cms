@@ -181,8 +181,11 @@ public class File {
 				Object val = f.get(this);
 				String valStr = "";
 				if(val!=null){
-					if(CommonUtils.contains(val.getClass().getInterfaces(), Blob.class)&&!this.isPic()){
-						valStr = blobJsonSerializer.format((Blob) val);
+					if(CommonUtils.contains(val.getClass().getInterfaces(), Blob.class)){
+						if(!this.isPic()){
+							valStr = blobJsonSerializer.format((Blob) val);
+						}
+						
 					}else if(val.getClass().isAssignableFrom(Date.class)){
 						valStr = sdf.format(val);
 					}else{

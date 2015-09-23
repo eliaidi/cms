@@ -24,6 +24,7 @@ Ext.define('MyCms.view.channel.Form',{
 			},{
 				fieldLabel: '栏目发布目录',
 		        name: 'folder',
+		        vtype:'alphanum',
 		        allowBlank: false
 			},{
 				xtype:'fieldcontainer',
@@ -70,19 +71,22 @@ Ext.define('MyCms.view.channel.Form',{
 		this.chooseTemp("detail");
 	},
 	chooseTemp:function(t){
-		var me = this,fieldName = t=='outline'?'otempIds':'dtempIds',win = me.up('window'),site = win.parent?new MyCms.model.Site(win.parent.get('site')):win.site;
-    	me.tempWin = Ext.create('MyCms.view.template.Window',{
-    		site : site,
-    		modal : true,
-    		from : me,
-    		showType : t,
-    		buttons : [{
-    			text : '确定',
-    			handler : 'doChooseTemp',
-    			scope : me
-    		}],
-    		initChooseData : me.getForm().findField(fieldName).getValue()
-    	});
+		var me = this,fieldName = t=='outline'?'otempIds':'dtempIds',win = me.up('window'),site = win.channel?new MyCms.model.Site(win.channel.get('site')):win.site;
+    	if(!me.tempWin){
+    		me.tempWin = Ext.create('MyCms.view.template.Window',{
+        		site : site,
+        		modal : true,
+        		from : me,
+        		showType : t,
+        		buttons : [{
+        			text : '确定',
+        			handler : 'doChooseTemp',
+        			scope : me
+        		}],
+        		initChooseData : me.getForm().findField(fieldName).getValue()
+        	});
+    	}
+		
     	me.tempWin.show();
 	},
 	doChooseTemp:function(){

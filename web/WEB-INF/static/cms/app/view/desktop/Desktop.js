@@ -55,6 +55,18 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 },
                 scope:me
             },{
+            	text: '发布首页',
+                handler:function(){
+                	me.publish(record,"index");
+                },
+                scope:me
+            },{
+            	text: '全站发布',
+                handler:function(){
+                	me.publish(record,"all");
+                },
+                scope:me
+            },{
                 text: '修改',
                 handler:function(){
                 	me.modifySite(record);
@@ -205,6 +217,27 @@ Ext.define('MyCms.view.desktop.Desktop', {
     		title:'批量导入站点'
     	});
     	win.show();
+    },
+    publish:function(r,t){
+    	var me = this;
+    	Ext.Ajax.request({
+		    url: site_publish,
+		    params : {
+		    	id : r.get('id'),
+		    	type:t
+		    },
+		    success: function(response, opts) {
+		        var obj = Ext.decode(response.responseText);
+		        if(!obj.success){
+		        	Ext.Msg.alert('错误',obj.message);
+		        	return;
+		        }
+		       // window.open(RootPath+"/"+obj.obj);
+		    },
+		    failure: function(response, opts) {
+		        console.log('server-side failure with status code ' + response.status);
+		    }
+		});
     },
     preview:function(record){
     	var me = this;

@@ -21,6 +21,9 @@ import com.wk.cms.model.Document;
 import com.wk.cms.model.Field.Type;
 import com.wk.cms.model.FieldValue;
 import com.wk.cms.model.Site;
+import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.publish.server.PublishServer;
+import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
@@ -40,6 +43,9 @@ public class DocumentService implements IDocumentService {
 
 	@Autowired
 	private IAppendixService appendixService;
+	
+	@Autowired
+	private PublishServer publishServer;
 
 	@Override
 	public PageInfo find(String channelId, PageInfo pageInfo, String query)
@@ -164,7 +170,7 @@ public class DocumentService implements IDocumentService {
 		Document newDoc = new Document();
 		BeanUtils.copyProperties(document, newDoc, new String[] { "id",
 				"crTime", "crUser", "appendixs","fieldValues" });
-		
+		newDoc.setStatus(1);
 		save(newDoc, newChannel);
 
 		// 拷贝本文档下所有的附件
@@ -370,6 +376,11 @@ public class DocumentService implements IDocumentService {
 			return documentDao.findByChannels(site,channels,params);
 		}
 		throw new ServiceException("channels属性和parent属性至少需要一个！");
+	}
+
+	@Override
+	public String preview(String id) throws  ServiceException {
+		return publishServer.publish(findById(id), true, PublishType.INDEX);
 	}
 
 }

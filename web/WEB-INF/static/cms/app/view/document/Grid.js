@@ -139,7 +139,13 @@ Ext.define('MyCms.view.document.Grid', {
 		}
 		dMenu = Ext.create('MyCms.view.ux.MyMenu', {
 			id : 'document-item-menu',
-			items : [ {
+			items : [{
+				text : '预览',
+				handler : function() {
+					me.previewDoc(record);
+				},
+				scope : me
+			}, {
 				text : '修改',
 				handler : function() {
 					me.modifyDoc(record);
@@ -176,6 +182,28 @@ Ext.define('MyCms.view.document.Grid', {
 
 		e.stopEvent();
 		e.stopPropagation();
+	},
+	previewDoc:function(r){
+		var me = this;
+		
+		Ext.Ajax.request({
+			url : document_preview,
+			params : {
+				id:r.get('id')
+			},
+			success : function(response, opts) {
+				var o = Ext.decode(response.responseText);
+				if (!o.success) {
+					Ext.Msg.alert('错误', o.message);
+					return;
+				}
+				window.open(o.obj);
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	},
 	copy:function(r){
 		var me = this,rs = me.getSelectionModel().getSelection();

@@ -21,11 +21,20 @@ Ext.define('MyCms.view.site.Form',{
 			},{
 				fieldLabel: '站点发布目录',
 		        name: 'folder',
+		        vtype:'alphanum',
 		        allowBlank: false
 			},{
 				fieldLabel: '站点发布地址',
 		        name: 'url',
-		        allowBlank: false
+		        vtype:'url',
+		        allowBlank: false,
+		        listeners:{
+		        	focus:function(){
+		        		if(this.getValue()==''){
+		        			this.setValue(BasePath);
+		        		}
+		        	}
+		        }
 			}];
 		for(var k in MyCms.model.Document.StatusMapping){
 			pubStaFields.push({

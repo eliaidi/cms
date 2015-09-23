@@ -80,4 +80,11 @@ public class SiteController {
 		
 		return new Message(true, null, siteService.previewById(siteId));
 	}
+	
+	@RequestMapping("/publish")
+	public @ResponseBody Message publish(String id,String type) throws ServiceException{
+		
+		siteService.publish(id,type);
+		return new Message(true, null, "");
+	}
 }

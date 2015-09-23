@@ -56,6 +56,7 @@ public class DocumentParser extends AbstractTagParser {
 		}
 
 		Object val = documentService.getDocProperty(currDoc ,field,StringUtils.hasLength(index)?Integer.parseInt(index):null);
+		if(val==null) return "";
 		String valStr = null;
 		if ((val instanceof Date)) {
 			if (!StringUtils.hasLength(dateFormat)) {

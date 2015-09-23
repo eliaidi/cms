@@ -72,4 +72,6 @@ public interface IDocumentService {
 
 	PageInfo findRollDocuments(@NotNull Site site, @NotNull Map<String, String> params) throws ServiceException;
 
+	String preview(@NotEmpty String id) throws ServiceException;
+
 }

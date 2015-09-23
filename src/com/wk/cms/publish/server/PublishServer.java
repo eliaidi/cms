@@ -24,12 +24,14 @@ import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.TempFile;
 import com.wk.cms.model.Template;
+import com.wk.cms.model.Template.Type;
 import com.wk.cms.parser.HtmlTag;
 import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.exceptions.PublishException;
 import com.wk.cms.publish.parser.TagParser;
 import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IChannelService;
+import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.ITemplateService;
 import com.wk.cms.service.exception.ServiceException;
@@ -77,33 +79,131 @@ public class PublishServer implements IPublishServer {
 		this.isPreview = isPreview;
 		if (isPreview)
 			return preview(obj);
-		return publish(obj);
+		return publish(obj,type);
 	}
 
-	private String publish(Object obj) {
-		// TODO Auto-generated method stub
-		LOGGER.debug(obj+"---"+isPreview);
+	private String publish(Object obj, PublishType type) throws PublishException {
+		
+		if(obj instanceof Site){
+			return publishSite((Site)obj,type);
+		}else if(obj instanceof Channel){
+			return publishChannel((Channel)obj,type);
+		}else if(obj instanceof Document){
+			return previewOrPublishDocument((Document) obj);
+		}
 		return null;
+	}
+
+	private String publishChannel(Channel obj, final PublishType type) throws PublishException {
+		
+		String r = previewOrPublishChannel(obj);
+		if(type.equals(PublishType.ALL)){
+			try {
+				IChannelService channelService = BeanFactory.getBean(IChannelService.class);
+				List<Channel > channels = channelService.findByParentId(obj.getId());
+				
+				for(final Channel channel : channels){
+					if(!StringUtils.hasLength(channel.getOtempIds())){
+						continue;
+					}
+					EXECUTOR.execute(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								publish(channel, type);
+							} catch (PublishException e) {
+								LOGGER.error("发布栏目失败【"+channel.getDescr()+"】",e);
+							}
+						}
+					});
+				}
+				
+				if(StringUtils.hasLength(obj.getDtempIds())){
+					IDocumentService documentService = BeanFactory.getBean(IDocumentService.class);
+					List<Document> documents = documentService.findCanPub(obj, IDocumentService.MAX_FETCH_SIZE, null, null, null);
+					
+					for(final Document document : documents){
+						EXECUTOR.execute(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									publish(document, type);
+								} catch (PublishException e) {
+									LOGGER.error("发布文档失败【"+document.getTitle()+"】",e);
+								}
+							}
+						});
+					}
+				}
+				
+			} catch (ServiceException e) {
+				throw new PublishException("获取站点根栏目失败！", e);
+			}
+		}
+		return r;
+	}
+
+
+	private String publishSite(Site obj, final PublishType type) throws PublishException {
+		
+		String r = previewOrPublishSite(obj);
+		if(type.equals(PublishType.ALL)){
+			
+			IChannelService channelService = BeanFactory.getBean(IChannelService.class);
+			try {
+				List<Channel > channels = channelService.findBySiteId(obj.getId());
+				
+				for(final Channel channel : channels){
+					if(!StringUtils.hasLength(channel.getOtempIds())){
+						continue;
+					}
+					EXECUTOR.execute(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								publish(channel, type);
+							} catch (PublishException e) {
+								LOGGER.error("发布栏目失败【"+channel.getDescr()+"】",e);
+							}
+						}
+					});
+				}
+			} catch (ServiceException e) {
+				throw new PublishException("获取站点根栏目失败！", e);
+			}
+		}
+		return r;
 	}
 
 	private String preview(Object obj) throws PublishException {
 
 		if (obj instanceof Site)
-			return previewSite((Site) obj);
+			return previewOrPublishSite((Site) obj);
 		if (obj instanceof Channel)
-			return previewChannel((Channel) obj);
+			return previewOrPublishChannel((Channel) obj);
 		if (obj instanceof Document)
-			return previewDocument((Document) obj);
+			return previewOrPublishDocument((Document) obj);
 
 		throw new PublishException("不支持预览此类型对象【" + obj + "】！！");
 	}
 
-	private String previewDocument(Document obj) {
-		// TODO Auto-generated method stub
-		return null;
+	private String previewOrPublishDocument(Document obj) throws PublishException {
+
+		if(!StringUtils.hasLength(obj.getChannel().getDtempIds())){
+			throw new PublishException("该文档【"+obj.getId()+"】所在栏目【"+obj.getChannel().getId()+"】没有配置概览模板！");
+		}
+		IChannelService  channelService = BeanFactory.getBean(IChannelService.class);
+		List<Template> dTemps = channelService.findTemps(obj.getChannel(), Type.DETAIL);
+		if(CommonUtils.isEmpty(dTemps)){
+			throw new PublishException("未找到栏目【"+obj.getChannel().getId()+"】的概览模板[otempids::"+obj.getChannel().getDtempIds()+"]！");
+		}
+		Template tpl = dTemps.get(0);
+		publishInternal(obj, tpl);
+		
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
 	}
 
-	private String previewChannel(Channel obj) throws PublishException {
+	private String previewOrPublishChannel(Channel obj) throws PublishException {
 		
 		if(!StringUtils.hasLength(obj.getOtempIds())){
 			throw new PublishException("该栏目【"+obj.getId()+"】没有配置概览模板！");
@@ -116,10 +216,10 @@ public class PublishServer implements IPublishServer {
 		Template tpl = otemps.get(0);
 		publishInternal(obj, tpl);
 		
-		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
 	}
 
-	private String previewSite(final Site obj) throws PublishException {
+	private String previewOrPublishSite(final Site obj) throws PublishException {
 
 		ISiteService siteService = BeanFactory.getBean(ISiteService.class);
 
@@ -130,7 +230,7 @@ public class PublishServer implements IPublishServer {
 		for (final Template template : templates) {
 			publishInternal(obj, template);
 		}
-		return ITemplateService.PREVIEW_FOLDER+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
 	}
 
 	private void publishTempFile(Object obj) {

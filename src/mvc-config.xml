@@ -17,6 +17,7 @@
 	<!-- mapping static resources -->
 	<mvc:resources location="/WEB-INF/static/" mapping="/static/**"></mvc:resources>
 	<mvc:resources location="/preview/" mapping="/preview/**"></mvc:resources>
+	<mvc:resources location="/publish/" mapping="/publish/**"></mvc:resources>
 	<mvc:resources location="/WEB-INF/static/cms/" mapping="/**"></mvc:resources>
 
 	<bean

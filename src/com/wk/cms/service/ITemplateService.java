@@ -18,6 +18,7 @@ public interface ITemplateService {
 
 	String TEMPFILE_FOLDER = "images";
 	String PREVIEW_FOLDER = "preview";
+	String PUBLISH_FOLDER = "publish";
 
 	PageInfo find(@NotEmpty String siteId, String show,
 			@NotNull PageInfo pageInfo, String query);

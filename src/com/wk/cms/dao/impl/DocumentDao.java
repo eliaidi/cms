@@ -1,6 +1,5 @@
 package com.wk.cms.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,7 +7,6 @@ import java.util.UUID;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ public class DocumentDao implements IDocumentDao {
 		if (StringUtils.hasLength(query)) {
 			hql.append(" and ( title like ? or abst like ? or content like ?)");
 		}
-		hql.append(" order by sort ");
+		hql.append(" order by sort desc ");
 		Query cq = s.createQuery("select count(*) " + hql.toString())
 				.setParameter(0, channelId);
 		Query lq = s.createQuery(hql.toString()).setParameter(0, channelId);
@@ -54,10 +52,6 @@ public class DocumentDao implements IDocumentDao {
 
 		Long count = (Long) cq.uniqueResult();
 		List<Document> documents = lq.list();
-		// List<Document> documents = s.createQuery("from Document")
-		// .setFirstResult(pageInfo.getStart())
-		// .setMaxResults(pageInfo.getLimit())
-		// .list();
 
 		return new PageInfo(documents, count);
 	}
@@ -156,6 +150,8 @@ public class DocumentDao implements IDocumentDao {
 		}
 		if (StringUtils.hasLength(order)) {
 			hql += " order by " + order;
+		}else{
+			hql += " order by sort desc " ;
 		}
 
 		Query q = hibernateTemplate.getSessionFactory().getCurrentSession()
@@ -213,7 +209,7 @@ public class DocumentDao implements IDocumentDao {
 
 		hibernateTemplate
 				.bulkUpdate(
-						"update Document set sort=sort+1 where channel.id=? and sort>=?",
+						"update Document set sort=sort-1 where channel.id=? and sort<=?",
 						targetDoc.getChannel().getId(), targetDoc.getSort());
 
 		currDoc.setSort(tSort);
@@ -250,7 +246,7 @@ public class DocumentDao implements IDocumentDao {
 		if(StringUtils.hasLength(order)){
 			hql.append(" order by " + order);
 		}else{
-			hql.append(" order by sort ");
+			hql.append(" order by sort desc ");
 		}
 		
 		List<Document> list = hibernateTemplate.getSessionFactory()
@@ -300,7 +296,7 @@ public class DocumentDao implements IDocumentDao {
 		if(StringUtils.hasLength(order)){
 			hql.append(" order by " + order);
 		}else{
-			hql.append(" order by sort ");
+			hql.append(" order by sort desc");
 		}
 		List<Document> list = hibernateTemplate.getSessionFactory()
 				.getCurrentSession()

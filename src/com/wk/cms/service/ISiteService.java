@@ -34,4 +34,6 @@ public interface ISiteService {
 	String previewById(@NotEmpty String siteId) throws ServiceException;
 
 	List<Template> findTemplatesBySite(@NotNull Site obj);
+
+	void publish(@NotEmpty String id, @NotEmpty String type) throws ServiceException;
 }

@@ -6,8 +6,10 @@ import java.io.File;
 
 
 
+
 import org.springframework.util.StringUtils;
 
+import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
@@ -64,7 +66,7 @@ public class PublishUtils {
 			
 			p = p+tArr[i]+File.separator;
 		}
-		return p;
+		return "".equals(p)?"./":p;
 	}
 	
 	public static String getPubFileName(Object obj, Template template) {
@@ -84,8 +86,18 @@ public class PublishUtils {
 	}
 
 	public static String getPublishDir(Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		String pubRootDir = SysCfg.getProperty("publish_dir");
+		if(!StringUtils.hasLength(pubRootDir)){
+			pubRootDir = CommonUtils.getAppPath("cms") + File.separator + ITemplateService.PUBLISH_FOLDER;
+		}
+		pubRootDir = pubRootDir+File.separator+getDir(obj);
+		
+		File f = new File(pubRootDir);
+		if(!f.exists()){
+			f.mkdirs();
+		}
+		return pubRootDir;
 	}
 
 	public static String getPubFileName(Object obj, Template template,

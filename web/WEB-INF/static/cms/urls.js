@@ -4,6 +4,7 @@ var site_detail = RootPath+'/site/detail';
 var site_delete = RootPath+'/site/delete';
 var site_imp = RootPath+'/site/imp';
 var site_preview = RootPath+'/site/preview';
+var site_publish = RootPath+'/site/publish';
 	
 var list_channel_by_siteid = RootPath+'/channel/list';
 var channel_save = RootPath+'/channel/save';
@@ -25,6 +26,7 @@ var document_detail = RootPath+'/document/detail';
 var document_copy = RootPath+'/document/copy';
 var document_cut = RootPath+'/document/cut';
 var document_move = RootPath+'/document/move';
+var document_preview = RootPath+'/document/preview';
 
 var appendix_list = RootPath+'/appendix/list';
 var appendix_save = RootPath+'/appendix/save';

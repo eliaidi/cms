@@ -13,6 +13,8 @@ import com.wk.cms.dao.ISiteDao;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
 import com.wk.cms.publish.IPublishServer;
+import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
@@ -107,6 +109,16 @@ public class SiteService implements ISiteService {
 	@Override
 	public List<Template> findTemplatesBySite(Site obj) {
 		return siteDao.findTemplatesBySite(obj);
+	}
+	@Override
+	public void publish(String id, String type) throws  ServiceException {
+		PublishType pType = null;
+		if("index".equalsIgnoreCase(type)){
+			pType = PublishType.INDEX;
+		}else if("all".equalsIgnoreCase(type)){
+			pType = PublishType.ALL;
+		}
+		publishServer.publish(findById(id), false, pType);
 	}
 
 }

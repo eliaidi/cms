@@ -140,4 +140,11 @@ public class DocumentController {
 		documentService.move(currId, targetId);
 		return new Message(true, "移动成功！", null);
 	}
+	
+	@RequestMapping("/preview")
+	public @ResponseBody
+	Message preview(String id) throws ServiceException {
+
+		return new Message(true, "", documentService.preview(id));
+	}
 }

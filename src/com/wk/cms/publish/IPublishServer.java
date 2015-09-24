@@ -8,4 +8,5 @@ public interface IPublishServer {
 	String TEMPFILE_FOLDER = "images";
 
 	public String publish(Object obj,boolean isPreview, PublishType type) throws PublishException;
+
 }

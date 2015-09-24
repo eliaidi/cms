@@ -314,4 +314,10 @@ public class DocumentDao implements IDocumentDao {
 		return new PageInfo(stpos, lmt, list, count);
 	}
 
+	@Override
+	public void changeStatus(Document obj, Integer status) {
+		obj.setStatus(status);
+		hibernateTemplate.update(obj);
+	}
+
 }

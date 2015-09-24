@@ -24,4 +24,5 @@ public class BeanFactory implements ApplicationContextAware {
 		
 		return (T) applicationContext.getBean(beanName);
 	}
+	
 }

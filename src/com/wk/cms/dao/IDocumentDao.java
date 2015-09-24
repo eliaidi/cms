@@ -48,4 +48,6 @@ public interface IDocumentDao {
 	PageInfo findByChannels(Site site, List<Channel> channels,
 			Map<String, String> params);
 
+	void changeStatus(Document obj, Integer status);
+
 }

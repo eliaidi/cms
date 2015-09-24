@@ -34,6 +34,13 @@ import com.wk.cms.mvc.json.OneToManyFieldSerializer;
 @Cacheable
 @Cache(region = "document", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Document {
+	
+	public static class Status{
+		public static final Integer NEW = 1;
+		public static final Integer EDIT = 2;
+		public static final Integer AUDIT = 3;
+		public static final Integer PUBLISH = 4;
+	}
 
 	@Id
 	private String id;
@@ -50,7 +57,7 @@ public class Document {
 	private String content;
 	private String author;
 	private Integer sort = 0;
-	private Integer status;
+	private Integer status = Status.NEW;
 	@OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
 	private Set<Appendix> appendixs;
 

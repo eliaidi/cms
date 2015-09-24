@@ -17,7 +17,7 @@ import com.wk.cms.model.Channel;
 import com.wk.cms.model.ExtField;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
-import com.wk.cms.publish.server.PublishServer;
+import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
@@ -38,7 +38,7 @@ public class ChannelService implements IChannelService {
 	private IDocumentService documentService;
 	
 	@Autowired
-	PublishServer publishServer;
+	private IPublishServer publishServer;
 	
 	@Override
 	public List<Channel> findBySiteId(String siteId) throws ServiceException {

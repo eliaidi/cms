@@ -21,8 +21,7 @@ import com.wk.cms.model.Document;
 import com.wk.cms.model.Field.Type;
 import com.wk.cms.model.FieldValue;
 import com.wk.cms.model.Site;
-import com.wk.cms.publish.exceptions.PublishException;
-import com.wk.cms.publish.server.PublishServer;
+import com.wk.cms.publish.IPublishServer;
 import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
@@ -45,7 +44,7 @@ public class DocumentService implements IDocumentService {
 	private IAppendixService appendixService;
 	
 	@Autowired
-	private PublishServer publishServer;
+	private IPublishServer publishServer;
 
 	@Override
 	public PageInfo find(String channelId, PageInfo pageInfo, String query)
@@ -246,7 +245,7 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public List<Document> findCanPub(Channel currChnl, int pageSize,
 			String where, String order, Object[] params) {
-		String hql = " from Doucment where channel.id='" + currChnl.getId()
+		String hql = " from Document where channel.id='" + currChnl.getId()
 				+ "'  ";
 
 		if (StringUtils.hasLength(currChnl.getSite().getCanPubSta())) {
@@ -381,6 +380,11 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public String preview(String id) throws  ServiceException {
 		return publishServer.publish(findById(id), true, PublishType.INDEX);
+	}
+
+	@Override
+	public void changeStatus(Document obj, Integer status) {
+		documentDao.changeStatus(obj,status);
 	}
 
 }

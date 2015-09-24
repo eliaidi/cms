@@ -5,9 +5,14 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -45,15 +50,16 @@ import com.wk.cms.utils.PublishUtils;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PublishServer implements IPublishServer {
 
+	private static final int INIT_POOL_SIZE = Runtime.getRuntime().availableProcessors();
 	private static final int MAX_POOL_SIZE = 10;
-	private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(
-			MAX_POOL_SIZE);
+	private static final int KEEP_ALIVE_SECONDS = 10;
+	private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(
+			INIT_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(PublishServer.class);
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
 	private boolean isPreview ;
-	
 	
 	public boolean isPreview() {
 		return isPreview;
@@ -76,13 +82,14 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
+		LOGGER.debug("发布对象【"+obj+"】，发布类型【"+(isPreview?"预览":"发布")+"】，发布形式【"+type+"】，当前线程【"+Thread.currentThread()+"】");
 		this.isPreview = isPreview;
 		if (isPreview)
 			return preview(obj);
-		return publish(obj,type);
+		return doPublish(obj,type);
 	}
 
-	private String publish(Object obj, PublishType type) throws PublishException {
+	public String doPublish(Object obj, PublishType type) throws PublishException {
 		
 		if(obj instanceof Site){
 			return publishSite((Site)obj,type);
@@ -110,7 +117,7 @@ public class PublishServer implements IPublishServer {
 						@Override
 						public void run() {
 							try {
-								publish(channel, type);
+								doPublish(channel, type);
 							} catch (PublishException e) {
 								LOGGER.error("发布栏目失败【"+channel.getDescr()+"】",e);
 							}
@@ -127,7 +134,7 @@ public class PublishServer implements IPublishServer {
 							@Override
 							public void run() {
 								try {
-									publish(document, type);
+									doPublish(document, type);
 								} catch (PublishException e) {
 									LOGGER.error("发布文档失败【"+document.getTitle()+"】",e);
 								}
@@ -161,7 +168,7 @@ public class PublishServer implements IPublishServer {
 						@Override
 						public void run() {
 							try {
-								publish(channel, type);
+								doPublish(channel, type);
 							} catch (PublishException e) {
 								LOGGER.error("发布栏目失败【"+channel.getDescr()+"】",e);
 							}
@@ -199,6 +206,11 @@ public class PublishServer implements IPublishServer {
 		}
 		Template tpl = dTemps.get(0);
 		publishInternal(obj, tpl);
+		
+		if(!isPreview){
+			IDocumentService documentService = BeanFactory.getBean(IDocumentService.class);
+			documentService.changeStatus(obj,Document.Status.PUBLISH);
+		}
 		
 		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
 	}

@@ -74,4 +74,6 @@ public interface IDocumentService {
 
 	String preview(@NotEmpty String id) throws ServiceException;
 
+	void changeStatus(@NotNull Document obj, @NotNull Integer publish);
+
 }

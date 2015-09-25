@@ -5,14 +5,13 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -60,6 +59,7 @@ public class PublishServer implements IPublishServer {
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
 	private boolean isPreview ;
+	private Semaphore sem;
 	
 	public boolean isPreview() {
 		return isPreview;
@@ -77,6 +77,17 @@ public class PublishServer implements IPublishServer {
 			LOGGER.error("加载发布组件失败，文件【"+PUBLISH_COMP_FILE_NAME+"】",e);
 		} 
 	}
+	
+	private void execute(Runnable runnable)  {
+		try {
+			sem.acquire();
+			Future<?> r = EXECUTOR.submit(runnable);
+			r.get();
+			sem.release();
+		} catch (Exception e) {
+			LOGGER.error("execute error!!",e);
+		}
+	}
 
 	@Override
 	public String publish(Object obj, boolean isPreview, PublishType type)
@@ -84,12 +95,13 @@ public class PublishServer implements IPublishServer {
 
 		LOGGER.debug("发布对象【"+obj+"】，发布类型【"+(isPreview?"预览":"发布")+"】，发布形式【"+type+"】，当前线程【"+Thread.currentThread()+"】");
 		this.isPreview = isPreview;
+		this.sem = new Semaphore(MAX_POOL_SIZE);
 		if (isPreview)
 			return preview(obj);
 		return doPublish(obj,type);
 	}
 
-	public String doPublish(Object obj, PublishType type) throws PublishException {
+	private String doPublish(Object obj, PublishType type) throws PublishException {
 		
 		if(obj instanceof Site){
 			return publishSite((Site)obj,type);
@@ -113,7 +125,7 @@ public class PublishServer implements IPublishServer {
 					if(!StringUtils.hasLength(channel.getOtempIds())){
 						continue;
 					}
-					EXECUTOR.execute(new Runnable() {
+					execute(new Runnable() {
 						@Override
 						public void run() {
 							try {
@@ -123,6 +135,7 @@ public class PublishServer implements IPublishServer {
 							}
 						}
 					});
+					
 				}
 				
 				if(StringUtils.hasLength(obj.getDtempIds())){
@@ -130,7 +143,7 @@ public class PublishServer implements IPublishServer {
 					List<Document> documents = documentService.findCanPub(obj, IDocumentService.MAX_FETCH_SIZE, null, null, null);
 					
 					for(final Document document : documents){
-						EXECUTOR.execute(new Runnable() {
+						execute(new Runnable() {
 							@Override
 							public void run() {
 								try {
@@ -164,7 +177,7 @@ public class PublishServer implements IPublishServer {
 					if(!StringUtils.hasLength(channel.getOtempIds())){
 						continue;
 					}
-					EXECUTOR.execute(new Runnable() {
+					execute(new Runnable() {
 						@Override
 						public void run() {
 							try {

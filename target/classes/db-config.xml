@@ -55,10 +55,11 @@
 	</aop:config>
 	
 	<tx:advice id="advice" transaction-manager="txManager">
-		<tx:attributes>
+		<tx:attributes >
 			<tx:method name="find*" read-only="true" propagation="NOT_SUPPORTED"/>
 			<tx:method name="get*" read-only="true" propagation="NOT_SUPPORTED"/>
-			<tx:method name="*" read-only="false" propagation="REQUIRED"/>
+			<tx:method name="noTrans*" read-only="false" propagation="NOT_SUPPORTED" isolation="READ_COMMITTED"/>
+			<tx:method name="*" read-only="false" propagation="REQUIRED" isolation="READ_COMMITTED"/>
 		</tx:attributes>
 	</tx:advice>
 	

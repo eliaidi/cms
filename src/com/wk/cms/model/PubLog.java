@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -19,7 +20,7 @@ public class PubLog {
 	private String objType;
 	private String descr;
 	@Type(type="yes_no")
-	private boolean success;
+	private Boolean success;
 	private String exception;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -27,6 +28,10 @@ public class PubLog {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endTime;
+	
+	@ManyToOne
+	private User pubUser;
+	
 	public String getId() {
 		return id;
 	}
@@ -57,10 +62,11 @@ public class PubLog {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
-	public boolean isSuccess() {
+	
+	public Boolean getSuccess() {
 		return success;
 	}
-	public void setSuccess(boolean success) {
+	public void setSuccess(Boolean success) {
 		this.success = success;
 	}
 	public String getException() {
@@ -80,6 +86,12 @@ public class PubLog {
 	}
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+	public User getPubUser() {
+		return pubUser;
+	}
+	public void setPubUser(User pubUser) {
+		this.pubUser = pubUser;
 	}
 	
 }

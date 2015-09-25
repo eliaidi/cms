@@ -52,3 +52,5 @@ var field_save = RootPath+'/field/save';
 var field_delete = RootPath+'/field/delete';
 var field_list_type = RootPath+'/field/listTypes';
 var field_detail = RootPath+'/field/detail';
+
+var publog_list = RootPath+'/publog/list';

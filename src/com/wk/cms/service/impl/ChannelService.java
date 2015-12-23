@@ -24,6 +24,7 @@ import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 
@@ -36,9 +37,6 @@ public class ChannelService implements IChannelService {
 	private ISiteService siteService;
 	@Autowired
 	private IDocumentService documentService;
-	
-	@Autowired
-	private IPublishServer publishServer;
 	
 	@Override
 	public List<Channel> findBySiteId(String siteId) throws ServiceException {
@@ -274,6 +272,7 @@ public class ChannelService implements IChannelService {
 		if(channel==null){
 			throw new ServiceException("id为【"+id+"】的栏目不存在！");
 		}
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
 		return publishServer.publish(channel, true, PublishType.INDEX);
 	}
 }

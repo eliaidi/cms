@@ -148,7 +148,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
         var me = this, ret = me.callParent();
 
         return Ext.apply(ret, {
-            title: 'Don Griffin',
+            title: CurrUser,
             iconCls: 'user',
             height: 300,
             toolConfig: {
@@ -187,7 +187,11 @@ Ext.define('MyCms.view.desktop.Desktop', {
     },
 
     onLogout: function () {
-        Ext.Msg.confirm('Logout', 'Are you sure you want to logout?');
+        Ext.Msg.confirm('Logout', 'Are you sure you want to logout?',function(s){
+        	if(s=='yes'){
+        		window.location.assign(BasePath+'/logout');
+        	}
+        });
     },
 
     onSettings: function () {

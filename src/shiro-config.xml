@@ -16,7 +16,7 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 	
 	<!-- 缓存管理器 -->
-    <bean id="cacheManager" class="com.banbank.mobile.portal.cache.SpringCacheManagerWrapper">
+    <bean id="cacheManager" class="com.wk.cms.shiro.cache.SpringCacheManagerWrapper">
         <property name="cacheManager" ref="springCacheManager"/>
     </bean>	
 	<!-- 会话ID生成器 -->
@@ -28,7 +28,7 @@
     </bean>
     <!-- 会话Cookie模板 -->
     <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-        <constructor-arg value="sid"/>
+        <property name="name" value="sid"></property>
         <property name="httpOnly" value="true"/>
         <property name="maxAge" value="-1"/>
     </bean>
@@ -51,7 +51,7 @@
     </bean>
     
     <!-- 凭证匹配器 -->
-    <bean id="credentialsMatcher" class="com.banbank.mobile.portal.shiro.RetryLimitHashedCredentialsMatcher">
+    <bean id="credentialsMatcher" class="com.wk.cms.shiro.RetryLimitHashedCredentialsMatcher">
         <constructor-arg ref="cacheManager"/>
         <property name="hashAlgorithmName" value="md5"/>
         <property name="hashIterations" value="2"/>
@@ -59,7 +59,9 @@
     </bean>
     
     <!-- Realm实现 -->
-    <bean id="userRealm" class="com.banbank.mobile.portal.shiro.realm.UserRealm">
+    <bean id="userRealm" class="com.wk.cms.shiro.realms.MyUserRealm">
+    	
+    	<property name="userService" ref="UserService"></property>
         <property name="credentialsMatcher" ref="credentialsMatcher"/>
         <property name="cachingEnabled" value="false"/>
         <!--<property name="authenticationCachingEnabled" value="true"/>-->
@@ -69,7 +71,7 @@
     </bean>
     
     <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-        <constructor-arg value="rememberMe"/>
+        <property name="name" value="rememberMe"></property>
         <property name="httpOnly" value="true"/>
         <property name="maxAge" value="2592000"/><!-- 30天 -->
     </bean>
@@ -89,13 +91,15 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="rememberMeManager" ref="rememberMeManager"/>
     </bean>
-    <bean id="ajaxForm" class="com.banbank.mobile.portal.shiro.filter.AjaxAuthenticationFilter"></bean>
+    <bean id="ajaxForm" class="com.wk.cms.shiro.filters.MyFormAuthenticationFilter">
+    	<property name="successUrl" value="/"></property>
+    </bean>
 
 	<!-- Shiro的Web过滤器 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
         <property name="loginUrl" value="/login"/>
-        <property name="successUrl" value="/index"></property>
+        <property name="successUrl" value="/"></property>
         <property name="filters">
         	<util:map>
         		<entry key="authc" value-ref="ajaxForm"></entry>

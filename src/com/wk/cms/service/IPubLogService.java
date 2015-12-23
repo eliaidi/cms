@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.PubLog;
 import com.wk.cms.utils.PageInfo;
 
@@ -14,6 +15,9 @@ public interface IPubLogService {
 	PageInfo find(@NotEmpty String type, @NotNull PageInfo pageInfo);
 
 	PubLog noTransSave(@NotNull PubLog log);
+
+
+	void delete(@NotEmpty String ids);
 
 
 }

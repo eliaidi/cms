@@ -27,6 +27,7 @@ import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
@@ -43,9 +44,6 @@ public class DocumentService implements IDocumentService {
 	@Autowired
 	private IAppendixService appendixService;
 	
-	@Autowired
-	private IPublishServer publishServer;
-
 	@Override
 	public PageInfo find(String channelId, PageInfo pageInfo, String query)
 			throws ServiceException {
@@ -379,6 +377,7 @@ public class DocumentService implements IDocumentService {
 
 	@Override
 	public String preview(String id) throws  ServiceException {
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
 		return publishServer.publish(findById(id), true, PublishType.INDEX);
 	}
 

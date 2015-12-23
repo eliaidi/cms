@@ -54,3 +54,4 @@ var field_list_type = RootPath+'/field/listTypes';
 var field_detail = RootPath+'/field/detail';
 
 var publog_list = RootPath+'/publog/list';
+var publog_delete = RootPath+'/publog/delete';

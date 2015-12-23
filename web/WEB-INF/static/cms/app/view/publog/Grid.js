@@ -114,9 +114,57 @@ Ext.define('MyCms.view.publog.Grid',{
 		});
 		
 		me.on('containercontextmenu', 'showCmpMenu', me);
+		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'refresh', me);
 
 		me.callParent();
+	},
+	showItemMenu : function(_this, record, item, index, e, eOpts) {
+		var me = this;
+
+		Ext.create('MyCms.view.ux.MyMenu', {
+			items : [{
+				text : '删除',
+				handler : 'deleteLogs',
+				scope : me
+			} ]
+		}).showAt(e.getXY());
+
+		e.stopEvent();
+		e.stopPropagation();
+	},
+	deleteLogs:function(){
+		var me = this,rs = me.getSelectionModel().getSelection();
+		if(rs.length==0){
+			Ext.Msg.alert('error','请选择待删除的记录！');
+			return;
+		}
+		var ids = [];
+		for(var i=0;i<rs.length;i++){
+			ids.push(rs[i].get('id'));
+		}
+		Ext.Msg.confirm('warn','你确定删除选中的记录吗？',function(m){
+			if(m=='yes'){
+				Ext.Ajax.request({
+					url : publog_delete,
+					params : {
+						ids : '\''+ids.join('\',\'')+'\''
+					},
+					success : function(response, opts) {
+						var obj = Ext.decode(response.responseText);
+						if (!obj.success) {
+							Ext.Msg.alert('错误', obj.message);
+							return;
+						}
+						me.fireEvent('refresh', me);
+					},
+					failure : function(response, opts) {
+						console.log('server-side failure with status code '
+								+ response.status);
+					}
+				});
+			}
+		});
 	},
 	showCmpMenu : function(_this, e, eOpts) {
 		var me = this;

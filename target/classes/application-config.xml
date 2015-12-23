@@ -28,4 +28,5 @@
     
 	<import resource="classpath:db-config.xml" />
 
+	<import resource="classpath:shiro-config.xml"/>
 </beans>

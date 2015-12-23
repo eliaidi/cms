@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.wk.cms.controller.vo.Message;
 import com.wk.cms.dao.IPubLogDao;
 import com.wk.cms.model.PubLog;
 import com.wk.cms.utils.PageInfo;
@@ -44,7 +45,6 @@ public class PubLogDao implements IPubLogDao {
 			c.add(Restrictions.eq("success", false));
 		}else if("doing".equalsIgnoreCase(type)){
 			c.add(Restrictions.isNull("success"));
-//			c.add(Restrictions.isNull("endTime"));
 		}
 		
 		c.addOrder(Order.desc("startTime"));
@@ -54,6 +54,11 @@ public class PubLogDao implements IPubLogDao {
 		pageInfo.setList(pubLogs);
 		pageInfo.setTotalCount(count);
 		return pageInfo;
+	}
+	@Override
+	public void delete(String ids) {
+		
+		hibernateTemplate.bulkUpdate("delete from PubLog where id in ("+ids+")");
 	}
 
 }

@@ -16,11 +16,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.wk.cms.cfg.SysCfg;
 import com.wk.cms.model.Channel;
@@ -46,7 +46,7 @@ import com.wk.cms.utils.PublishUtils;
 
 @Component
 @Transactional(readOnly = true)
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Scope(WebApplicationContext.SCOPE_REQUEST)
 public class PublishServer implements IPublishServer {
 
 	private static final int INIT_POOL_SIZE = Runtime.getRuntime().availableProcessors();
@@ -93,7 +93,7 @@ public class PublishServer implements IPublishServer {
 	public String publish(Object obj, boolean isPreview, PublishType type)
 			throws PublishException {
 
-		LOGGER.debug("发布对象【"+obj+"】，发布类型【"+(isPreview?"预览":"发布")+"】，发布形式【"+type+"】，当前线程【"+Thread.currentThread()+"】");
+		LOGGER.debug("发布对象【"+obj+"】，发布类型【"+(isPreview?"预览":"发布")+"】，发布形式【"+type+"】，当前线程【"+Thread.currentThread()+"】，当前发布类实例【"+this+"】");
 		this.isPreview = isPreview;
 		this.sem = new Semaphore(MAX_POOL_SIZE);
 		if (isPreview)

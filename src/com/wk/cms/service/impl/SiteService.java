@@ -18,6 +18,7 @@ import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.FileParseException;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 
@@ -27,8 +28,6 @@ public class SiteService implements ISiteService {
 	@Autowired
 	private ISiteDao siteDao;
 	
-	@Autowired
-	private IPublishServer publishServer;
 	@Override
 	public List<Site> findAll() {
 		return siteDao.findAll();
@@ -104,6 +103,7 @@ public class SiteService implements ISiteService {
 		
 		Site site = findById(siteId);
 		
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
 		return publishServer.publish(site, true,null);
 	}
 	@Override
@@ -118,6 +118,7 @@ public class SiteService implements ISiteService {
 		}else if("all".equalsIgnoreCase(type)){
 			pType = PublishType.ALL;
 		}
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
 		publishServer.publish(findById(id), false, pType);
 	}
 

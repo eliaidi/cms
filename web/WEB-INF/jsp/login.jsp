@@ -22,7 +22,7 @@ var boxWidth = 469,boxHeight = 258;
 var LOGIN_URL = '<%=path%>/login';
 Ext.onReady(function(){
 	
-	Ext.create('Ext.form.Panel',{
+	var loginPanel = Ext.create('Ext.form.Panel',{
 		renderTo:'loginForm',
 		title:'用户登录',
 		width:boxWidth,
@@ -40,6 +40,11 @@ Ext.onReady(function(){
 	        inputType: 'password',
 	        fieldLabel: '密码',
 	        allowBlank: false
+	    },{
+	    	xtype: 'checkboxfield',
+	    	boxLabel  : '记住我',
+            name      : 'rememberMe',
+            inputValue: 'true'
 	    }],
 	    buttons: [{
 	        text: '登录',
@@ -57,7 +62,6 @@ Ext.onReady(function(){
 		    		clientValidation:true,
 		    		url:LOGIN_URL,
 		    		success: function(form, action) {
-		    		       //Ext.Msg.alert('Success', action.result.msg);
 		    		       if(action.result.success){
 		    		    	   window.location.assign('<%=path%>/');
 		    		       }else{
@@ -73,7 +77,7 @@ Ext.onReady(function(){
 	    		                Ext.Msg.alert('Failure', 'Ajax communication failed');
 	    		                break;
 	    		            case Ext.form.action.Action.SERVER_INVALID:
-	    		               	Ext.Msg.alert('Failure', action.result.msg);
+	    		               	Ext.Msg.alert('Failure', action.result.message);
 	    		       }
 	    		    }
 		    	});
@@ -81,7 +85,26 @@ Ext.onReady(function(){
 	    }]
 	    
 	});
+	
+	if(window.attachEvent){
+		window.attachEvent('onkeypress',keyPressFn);
+		window.onkeypress = keyPressFn;
+	}else{
+		window.addEventListener('keypress',keyPressFn);
+	}
+	
+	
+	
+	function keyPressFn(e){
+		e = e||window.event;
+		if(e.charCode!=13) return;
+		//console.log(e,loginPanel,loginPanel.down('button'));
+		var btn = loginPanel.down('button');
+		btn.fireEvent('click');
+	}
 });
+
+
 </script>
 </head>
 

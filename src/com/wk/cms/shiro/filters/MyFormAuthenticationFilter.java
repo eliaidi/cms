@@ -1,7 +1,5 @@
 package com.wk.cms.shiro.filters;
 
-import java.io.IOException;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +12,6 @@ import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wk.cms.controller.vo.Message;
 
@@ -58,16 +54,6 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		return super.onLoginFailure(token, e, request, response);
 	}
 	
-	/*@Override
-	protected boolean executeLogin(ServletRequest request,
-			ServletResponse response) throws Exception {
-		
-		if(isAjax(request)&&"admin".equals(getUsername(request))&&"admin".equals(getPassword(request))){
-			return onLoginSuccess(null, null, request, response);
-		}
-		return super.executeLogin(request, response);
-	}*/
-	
 	private void writeJSONObject(ServletResponse response,Object obj) throws Exception {
 		HttpServletResponse res = (HttpServletResponse) response;
 		ObjectMapper mapper = new ObjectMapper();
@@ -82,7 +68,6 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 	@Override
 	protected boolean onAccessDenied(ServletRequest request,
 			ServletResponse response) throws Exception {
-		//return super.onAccessDenied(request, response);
 		
 		if (isLoginRequest(request, response)) {
             if (isLoginSubmission(request, response)) {
@@ -115,4 +100,5 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		
 		return "XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"));
 	}
+	
 }

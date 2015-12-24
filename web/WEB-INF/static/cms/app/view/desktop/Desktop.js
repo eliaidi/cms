@@ -155,14 +155,14 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 width: 100,
                 items: [
                     {
-                        text:'Settings',
+                        text:'设置',
                         iconCls:'settings',
                         handler: me.onSettings,
                         scope: me
                     },
                     '-',
                     {
-                        text:'Logout',
+                        text:'注销',
                         iconCls:'logout',
                         handler: me.onLogout,
                         scope: me

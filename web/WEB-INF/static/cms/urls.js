@@ -55,3 +55,7 @@ var field_detail = RootPath+'/field/detail';
 
 var publog_list = RootPath+'/publog/list';
 var publog_delete = RootPath+'/publog/delete';
+
+var user_list = RootPath+'/user/list';
+var user_delete = RootPath+'/user/delete';
+var user_save = RootPath+'/user/save';

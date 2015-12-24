@@ -7,7 +7,7 @@
 Ext.define('MyCms.view.sysmgt.Module', {
 	extend : 'Ext.ux.desktop.Module',
 
-	requires : [ 'MyCms.view.template.Window','MyCms.view.publog.Window' ],
+	requires : [ 'MyCms.view.template.Window','MyCms.view.publog.Window','MyCms.view.user.Window' ],
 
 	id : 'sysmgt-module',
 
@@ -20,8 +20,23 @@ Ext.define('MyCms.view.sysmgt.Module', {
 				text : '发布监控',
 				handler : 'pubLogMgt',
 				scope : me
+			},{
+				text : '用户管理',
+				handler : 'userMgt',
+				scope : me
 			} ]
 		}
+	},
+	userMgt:function(){
+		var desktop = this.app.getDesktop();
+		var win = desktop.getWindow('user-mgt-window');
+		if (!win) {
+			win = desktop.createWindow({
+				id : 'user-mgt-window',
+				desktop : desktop
+			}, MyCms.view.user.Window);
+		}
+		desktop.restoreWindow(win);
 	},
 	tempMgt : function() {
 		var me = this, desktop = me.app.getDesktop();

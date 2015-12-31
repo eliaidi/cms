@@ -118,8 +118,36 @@
 		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'refresh', me);
 		me.on('itemdblclick','openUser',me);
+		me.on('onFinish','doOnFinish',me);
 
 		me.callParent();
+	},
+	doOnFinish:function(rs,user,win){
+		var me = this,rIds = [];
+		for(var i=0;i<rs.length;i++){
+			rIds.push(rs[i].get('id'));
+		}
+		
+		Ext.Ajax.request({
+			url : user_assign_role,
+			params : {
+				userId : user.get('id'),
+				roleIds:rIds.join(',')
+			},
+			success : function(response, opts) {
+				var obj = Ext.decode(response.responseText);
+				if (!obj.success) {
+					Ext.Msg.alert('错误', obj.message);
+					return;
+				}
+				me.fireEvent('refresh', me);
+				win.close();
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	},
 	openUser:function(_this,record){
 		

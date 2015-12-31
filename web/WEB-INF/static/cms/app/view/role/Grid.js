@@ -65,14 +65,13 @@
 			scope : me
 		} ];
 
-		var store = Ext.create('Ext.data.BufferedStore', {
+		var store = Ext.create('Ext.data.Store', {
 			model : 'MyCms.model.Role',
 			pageSize : 200,
 			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
 				url : role_list,
-				extraParams:me.user?{userId:me.user.get('id')}:{},
 				reader : {
 					rootProperty : 'list',
 					totalProperty : 'totalCount'

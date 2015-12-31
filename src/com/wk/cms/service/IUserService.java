@@ -28,4 +28,6 @@ public interface IUserService {
 
 	void delete(@NotEmpty String[] id);
 
+	void assign(@NotEmpty String userId, @NotEmpty String[] roleIds) throws ServiceException;
+
 }

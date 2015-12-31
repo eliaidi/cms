@@ -116,7 +116,10 @@ Ext.define('MyCms.view.role.AddWin',{
 		form.add({
 			id:'res-checkboxs',
 			xtype: 'fieldcontainer',
-			layout:'fit',
+			layout:{
+				type:'table',
+				columns:4
+			},
             fieldLabel: '选择权限',
             defaultType: 'checkboxfield',
             items:citems

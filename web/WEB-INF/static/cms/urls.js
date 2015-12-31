@@ -59,6 +59,7 @@ var publog_delete = RootPath+'/publog/delete';
 var user_list = RootPath+'/user/list';
 var user_delete = RootPath+'/user/delete';
 var user_save = RootPath+'/user/save';
+var user_assign_role = RootPath+'/user/assign'
 
 var role_list = RootPath+'/role/list';
 var role_save = RootPath+'/role/save';

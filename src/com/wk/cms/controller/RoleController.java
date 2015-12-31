@@ -18,9 +18,9 @@ public class RoleController {
 	private IRoleService roleService;
 	
 	@RequestMapping("/list")
-	public @ResponseBody PageInfo list(PageInfo info,String query){
+	public @ResponseBody PageInfo list(PageInfo info,String query,String userId){
 		
-		return roleService.list(info,query);
+		return roleService.list(info,query,userId);
 	}
 	
 	@RequestMapping("/save")

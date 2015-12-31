@@ -1,5 +1,7 @@
 package com.wk.cms.dao.impl;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IUserDao;
+import com.wk.cms.model.Role;
 import com.wk.cms.model.User;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
@@ -72,6 +75,28 @@ public class UserDao implements IUserDao {
 		for(String id : ids){
 			delete(id);
 		}
+	}
+	@Override
+	public void assign(User user, List<Role> roles) {
+		user.setRoles(new HashSet<Role>(roles));
+		for(Role r: roles){
+			r.getUsers().add(user);
+		}
+		hibernateTemplate.merge(user);
+	}
+	@Override
+	public void assign(String userId, String[] roleIds) {
+		User user = findById(userId);
+		List<Role> roles = (List<Role>) hibernateTemplate.find("select r from Role r where r.id in ('"+CommonUtils.join(roleIds, "','")+"')");
+		
+		for(Role r : user.getRoles()){
+			r.getUsers().remove(user);
+		}
+		user.setRoles(new HashSet<Role>(roles));
+		for(Role r: roles){
+			r.getUsers().add(user);
+		}
+		hibernateTemplate.merge(user);
 	}
 
 }

@@ -22,8 +22,8 @@ public class RoleService implements IRoleService {
 	@Autowired
 	private IRoleDao roleDao;
 	@Override
-	public PageInfo list(PageInfo info, String query) {
-		return roleDao.find(info,query);
+	public PageInfo list(PageInfo info, String query,String userId) {
+		return roleDao.find(info,query,userId);
 	}
 	@Override
 	public Role save(Role role ) {
@@ -66,6 +66,15 @@ public class RoleService implements IRoleService {
 	@Override
 	public void delete(String[] ids) {
 		roleDao.delete(ids);
+	}
+	@Override
+	public List<Role> find(String[] roleIds) {
+		return roleDao.find(roleIds);
+	}
+	@Override
+	public List<String> findByUserName(String username) {
+		
+		return roleDao.findNameByUserName(username);
 	}
 
 }

@@ -9,6 +9,8 @@ Ext.define('MyCms.model.User', {
 	},{
 		name : 'email'
 	},{
+		name : 'roles'
+	},{
 		name : 'crUser'
 	},{
 		name : 'crUserName',

@@ -35,4 +35,11 @@ public class UserController {
 		userService.delete(id);
 		return new Message(true, "删除成功!", "");
 	}
+	
+	@RequestMapping("/assign")
+	public @ResponseBody Message assign(String userId,String[] roleIds) throws ServiceException{
+		
+		userService.assign(userId,roleIds);
+		return new Message(true, "操作成功!", "");
+	}
 }

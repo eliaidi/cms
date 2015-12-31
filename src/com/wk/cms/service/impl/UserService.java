@@ -1,6 +1,8 @@
 package com.wk.cms.service.impl;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IUserDao;
+import com.wk.cms.model.Role;
 import com.wk.cms.model.User;
+import com.wk.cms.service.IRoleService;
 import com.wk.cms.service.IUserService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
+import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 import com.wk.cms.utils.PasswordHash;
 
@@ -27,8 +33,8 @@ public class UserService implements IUserService {
 
 	@Override
 	public Set<String> findRoles(String username) {
-		// TODO Auto-generated method stub
-		return null;
+		IRoleService roleService = BeanFactory.getBean(IRoleService.class);
+		return new HashSet<String>(roleService.findByUserName(username));
 	}
 
 	@Override
@@ -86,6 +92,20 @@ public class UserService implements IUserService {
 	@Override
 	public void delete(String[] id) {
 		userDao.delete(id);
+	}
+
+	@Override
+	public void assign(String userId, String[] roleIds) throws ServiceException {
+		/*User user = findById(userId);
+		
+		if(user==null) throw new ServiceException("User[id="+userId+"] not exists!");
+		
+		IRoleService roleService = BeanFactory.getBean(IRoleService.class);
+		List<Role> roles = roleService.find(roleIds);
+		if(CommonUtils.isEmpty(roles) ) throw new ServiceException("No Roles match ID Array["+CommonUtils.join(roleIds, ",")+"]");
+		
+		userDao.assign(user,roles);*/
+		userDao.assign(userId, roleIds);
 	}
 
 }

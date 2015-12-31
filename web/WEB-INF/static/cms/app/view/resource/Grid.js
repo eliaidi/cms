@@ -1,11 +1,10 @@
- Ext.define('MyCms.view.user.Grid', {
+ Ext.define('MyCms.view.resource.Grid', {
 	extend : 'Ext.grid.Panel',
 	uses : [ 'Ext.data.Store',
-	         'MyCms.model.User',
+	         'MyCms.model.Resource',
 			 'Ext.ux.form.SearchField',
 			 'MyCms.view.ux.MyMenu'],
 	border : true,
-//	title : '用户列表',
 	loadMask : true,
 
 	selModel: {
@@ -23,20 +22,23 @@
 		sortable : false
 	}, {
 		tdCls : 'x-grid-cell-topic',
-		text : "用户名",
-		dataIndex : 'username',
+		text : "名称",
+		dataIndex : 'name',
 		flex : 2,
 		sortable : false
 	},{
-		text : "真实姓名",
-		dataIndex : 'truename',
+		text : "值",
+		dataIndex : 'value',
 		flex : 1,
 		sortable : false
-	}, {
-		text : "email",
-		dataIndex : 'email',
+	},{
+		text : "类型",
+		dataIndex : 'type',
 		flex : 1,
-		sortable : false
+		sortable : false,
+		renderer:function(v){
+			return MyCms.model.Resource.Types[v];
+		}
 	},{
 		text : "创建人",
 		dataIndex : 'crUserName',
@@ -57,22 +59,22 @@
 			handler : 'refresh',
 			scope : me
 		}, {
-			text : '添加用户',
-			handler : 'addUser',
+			text : '添加',
+			handler : 'addRes',
 			scope : me
 		},{
-			text : '删除用户',
-			handler : 'deleteUser',
+			text : '删除',
+			handler : 'delRes',
 			scope : me
 		} ];
 
 		var store = Ext.create('Ext.data.BufferedStore', {
-			model : 'MyCms.model.User',
+			model : 'MyCms.model.Resource',
 			pageSize : 20,
 			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
-				url : user_list,
+				url : resource_list,
 				reader : {
 					rootProperty : 'list',
 					totalProperty : 'totalCount'
@@ -117,14 +119,14 @@
 		me.on('containercontextmenu', 'showCmpMenu', me);
 		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'refresh', me);
-		me.on('itemdblclick','openUser',me);
+		me.on('itemdblclick','openRes',me);
 
 		me.callParent();
 	},
-	openUser:function(_this,record){
+	openRes:function(_this,record){
 		
 		var me = this;
-		me.modifyUser(record);
+		me.modifyRes(record);
 	},
 	showItemMenu : function(_this, record, item, index, e, eOpts) {
 		var me = this;
@@ -133,19 +135,13 @@
 			items : [{
 				text : '修改',
 				handler : function() {
-					me.modifyUser(record);
-				},
-				scope : me
-			},{
-				text : '配置角色',
-				handler : function() {
-					me.configRole(record);
+					me.modifyRes(record);
 				},
 				scope : me
 			}, {
 				text : '删除',
 				handler : function() {
-					me.deleteUser(record);
+					me.delRes(record);
 				},
 				scope : me
 			}]
@@ -153,10 +149,6 @@
 
 		e.stopEvent();
 		e.stopPropagation();
-	},
-	configRole:function(r){
-		var me = this;
-		Ext.create('MyCms.view.role.Window',{from:me,user:r}).show();
 	},
 	showCmpMenu : function(_this, e, eOpts) {
 		var me = this;
@@ -173,15 +165,15 @@
 
 		me.getStore().load();
 	},
-	addUser : function() {
+	addRes : function() {
 		var me = this;
-		Ext.create('MyCms.view.user.AddWin',{from:me}).show();
+		Ext.create('MyCms.view.resource.AddWin',{from:me}).show();
 	},
-	modifyUser : function(record) {
+	modifyRes : function(record) {
 		var me = this;
-		Ext.create('MyCms.view.user.AddWin',{from:me,user:record}).show();
+		Ext.create('MyCms.view.resource.AddWin',{from:me,resource:record}).show();
 	},
-	deleteUser : function(record) {
+	delRes : function(record) {
 		var me = this,ids = [];
 		if(!record.isModel){
 			var rs = me.getSelectionModel().getSelection();
@@ -199,9 +191,9 @@
 		Ext.Msg.confirm('警告','您确认删除该项吗？',function(m){
 			if(m=='yes'){
 				Ext.Ajax.request({
-					url : user_delete,
+					url : resource_delete,
 					params : {
-						id : ids.join(',')
+						ids : ids.join(',')
 					},
 					success : function(response, opts) {
 						var obj = Ext.decode(response.responseText);

@@ -7,7 +7,11 @@
 Ext.define('MyCms.view.sysmgt.Module', {
 	extend : 'Ext.ux.desktop.Module',
 
-	requires : [ 'MyCms.view.template.Window','MyCms.view.publog.Window','MyCms.view.user.Window' ],
+	requires : [ 'MyCms.view.template.Window',
+	             'MyCms.view.publog.Window',
+	             'MyCms.view.user.Window',
+	             'MyCms.view.role.Window',
+	             'MyCms.view.resource.Window'],
 
 	id : 'sysmgt-module',
 
@@ -24,8 +28,38 @@ Ext.define('MyCms.view.sysmgt.Module', {
 				text : '用户管理',
 				handler : 'userMgt',
 				scope : me
+			},{
+				text : '角色管理',
+				handler : 'roleMgt',
+				scope : me
+			},{
+				text : '资源管理',
+				handler : 'resMgt',
+				scope : me
 			} ]
 		}
+	},
+	roleMgt:function(){
+		var desktop = this.app.getDesktop();
+		var win = desktop.getWindow('role-mgt-window');
+		if (!win) {
+			win = desktop.createWindow({
+				id : 'role-mgt-window',
+				desktop : desktop
+			}, MyCms.view.role.Window);
+		}
+		desktop.restoreWindow(win);
+	},
+	resMgt:function(){
+		var desktop = this.app.getDesktop();
+		var win = desktop.getWindow('res-mgt-window');
+		if (!win) {
+			win = desktop.createWindow({
+				id : 'res-mgt-window',
+				desktop : desktop
+			}, MyCms.view.resource.Window);
+		}
+		desktop.restoreWindow(win);
 	},
 	userMgt:function(){
 		var desktop = this.app.getDesktop();

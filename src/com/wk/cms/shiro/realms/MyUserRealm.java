@@ -4,6 +4,7 @@ package com.wk.cms.shiro.realms;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.RememberMeAuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -11,11 +12,14 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wk.cms.model.User;
 import com.wk.cms.service.IUserService;
 
 public class MyUserRealm extends AuthorizingRealm {
+	private static final Logger log = LoggerFactory.getLogger(MyUserRealm.class);
 
 	private IUserService userService;
 	
@@ -37,23 +41,23 @@ public class MyUserRealm extends AuthorizingRealm {
 		authorizationInfo.setStringPermissions(userService.findPermissions(username));
 		return authorizationInfo;
 	}
-
+	
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(
 			AuthenticationToken token) throws AuthenticationException {
 		
-		/*UsernamePasswordToken passwordToken = (UsernamePasswordToken) token;
-		if("admin".equals(passwordToken.getUsername())&&"admin".equals(passwordToken.getPassword())){
-			
-		}*/
 		String username = (String) token.getPrincipal();
 		
 		User user = userService.findByUserName(username);
-		
 		if(user==null){
 			throw new AuthenticationException("account["+username+"] not found!");
 		}
-		
+		if(token instanceof RememberMeAuthenticationToken){
+			RememberMeAuthenticationToken tk = (RememberMeAuthenticationToken) token;
+			log.debug("tk.isRememberMe()::"+tk.isRememberMe());
+			log.debug("tk.getPrincipal()::"+tk.getPrincipal());
+			log.debug("tk.getCredentials()::"+tk.getCredentials());
+		}
 		return new SimpleAuthenticationInfo(username, user.getPassword(), ByteSource.Util.bytes(user.getSalt()), getName());
 	}
 

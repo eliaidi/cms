@@ -1,7 +1,7 @@
- Ext.define('MyCms.view.user.Grid', {
+ Ext.define('MyCms.view.role.Grid', {
 	extend : 'Ext.grid.Panel',
 	uses : [ 'Ext.data.Store',
-	         'MyCms.model.User',
+	         'MyCms.model.Role',
 			 'Ext.ux.form.SearchField',
 			 'MyCms.view.ux.MyMenu'],
 	border : true,
@@ -23,18 +23,13 @@
 		sortable : false
 	}, {
 		tdCls : 'x-grid-cell-topic',
-		text : "用户名",
-		dataIndex : 'username',
+		text : "名称",
+		dataIndex : 'name',
 		flex : 2,
 		sortable : false
 	},{
-		text : "真实姓名",
-		dataIndex : 'truename',
-		flex : 1,
-		sortable : false
-	}, {
-		text : "email",
-		dataIndex : 'email',
+		text : "是否管理员角色",
+		dataIndex : 'isAdmin',
 		flex : 1,
 		sortable : false
 	},{
@@ -57,22 +52,27 @@
 			handler : 'refresh',
 			scope : me
 		}, {
-			text : '添加用户',
-			handler : 'addUser',
+			text : '添加角色',
+			handler : 'addRole',
 			scope : me
 		},{
-			text : '删除用户',
-			handler : 'deleteUser',
+			text : '资源管理',
+			handler : 'resMgt',
+			scope : me
+		},{
+			text : '删除角色',
+			handler : 'deleteRole',
 			scope : me
 		} ];
 
 		var store = Ext.create('Ext.data.BufferedStore', {
-			model : 'MyCms.model.User',
-			pageSize : 20,
+			model : 'MyCms.model.Role',
+			pageSize : 200,
 			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
-				url : user_list,
+				url : role_list,
+				extraParams:me.user?{userId:me.user.get('id')}:{},
 				reader : {
 					rootProperty : 'list',
 					totalProperty : 'totalCount'
@@ -117,14 +117,17 @@
 		me.on('containercontextmenu', 'showCmpMenu', me);
 		me.on('itemcontextmenu', 'showItemMenu', me);
 		me.on('refresh', 'refresh', me);
-		me.on('itemdblclick','openUser',me);
+		me.on('itemdblclick','openRole',me);
 
 		me.callParent();
 	},
-	openUser:function(_this,record){
+	resMgt:function(){
+		Ext.create('MyCms.view.resource.Window',{}).show();
+	},
+	openRole:function(_this,record){
 		
 		var me = this;
-		me.modifyUser(record);
+		me.modifyRole(record);
 	},
 	showItemMenu : function(_this, record, item, index, e, eOpts) {
 		var me = this;
@@ -133,19 +136,13 @@
 			items : [{
 				text : '修改',
 				handler : function() {
-					me.modifyUser(record);
-				},
-				scope : me
-			},{
-				text : '配置角色',
-				handler : function() {
-					me.configRole(record);
+					me.modifyRole(record);
 				},
 				scope : me
 			}, {
 				text : '删除',
 				handler : function() {
-					me.deleteUser(record);
+					me.deleteRole(record);
 				},
 				scope : me
 			}]
@@ -153,10 +150,6 @@
 
 		e.stopEvent();
 		e.stopPropagation();
-	},
-	configRole:function(r){
-		var me = this;
-		Ext.create('MyCms.view.role.Window',{from:me,user:r}).show();
 	},
 	showCmpMenu : function(_this, e, eOpts) {
 		var me = this;
@@ -173,20 +166,20 @@
 
 		me.getStore().load();
 	},
-	addUser : function() {
+	addRole : function() {
 		var me = this;
-		Ext.create('MyCms.view.user.AddWin',{from:me}).show();
+		Ext.create('MyCms.view.role.AddWin',{from:me}).show();
 	},
-	modifyUser : function(record) {
+	modifyRole : function(record) {
 		var me = this;
-		Ext.create('MyCms.view.user.AddWin',{from:me,user:record}).show();
+		Ext.create('MyCms.view.role.AddWin',{from:me,role:record}).show();
 	},
-	deleteUser : function(record) {
+	deleteRole : function(record) {
 		var me = this,ids = [];
 		if(!record.isModel){
 			var rs = me.getSelectionModel().getSelection();
 			for (var int = 0; int < rs.length; int++) {
-				ids.push(rs[int].get('id'));
+				ids.push(rs[i].get('id'));
 			}
 		}else{
 			ids.push(record.get('id'));
@@ -199,9 +192,9 @@
 		Ext.Msg.confirm('警告','您确认删除该项吗？',function(m){
 			if(m=='yes'){
 				Ext.Ajax.request({
-					url : user_delete,
+					url : role_delete,
 					params : {
-						id : ids.join(',')
+						ids : ids.join(',')
 					},
 					success : function(response, opts) {
 						var obj = Ext.decode(response.responseText);

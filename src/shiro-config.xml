@@ -93,6 +93,7 @@
     </bean>
     <bean id="ajaxForm" class="com.wk.cms.shiro.filters.MyFormAuthenticationFilter">
     	<property name="successUrl" value="/"></property>
+    	<property name="rememberMeParam" value="rememberMe"></property>
     </bean>
 
 	<!-- Shiro的Web过滤器 -->
@@ -111,7 +112,7 @@
                 /logout = logout
                 /authenticated = authc
                 /static/**=anon
-                /** = authc,user
+                /** = user
             </value>
         </property>
     </bean>

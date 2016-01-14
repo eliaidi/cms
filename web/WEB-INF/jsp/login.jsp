@@ -15,6 +15,7 @@
 }
 </style>
 <link rel='stylesheet' type="text/css" href="<%=path%>/static/cms/bootstrap.css" />
+
 <script type="text/javascript" src="<%=path%>/static/cms/ext/build/bootstrap.js"></script>
 <script type="text/javascript">
 var ScreenWidth = window.screen.availWidth,ScreenHeight = window.screen.availHeight;

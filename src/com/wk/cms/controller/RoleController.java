@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.Role;
+import com.wk.cms.service.IResourceService;
 import com.wk.cms.service.IRoleService;
 import com.wk.cms.utils.PageInfo;
 
@@ -17,6 +18,9 @@ public class RoleController {
 	@Autowired
 	private IRoleService roleService;
 	
+	@Autowired
+	private IResourceService resourceService;
+	
 	@RequestMapping("/list")
 	public @ResponseBody PageInfo list(PageInfo info,String query,String userId){
 		
@@ -26,14 +30,22 @@ public class RoleController {
 	@RequestMapping("/save")
 	public @ResponseBody Message add(Role role){
 		
-		return new Message(true, "保存成功!", roleService.save(role));
+		try{
+			return new Message(true, "保存成功!", roleService.save(role));
+		}finally{
+			resourceService.initFilterChain();
+		}
 	}
 	
 	@RequestMapping("/delete")
 	public @ResponseBody Message delete(String[] ids){
 		
-		roleService.delete(ids);
-		return new Message(true, "删除成功!", "");
+		try{
+			roleService.delete(ids);
+			return new Message(true, "删除成功!", "");
+		}finally{
+			resourceService.initFilterChain();
+		}
 	}
 	
 }

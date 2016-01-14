@@ -329,5 +329,14 @@ public class FileUtils {
 			}
 		}
 	}
+
+	public static boolean isPic(String originalFilename) {
+
+		if(!StringUtils.hasLength(originalFilename)) return false;
+		String ext = getFileExt(originalFilename);
+		if(!StringUtils.hasLength(ext)) return false;
+		
+		return ext.equalsIgnoreCase("jpg")||ext.equalsIgnoreCase("png");
+	}
 	
 }

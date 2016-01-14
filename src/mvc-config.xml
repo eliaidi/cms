@@ -12,7 +12,7 @@
 
 	<mvc:annotation-driven validator="validator"  />
 	
-	<mvc:default-servlet-handler />
+	<mvc:default-servlet-handler  />
 
 	<!-- mapping static resources -->
 	<mvc:resources location="/WEB-INF/static/" mapping="/static/**"></mvc:resources>

@@ -178,7 +178,7 @@
 		if(!record.isModel){
 			var rs = me.getSelectionModel().getSelection();
 			for (var int = 0; int < rs.length; int++) {
-				ids.push(rs[i].get('id'));
+				ids.push(rs[int].get('id'));
 			}
 		}else{
 			ids.push(record.get('id'));

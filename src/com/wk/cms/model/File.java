@@ -160,15 +160,6 @@ public class File {
 	public void setCrUser(User crUser) {
 		this.crUser = crUser;
 	}
-	public boolean isPic() {
-		String[] pics = {"jpg","png","gif","bmp"};
-		for(String e : pics){
-			if(e.equalsIgnoreCase(this.fileExt)){
-				return true;
-			}
-		}
-		return false;
-	}
 	public Map<String, String> toJsonMap() throws ServiceException {
 
 		try {
@@ -182,7 +173,7 @@ public class File {
 				String valStr = "";
 				if(val!=null){
 					if(CommonUtils.contains(val.getClass().getInterfaces(), Blob.class)){
-						if(!this.isPic()){
+						if(!FileUtils.isPic(this.getFileName())){
 							valStr = blobJsonSerializer.format((Blob) val);
 						}
 						

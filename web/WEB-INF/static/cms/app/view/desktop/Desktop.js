@@ -138,7 +138,7 @@ Ext.define('MyCms.view.desktop.Desktop', {
                 autoLoad: true
             }),
 
-            wallpaper: 'resources/images/wallpapers/Blue-Sencha.jpg',
+            wallpaper: wallpaper_current,
             wallpaperStretch: false
         });
     },

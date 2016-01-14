@@ -68,3 +68,9 @@ var role_delete = RootPath+'/role/delete';
 var resource_list = RootPath+'/resource/list';
 var resource_save = RootPath+'/resource/save';
 var resource_delete = RootPath+'/resource/delete';
+
+var wallpaper_save = RootPath+'/wallpaper/save';
+var wallpaper_list = RootPath+'/wallpaper/list';
+var wallpaper_delete = RootPath+'/wallpaper/delete';
+var wallpaper_use = RootPath+'/wallpaper/use';
+var wallpaper_current = RootPath+'/wallpaper/current';

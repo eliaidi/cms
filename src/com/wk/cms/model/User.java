@@ -18,6 +18,8 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wk.cms.service.IUserService;
+import com.wk.cms.utils.BeanFactory;
 
 @Entity
 @Table(name="Sys_User",schema="CMS")
@@ -98,6 +100,12 @@ public class User {
 	}
 	public void setCrTime(Date crTime) {
 		this.crTime = crTime;
+	}
+
+	public static User findByUsername(String username) {
+		
+		IUserService userService = BeanFactory.getBean(IUserService.class);
+		return userService.findByUserName(username);
 	}
 	
 	

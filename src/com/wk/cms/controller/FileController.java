@@ -42,6 +42,7 @@ public class FileController {
 		response.setHeader("Content-disposition",
 				"attachment;filename=" + file.getFileName());
 		response.setHeader("Content-Length", String.valueOf(file.getFileSize()));
+		response.setHeader("Cache-control", "max-age=86400");
 		response.setContentType("application/octet-stream;charset=UTF-8");
 
 		InputStream is = file.getContent().getBinaryStream();

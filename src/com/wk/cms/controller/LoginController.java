@@ -11,8 +11,11 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.wk.cms.controller.vo.Message;
 
 @Controller
 public class LoginController {
@@ -39,4 +42,8 @@ public class LoginController {
 		return "login";
 	}
 	
+	@RequestMapping("/unauthorized")
+	public @ResponseBody Message unauthorized(){
+		return new Message(false, "unauthorized", "");
+	}
 }

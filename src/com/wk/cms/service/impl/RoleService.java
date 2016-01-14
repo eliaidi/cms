@@ -27,6 +27,7 @@ public class RoleService implements IRoleService {
 	}
 	@Override
 	public Role save(Role role ) {
+		
 		if(StringUtils.hasLength(role.getId())){
 			Role r = findById(role.getId());
 			
@@ -35,6 +36,7 @@ public class RoleService implements IRoleService {
 			r.setResources(role.getResources());
 			attachResource(r);
 			roleDao.save(r);
+			
 			return r;
 		}else{
 			attachResource(role);
@@ -42,8 +44,10 @@ public class RoleService implements IRoleService {
 			
 			//role.setCrUser(crUser);
 			roleDao.save(role);
+			
 			return role; 
 		}
+		
 	}
 	private void attachResource(Role role) {
 		List<Resource> resources = role.getResources();
@@ -57,6 +61,7 @@ public class RoleService implements IRoleService {
 			
 			IResourceService resourceService = BeanFactory.getBean(IResourceService.class);
 			role.setResources(resourceService.findByIds(ids));
+			
 		}
 	}
 	@Override

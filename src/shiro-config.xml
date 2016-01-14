@@ -96,26 +96,41 @@
     	<property name="rememberMeParam" value="rememberMe"></property>
     </bean>
 
-	<!-- Shiro的Web过滤器 -->
-    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
-        <property name="securityManager" ref="securityManager"/>
+    <bean id="filterChainManager" class="com.wk.cms.shiro.CustomDefaultFilterChainManager">
         <property name="loginUrl" value="/login"/>
         <property name="successUrl" value="/"></property>
-        <property name="filters">
+        <property name="unauthorizedUrl" value="/unauthorized"></property>
+        <property name="customFilters">
         	<util:map>
         		<entry key="authc" value-ref="ajaxForm"></entry>
         	</util:map>
         </property>
-        <property name="filterChainDefinitions">
+        <property name="defaultFilterChainDefinitions">
             <value>
                 /login = authc
                 /logout = logout
                 /authenticated = authc
                 /static/**=anon
-                /** = user
+                /** = anon
             </value>
         </property>
     </bean>
+    
+    <bean id="filterChainResolver"   
+	    class="com.wk.cms.shiro.CustomPathMatchingFilterChainResolver">  
+	    <property name="customDefaultFilterChainManager" ref="filterChainManager"/>
+	</bean> 
+
+	<!-- Shiro的Web过滤器 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">  
+	    <property name="securityManager" ref="securityManager"/>  
+	</bean> 
+    
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">  
+	    <property name="targetObject" ref="shiroFilter"/>  
+	    <property name="targetMethod" value="setFilterChainResolver"/>  
+	    <property name="arguments" ref="filterChainResolver"/>  
+	</bean> 
     
     <!-- Shiro生命周期处理器-->
     <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>

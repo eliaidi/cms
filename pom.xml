@@ -117,6 +117,16 @@
 		<!-- Spring MVC -->
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+		<dependency>
+	        <groupId>org.springframework</groupId>
+	        <artifactId>spring-messaging</artifactId>
+	        <version>${spring-framework.version}</version>
+	    </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring-framework.version}</version>
 		</dependency>
@@ -130,6 +140,12 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>${spring-framework.version}</version>
 		</dependency>
+		
+		<!-- <dependency>
+		   <groupId>org.apache.tomcat.embed</groupId>
+		   <artifactId>tomcat-embed-websocket</artifactId>
+		   <version>7.0.52</version>
+		</dependency> -->
 		
 		<!-- Commons-fileupload -->
 		<dependency>

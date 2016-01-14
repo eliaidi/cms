@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.wk.cms.model.Resource;
+import com.wk.cms.model.Role;
 import com.wk.cms.utils.PageInfo;
 
 public interface IResourceService {
@@ -20,5 +21,13 @@ public interface IResourceService {
 	void delete(@NotEmpty String[] ids);
 
 	List<Resource> findByIds(@NotEmpty String[] ids);
+
+	List<Resource> findAllWithRoles();
+
+	List<Role> findRoles(@NotNull Resource r);
+
+	List<String> findRoleNames(@NotNull Resource r);
+
+	void initFilterChain();
 
 }

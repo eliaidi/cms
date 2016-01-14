@@ -3,6 +3,7 @@ package com.wk.cms.dao;
 import java.util.List;
 
 import com.wk.cms.model.Resource;
+import com.wk.cms.model.Role;
 import com.wk.cms.utils.PageInfo;
 
 public interface IResourceDao {
@@ -18,5 +19,11 @@ public interface IResourceDao {
 	void delete(String id);
 
 	List<Resource> find(String[] ids);
+
+	List<Resource> findAllWithRoles();
+
+	List<Role> findRoles(Resource r);
+
+	List<String> findRoleNames(Resource r);
 
 }

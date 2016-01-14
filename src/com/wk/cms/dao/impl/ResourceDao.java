@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IResourceDao;
 import com.wk.cms.model.Resource;
+import com.wk.cms.model.Role;
 import com.wk.cms.utils.PageInfo;
 
 @Repository
@@ -65,9 +66,19 @@ public class ResourceDao implements IResourceDao {
 	}
 	@Override
 	public void delete(String id) {
-		hibernateTemplate.delete(findById(id));
+		Resource r = findById(id);
+		if(r==null) return;
+		if(r.getRoles() != null){
+			for(Role rl : r.getRoles()){
+				rl.getResources().remove(r);
+			}
+			r.setRoles(null);
+		}
+		
+		hibernateTemplate.delete(r);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Resource> find(String[] ids) {
 
@@ -77,6 +88,21 @@ public class ResourceDao implements IResourceDao {
 		return c.add(Restrictions.in("id", ids))
 				.setFetchSize(20)
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Resource> findAllWithRoles() {
+
+		List<Resource> resources = (List<Resource>) hibernateTemplate.find("select r from Resource r  where r.roles.size > 0");
+		return resources;
+	}
+	@Override
+	public List<Role> findRoles(Resource r) {
+		return (List<Role>) hibernateTemplate.find("select distinct rs from Resource r left join r.roles rs where r=?", r);
+	}
+	@Override
+	public List<String> findRoleNames(Resource r) {
+		return (List<String>) hibernateTemplate.find("select distinct rs.name from Resource r left join r.roles rs where r=?", r);
 	}
 
 }

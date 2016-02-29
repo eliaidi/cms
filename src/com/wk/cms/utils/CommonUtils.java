@@ -2,11 +2,13 @@ package com.wk.cms.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -316,8 +318,14 @@ public class CommonUtils {
 	}
 
 	public static String getAppPath(String s) {
-		String fullPath = CommonUtils.class.getResource("/").getPath();
-		return fullPath.substring(0, fullPath.lastIndexOf(s)+s.length());
+		String fullPath = "";
+		try {
+			fullPath = URLDecoder.decode(CommonUtils.class.getResource("/").getPath(), "UTF-8");
+			return fullPath.substring(0, fullPath.lastIndexOf(s)+s.length());
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Url decode error!", e);
+		}
+		return fullPath;
 	}
 
 	public static String join(String[] idsArr, String sp) {

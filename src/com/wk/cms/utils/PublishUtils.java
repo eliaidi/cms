@@ -7,6 +7,8 @@ import java.io.File;
 
 
 
+
+
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.cfg.SysCfg;
@@ -14,6 +16,8 @@ import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
 import com.wk.cms.model.Template;
+import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.ITemplateService;
 
 public class PublishUtils {
@@ -110,6 +114,20 @@ public class PublishUtils {
 			}
 		}
 		return template.getPrefix()+"."+template.getExt();
+	}
+
+	public static PublishType getPubType(int type) throws PublishException {
+		
+		switch (type) {
+		case 0:
+			return PublishType.INDEX;
+		case 1:
+			return PublishType.INCRESE;
+		case 2:
+			return PublishType.ALL;
+		}
+		
+		throw new PublishException("can not find mapped PublishType![type="+type+"]");
 	}
 	
 }

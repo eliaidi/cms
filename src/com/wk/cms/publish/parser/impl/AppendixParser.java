@@ -53,7 +53,7 @@ public class AppendixParser extends AbstractTagParser {
 			String val = null;
 			if(!StringUtils.hasLength(field)){
 				String link = getPubDir(base, obj)+app.getFile().getFileName();
-				val = app.getFile().isPic()?"<img src=\""+link+"\" title=\""+app.getAddition()+"\" />":"<a href=\""+link+"\" alt=\""+app.getAddition()+"\"></a>";
+				val = FileUtils.isPic(app.getFile().getFileName())?"<img src=\""+link+"\" title=\""+app.getAddition()+"\" />":"<a href=\""+link+"\" alt=\""+app.getAddition()+"\"></a>";
 			}else if("_url".equalsIgnoreCase(field)){
 				val = getPubDir(base, obj)+app.getFile().getFileName();
 			}else{

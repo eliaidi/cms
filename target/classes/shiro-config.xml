@@ -109,9 +109,9 @@
             <value>
                 /login = authc
                 /logout = logout
-                /authenticated = authc
+                /authenticated = anon
                 /static/**=anon
-                /** = anon
+                /** = user
             </value>
         </property>
     </bean>

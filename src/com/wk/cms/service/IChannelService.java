@@ -83,4 +83,6 @@ public interface IChannelService {
 	List<Channel> findSubChannels(@NotNull Site site, @NotEmpty String pName, String level) throws ServiceException;
 
 	String preview(@NotEmpty String id) throws ServiceException;
+
+	String publish(@NotEmpty String id, int type) throws ServiceException;
 }

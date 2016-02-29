@@ -18,6 +18,7 @@ Ext
 							+ '" src="" frameborder=0  width="100%" height="100%" > </iframe></div></div></div>';
 						me.on('render', 'doAfterRender', me);
 						me.callParent();
+						
 					},
 					doAfterRender : function() {
 						var me = this,form = me.up('form');
@@ -59,8 +60,9 @@ Ext
 								.getField();
 
 						field.setValue(val);
+						
 						var frameLoop = setInterval(function() {
-							if (me.eWin.document && me.eWin.CKEDITOR) {
+							if (me.eWin && me.eWin.document && me.eWin.CKEDITOR) {
 								var fck = me.eWin.CKEDITOR.instances.editor1;
 								if (fck) {
 									if (fck.getData() != val) {

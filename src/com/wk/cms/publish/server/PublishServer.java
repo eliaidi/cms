@@ -2,6 +2,8 @@ package com.wk.cms.publish.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -72,7 +74,7 @@ public class PublishServer implements IPublishServer {
 	static{
 		pubCompCfg = new Properties();
 		try {
-			pubCompCfg.load(new FileInputStream(new File(PublishServer.class.getResource("/").getPath()+PUBLISH_COMP_FILE_NAME)));
+			pubCompCfg.load(new FileInputStream(new File(URLDecoder.decode(PublishServer.class.getResource("/").getPath(), "UTF-8")+PUBLISH_COMP_FILE_NAME)));
 		} catch (Exception e) {
 			LOGGER.error("加载发布组件失败，文件【"+PUBLISH_COMP_FILE_NAME+"】",e);
 		} 
@@ -116,11 +118,12 @@ public class PublishServer implements IPublishServer {
 	private String publishChannel(Channel obj, final PublishType type) throws PublishException {
 		
 		String r = previewOrPublishChannel(obj);
-		if(type.equals(PublishType.ALL)){
+		if(type.equals(PublishType.ALL)||type.equals(PublishType.INCRESE)){
 			try {
 				IChannelService channelService = BeanFactory.getBean(IChannelService.class);
 				List<Channel > channels = channelService.findByParentId(obj.getId());
 				
+				//发布栏目下子栏目
 				for(final Channel channel : channels){
 					if(!StringUtils.hasLength(channel.getOtempIds())){
 						continue;
@@ -143,6 +146,10 @@ public class PublishServer implements IPublishServer {
 					List<Document> documents = documentService.findCanPub(obj, IDocumentService.MAX_FETCH_SIZE, null, null, null);
 					
 					for(final Document document : documents){
+						//如果是增量发布且文档状态为已发布，则跳过~~
+						if(type.equals(PublishType.INCRESE)&&document.getStatus().equals(Document.Status.PUBLISH)){
+							continue;
+						}
 						execute(new Runnable() {
 							@Override
 							public void run() {
@@ -385,8 +392,4 @@ public class PublishServer implements IPublishServer {
 		return sb.toString();
 	}
 	
-	public static void main(String[] args) {
-		
-	}
-
 }

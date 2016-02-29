@@ -1,6 +1,7 @@
 package com.wk.cms.shiro;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class ShiroFilerChainManager {
 
 	@PostConstruct
 	public void init() {
-		defaultFilterChains = new HashMap<String, NamedFilterList>(
+		defaultFilterChains = new LinkedHashMap<String, NamedFilterList>(//需要排序，shiro按照顺序比较filterChain
 				filterChainManager.getFilterChains());
 	}
 

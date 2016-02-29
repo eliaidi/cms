@@ -105,6 +105,7 @@ Ext.define('MyCms.view.setting.Settings', {
     			var r = action.result;
     	    	if(r.success){
     	    		Ext.Msg.alert('提示','背景图保存成功！');
+    	    		me2._addObj = r.obj;
     	    		me2.refreshPicList();
     	    		this.close();
     	    	}
@@ -170,7 +171,15 @@ Ext.define('MyCms.view.setting.Settings', {
                     text:'Wallpaper',
                     expanded: true
                 }
-            })
+            })/*,
+            listeners:{
+            	"load" : function(_this){
+            		if(me._addObj){
+            			tree.selectPath('/root/'+me._addObj.id);
+            			me._addObj = null;
+            		}
+            	}
+            }*/
         });
 
         return tree;
@@ -220,7 +229,10 @@ Ext.define('MyCms.view.setting.Settings', {
     onOK: function () {
         var me = this;
         if (me.selected) {
-            me.desktop.setWallpaper(me.selected.get('img'), me.stretch);
+        	var img = me.selected.isModel?me.selected.get('img'):me.selected;
+            me.desktop.setWallpaper(img, me.stretch);
+            
+            me.destroy();
         }
         if(!me.selected.isModel) return;
         Ext.Ajax.request({

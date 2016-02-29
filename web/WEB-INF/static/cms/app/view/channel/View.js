@@ -62,6 +62,31 @@ Ext.define('MyCms.view.channel.View', {
 				},
 				scope : me
 			},{
+				text : '发布',
+				items:[{
+					text : '仅发布栏目首页',
+					handler : function() {
+						me.publish(record,0);
+					},
+					scope : me
+				},{
+					text : '增量发布',
+					handler : function() {
+						me.publish(record,1);
+					},
+					scope : me
+				},{
+					text : '全部发布',
+					handler : function() {
+						me.publish(record,2);
+					},
+					scope : me
+				}]
+//				handler : function() {
+//					me.publishChannel(record);
+//				},
+//				scope : me
+			},{
 				text : '打开',
 				handler : function(){
 					me.openChannel(_this, record, item, index, e, eOpts);
@@ -168,6 +193,27 @@ Ext.define('MyCms.view.channel.View', {
 
 		view.getStore().load();
 		view.mixins.dragSelector.init(view);
+	},
+	publish:function(r,t){
+		Ext.Ajax.request({
+			url : channel_publish,
+			params : {
+				id : r.get('id'),
+				type : t
+			},
+			success : function(response, opts) {
+				var obj = Ext.decode(response.responseText);
+				if (!obj.success) {
+					Ext.Msg.alert('错误', obj.message);
+					return;
+				}
+				//window.open(obj.obj);
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	},
 	previewChannel:function(r){
 		

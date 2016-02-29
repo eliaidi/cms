@@ -17,6 +17,7 @@ import com.wk.cms.controller.vo.Message;
 import com.wk.cms.model.WallPaper;
 import com.wk.cms.service.IWallpaperService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.PageInfo;
 
 @Controller

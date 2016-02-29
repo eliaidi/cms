@@ -33,6 +33,7 @@ public class CustomPathMatchingFilterChainResolver extends
 		for (String pathPattern : filterChainManager.getChainNames()) {
 			if (pathMatches(pathPattern, requestURI)) {
 				chainNames.add(pathPattern);
+				break;//只验证匹配最上面的一条记录
 			}
 		}
 		if (chainNames.size() == 0) {

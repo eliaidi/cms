@@ -110,4 +110,11 @@ public class ChannelController {
 		
 		return new Message(true, "", channelService.preview(id));
 	}
+	
+	@RequestMapping("/publish")
+	public @ResponseBody Message publish(String id,int type) throws ServiceException{
+		
+		
+		return new Message(true, "", channelService.publish(id,type));
+	}
 }

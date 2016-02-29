@@ -66,7 +66,8 @@ public class WallpaperDao implements IWallpaperDao {
 
 		List<WallPaper> wallPapers = c.createAlias("user", "u")
 				.add(Restrictions.eq("u.username", username))
-				.addOrder(Order.desc("crTime")).setMaxResults(1).list();
+				.add(Restrictions.isNotNull("useTime"))
+				.addOrder(Order.desc("useTime")).setMaxResults(1).list();
 		if (CommonUtils.isEmpty(wallPapers)) {
 			return null;
 		}

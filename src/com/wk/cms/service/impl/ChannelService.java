@@ -27,6 +27,7 @@ import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
+import com.wk.cms.utils.PublishUtils;
 
 @Service
 public class ChannelService implements IChannelService {
@@ -274,5 +275,14 @@ public class ChannelService implements IChannelService {
 		}
 		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
 		return publishServer.publish(channel, true, PublishType.INDEX);
+	}
+	@Override
+	public String publish(String id,int type) throws ServiceException {
+		Channel channel = findById(id);
+		if(channel==null){
+			throw new ServiceException("id为【"+id+"】的栏目不存在！");
+		}
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
+		return publishServer.publish(channel, false, PublishUtils.getPubType(type));
 	}
 }

@@ -64,6 +64,10 @@ Ext.define('MyCms.view.document.Grid', {
 			handler : 'paste',
 			scope : me/*,
 			disabled:!MyCms.Application.clipBoard*/
+		},{
+			text : '发布',
+			handler : 'publishDoc',
+			scope : me
 		} ];
 
 		var store = Ext.create('Ext.data.BufferedStore', {
@@ -144,6 +148,10 @@ Ext.define('MyCms.view.document.Grid', {
 				handler : function() {
 					me.previewDoc(record);
 				},
+				scope : me
+			},{
+				text : '发布',
+				handler : 'publishDoc',
 				scope : me
 			}, {
 				text : '修改',
@@ -451,5 +459,36 @@ Ext.define('MyCms.view.document.Grid', {
 				}
 			});
 		}
+	},
+	publishDoc : function(){
+		var me = this,rs = me.getSelectionModel().getSelection(),ids = [];
+		
+		if(rs.length==0){
+			Ext.Msg.alert('error','请选择待发布的记录！');
+			return;
+		}
+		
+		for(var i=0;i<rs.length;i++){
+			ids.push(rs[i].get('id'));
+		}
+		
+		Ext.Ajax.request({
+			url : document_publish,
+			params : {
+				ids : ids.join(',')
+			},
+			success : function(response, opts) {
+				var obj = Ext.decode(response.responseText);
+				if (!obj.success) {
+					Ext.Msg.alert('错误', obj.message);
+					return;
+				}
+				me.fireEvent('refresh',me);
+			},
+			failure : function(response, opts) {
+				console.log('server-side failure with status code '
+						+ response.status);
+			}
+		});
 	}
 });

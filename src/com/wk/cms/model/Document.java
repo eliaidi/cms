@@ -77,8 +77,7 @@ public class Document {
 	@ManyToOne
 	private Site site;
 
-	@ManyToOne
-	private User crUser;
+	private String crUser;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date crTime;
@@ -180,14 +179,6 @@ public class Document {
 		this.site = site;
 	}
 
-	public User getCrUser() {
-		return crUser;
-	}
-
-	public void setCrUser(User crUser) {
-		this.crUser = crUser;
-	}
-
 	public Date getCrTime() {
 		return crTime;
 	}
@@ -202,6 +193,14 @@ public class Document {
 
 	public void setFieldValues(List<FieldValue> fieldValues) {
 		this.fieldValues = fieldValues;
+	}
+
+	public String getCrUser() {
+		return crUser;
+	}
+
+	public void setCrUser(String crUser) {
+		this.crUser = crUser;
 	}
 
 }

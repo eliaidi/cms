@@ -2,6 +2,7 @@ package com.wk.cms.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -18,6 +19,7 @@ public class PubLog {
 	private String obj;
 	private String objId;
 	private String objType;
+	@Column(length=2000)
 	private String descr;
 	@Type(type="yes_no")
 	private Boolean success;
@@ -29,8 +31,7 @@ public class PubLog {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endTime;
 	
-	@ManyToOne
-	private User pubUser;
+	private String pubUser;
 	
 	public String getId() {
 		return id;
@@ -87,10 +88,10 @@ public class PubLog {
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
-	public User getPubUser() {
+	public String getPubUser() {
 		return pubUser;
 	}
-	public void setPubUser(User pubUser) {
+	public void setPubUser(String pubUser) {
 		this.pubUser = pubUser;
 	}
 	

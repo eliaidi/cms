@@ -176,10 +176,10 @@ Ext.define('MyCms.view.desktop.Desktop', {
         var ret = this.callParent();
 
         return Ext.apply(ret, {
-            quickStart: [
-                { name: 'Accordion Window', iconCls: 'accordion', module: 'acc-win' },
-                { name: 'Grid Window', iconCls: 'icon-grid', module: 'grid-win' }
-            ],
+//            quickStart: [
+//                { name: 'Accordion Window', iconCls: 'accordion', module: 'acc-win' },
+//                { name: 'Grid Window', iconCls: 'icon-grid', module: 'grid-win' }
+//            ],
             trayItems: [
                 { xtype: 'trayclock', flex: 1 }
             ]

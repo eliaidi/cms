@@ -63,7 +63,7 @@ Ext.define('MyCms.view.channel.View', {
 				scope : me
 			},{
 				text : '发布',
-				items:[{
+				menu:[{
 					text : '仅发布栏目首页',
 					handler : function() {
 						me.publish(record,0);
@@ -82,10 +82,6 @@ Ext.define('MyCms.view.channel.View', {
 					},
 					scope : me
 				}]
-//				handler : function() {
-//					me.publishChannel(record);
-//				},
-//				scope : me
 			},{
 				text : '打开',
 				handler : function(){

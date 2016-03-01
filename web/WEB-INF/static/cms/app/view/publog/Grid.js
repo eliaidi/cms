@@ -60,6 +60,10 @@ Ext.define('MyCms.view.publog.Grid',{
 		var me = this;
 		//面板右键菜单
 		me.cmpContextItems = [ {
+			text : '查看',
+			handler : 'showItem',
+			scope : me
+		},{
 			text : '刷新',
 			handler : 'refresh',
 			scope : me
@@ -115,6 +119,7 @@ Ext.define('MyCms.view.publog.Grid',{
 		
 		me.on('containercontextmenu', 'showCmpMenu', me);
 		me.on('itemcontextmenu', 'showItemMenu', me);
+		me.on('itemdblclick', 'showItem', me);
 		me.on('refresh', 'refresh', me);
 
 		me.callParent();
@@ -175,6 +180,17 @@ Ext.define('MyCms.view.publog.Grid',{
 
 		e.stopEvent();
 		e.stopPropagation();
+	},
+	showItem:function(){
+		
+		var me = this,rs = me.getSelectionModel().getSelection();
+		
+		if(rs.length!=1){
+			Ext.Msg.alert('error','请选择一条待查看的记录！');
+			return;
+		}
+		
+		Ext.create('MyCms.view.publog.ItemWin').loadData(rs[0]).show();
 	},
 	refresh:function(){
 		this.getStore().load();

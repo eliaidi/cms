@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.tools.zip.ZipFile;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class TemplateService implements ITemplateService {
 		if (!StringUtils.hasLength(template.getId())) {
 
 			template.getFile().setCrTime(new Date());
-			template.getFile().setCrUser(null);
+			template.getFile().setCrUser(SecurityUtils.getSubject().getPrincipal().toString());
 			
 			if(template.getSite()!=null&&StringUtils.hasLength(template.getSite().getId())){
 				template.setSite(siteService.findById(template.getSite().getId()));

@@ -1,7 +1,9 @@
 package com.wk.cms.publish.aspect;
 
 import java.util.Date;
+import java.util.List;
 
+import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,6 +18,7 @@ import com.wk.cms.model.PubLog;
 import com.wk.cms.model.Site;
 import com.wk.cms.service.IPubLogService;
 import com.wk.cms.utils.BeanFactory;
+import com.wk.cms.utils.CommonUtils;
 
 @Component
 @Aspect
@@ -23,7 +26,7 @@ public class PublishAspect {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PublishAspect.class);
 	
-	@Pointcut("execution(  * com.wk.cms.publish.server.PublishServer.publish(..) ) ")
+	@Pointcut("execution(  * com.wk.cms.publish.server.PublishServer.publish*(..) ) ")
 	private void t(){}
 	
 	@Around("t()")
@@ -72,12 +75,22 @@ public class PublishAspect {
 		log.setObjId(getObjId(pubObj));
 		log.setObjType(getObjType(pubObj));
 		log.setStartTime(new Date());
+		log.setPubUser(SecurityUtils.getSubject().getPrincipal().toString());
 		
 		IPubLogService pubLogService = BeanFactory.getBean(IPubLogService.class);
 		return pubLogService.noTransSave(log);
 	}
 
 	private String getObjType(Object pubObj) {
+		
+		if(List.class.isAssignableFrom(pubObj.getClass())){
+			List<Object> objects = (List<Object>) pubObj;
+			if(CommonUtils.isEmpty(objects)){
+				return null;
+			}
+			return getObjType(objects.get(0));
+		}
+		
 		if(pubObj instanceof Document){
 			return "文档";
 		}else if(pubObj instanceof Channel){
@@ -90,6 +103,17 @@ public class PublishAspect {
 
 	private String getObjId(Object pubObj) {
 		
+		if(List.class.isAssignableFrom(pubObj.getClass())){
+			StringBuilder sb = new StringBuilder();
+			List<Object> objects = (List<Object>) pubObj;
+			for(Object o : objects){
+				sb.append(","+getObjId(o));
+			}
+			if(sb.length()<=0){
+				return null;
+			}
+			return sb.delete(0, 1).toString();
+		}
 		if(pubObj instanceof Document){
 			return ((Document)pubObj).getId();
 		}else if(pubObj instanceof Channel){

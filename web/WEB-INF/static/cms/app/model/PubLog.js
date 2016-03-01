@@ -18,7 +18,8 @@ Ext.define('MyCms.model.PubLog', {
 		name : 'zhs',convert:function(v,r){
 			var st = r.get('startTime'),et = r.get('endTime'),v = '';
 			if(st&&et){
-				v = Math.floor((new Date(et).getTime() - new Date(st).getTime())/1000);
+				//v = Math.floor((new Date(et).getTime() - new Date(st).getTime())/1000);
+				v = (new Date(et).getTime() - new Date(st).getTime())/1000;
 			}
         	return v;
         } 

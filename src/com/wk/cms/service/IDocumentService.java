@@ -11,6 +11,7 @@ import com.wk.cms.exception.ParseException;
 import com.wk.cms.model.Channel;
 import com.wk.cms.model.Document;
 import com.wk.cms.model.Site;
+import com.wk.cms.publish.exceptions.PublishException;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.PageInfo;
 
@@ -75,5 +76,7 @@ public interface IDocumentService {
 	String preview(@NotEmpty String id) throws ServiceException;
 
 	void changeStatus(@NotNull Document obj, @NotNull Integer publish);
+
+	String publish(@NotEmpty String[] ids) throws PublishException;
 
 }

@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.shiro.SecurityUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -46,8 +47,7 @@ public class File {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date crTime;
 	
-	@ManyToOne
-	private User crUser;
+	private String crUser;
 
 	public File(){}
 	public File(String fileName, long size, String fileExt, MyBlob content, String encode2) {
@@ -57,7 +57,7 @@ public class File {
 		this.fileSize = size;
 		this.content = content;
 		this.crTime = new Date();
-		this.crUser = null;
+		this.crUser = SecurityUtils.getSubject().getPrincipal().toString();
 		this.encode = encode2;
 	}
 
@@ -72,13 +72,13 @@ public class File {
 		this.fileSize = bytes.length;
 		this.content = new MyBlob(bytes);
 		this.crTime = new Date();
-		this.crUser = null;
+		this.crUser = SecurityUtils.getSubject().getPrincipal().toString();
 		this.id = id;
 	}
 	public File(String id, java.io.File eFile, String encode2) throws FileParseException {
 		this.id = id;
 		this.crTime = new Date();
-		this.crUser = null;
+		this.crUser = SecurityUtils.getSubject().getPrincipal().toString();
 		
 		byte[] bytes = FileUtils.getBytes(eFile);
 		this.fileName = eFile.getName();
@@ -96,7 +96,7 @@ public class File {
 		this.content = new MyBlob(bytes);
 		this.fileSize = bytes.length;
 		this.crTime = new Date();
-		this.crUser = null;
+		this.crUser = SecurityUtils.getSubject().getPrincipal().toString();
 		this.encode = encode;
 	}
 	public String getId() {
@@ -153,13 +153,6 @@ public class File {
 		this.crTime = crTime;
 	}
 
-	public User getCrUser() {
-		return crUser;
-	}
-
-	public void setCrUser(User crUser) {
-		this.crUser = crUser;
-	}
 	public Map<String, String> toJsonMap() throws ServiceException {
 
 		try {
@@ -189,6 +182,12 @@ public class File {
 		} catch (Exception e) {
 			throw new ServiceException("生成File的JSON Map失败！", e);
 		} 
+	}
+	public String getCrUser() {
+		return crUser;
+	}
+	public void setCrUser(String crUser) {
+		this.crUser = crUser;
 	}
 	
 }

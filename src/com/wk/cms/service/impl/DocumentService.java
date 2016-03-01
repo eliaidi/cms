@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.shiro.SecurityUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import com.wk.cms.model.Field.Type;
 import com.wk.cms.model.FieldValue;
 import com.wk.cms.model.Site;
 import com.wk.cms.publish.IPublishServer;
+import com.wk.cms.publish.exceptions.PublishException;
+import com.wk.cms.publish.server.PublishServer;
 import com.wk.cms.publish.type.PublishType;
 import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IChannelService;
@@ -70,7 +73,7 @@ public class DocumentService implements IDocumentService {
 			document.setChannel(channel);
 			document.setSite(channel.getSite());
 			document.setCrTime(new Date());
-			document.setCrUser(null);
+			document.setCrUser(SecurityUtils.getSubject().getPrincipal().toString());
 			document.setSort(documentDao.findMaxSortOf(channel) + 1);
 			if (!CommonUtils.isEmpty(document.getFieldValues())) {
 				for (FieldValue fv : document.getFieldValues()) {
@@ -180,7 +183,7 @@ public class DocumentService implements IDocumentService {
 		newDoc.setChannel(newChannel);
 		newDoc.setSite(newChannel.getSite());
 		newDoc.setCrTime(new Date());
-		newDoc.setCrUser(null);
+		newDoc.setCrUser(SecurityUtils.getSubject().getPrincipal().toString());
 		newDoc.setSort(documentDao.findMaxSortOf(newChannel) + 1);
 		documentDao.save(newDoc);
 	}
@@ -257,7 +260,7 @@ public class DocumentService implements IDocumentService {
 		if (StringUtils.hasLength(order)) {
 			hql += " order by " + order;
 		}
-		return documentDao.find(hql, params, new PageInfo(1, pageSize, null,
+		return documentDao.find(hql, params, new PageInfo(0, pageSize, null,
 				null));
 	}
 
@@ -384,6 +387,18 @@ public class DocumentService implements IDocumentService {
 	@Override
 	public void changeStatus(Document obj, Integer status) {
 		documentDao.changeStatus(obj,status);
+	}
+
+	@Override
+	public String publish(String[] ids) throws PublishException {
+		
+		List<Document> documents = findByIds(ids);
+		if(CommonUtils.isEmpty(documents)){
+			throw new PublishException("未找到文档集合，IDS=["+CommonUtils.join(documents, ";")+"]");
+		}
+		IPublishServer publishServer = BeanFactory.getBean(IPublishServer.class);
+		publishServer.publishMulti(documents,false,PublishType.INDEX);
+		return null;
 	}
 
 }

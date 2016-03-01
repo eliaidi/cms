@@ -147,4 +147,11 @@ public class DocumentController {
 
 		return new Message(true, "", documentService.preview(id));
 	}
+	
+	@RequestMapping("/publish")
+	public @ResponseBody
+	Message publish(String[] ids) throws ServiceException {
+
+		return new Message(true, "", documentService.publish(ids));
+	}
 }

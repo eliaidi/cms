@@ -28,6 +28,7 @@ var document_copy = RootPath+'/document/copy';
 var document_cut = RootPath+'/document/cut';
 var document_move = RootPath+'/document/move';
 var document_preview = RootPath+'/document/preview';
+var document_publish = RootPath+'/document/publish';
 
 var appendix_list = RootPath+'/appendix/list';
 var appendix_save = RootPath+'/appendix/save';

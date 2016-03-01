@@ -61,7 +61,7 @@ public class PublishServer implements IPublishServer {
 	private static final String PUBLISH_COMP_FILE_NAME = "publish-comp-cfg.properties";
 	private static final Properties pubCompCfg;
 	private boolean isPreview ;
-	private Semaphore sem;
+//	private Semaphore sem;
 	
 	public boolean isPreview() {
 		return isPreview;
@@ -82,10 +82,10 @@ public class PublishServer implements IPublishServer {
 	
 	private void execute(Runnable runnable)  {
 		try {
-			sem.acquire();
+//			sem.acquire();
 			Future<?> r = EXECUTOR.submit(runnable);
 			r.get();
-			sem.release();
+//			sem.release();
 		} catch (Exception e) {
 			LOGGER.error("execute error!!",e);
 		}
@@ -97,7 +97,7 @@ public class PublishServer implements IPublishServer {
 
 		LOGGER.debug("发布对象【"+obj+"】，发布类型【"+(isPreview?"预览":"发布")+"】，发布形式【"+type+"】，当前线程【"+Thread.currentThread()+"】，当前发布类实例【"+this+"】");
 		this.isPreview = isPreview;
-		this.sem = new Semaphore(MAX_POOL_SIZE);
+//		this.sem = new Semaphore(MAX_POOL_SIZE);
 		if (isPreview)
 			return preview(obj);
 		return doPublish(obj,type);
@@ -390,6 +390,18 @@ public class PublishServer implements IPublishServer {
 		}
 		m.appendTail(sb);
 		return sb.toString();
+	}
+
+	@Override
+	public <T> void publishMulti(List<T> documents,boolean isPreview,PublishType publishType) {
+		
+		for(T o : documents){
+			try {
+				publish(o, false, PublishType.INDEX);
+			} catch (PublishException e) {
+				LOGGER.error("对象【"+o+"】发布失败！", e);
+			}
+		}
 	}
 	
 }

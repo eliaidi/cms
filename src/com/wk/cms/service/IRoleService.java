@@ -24,4 +24,6 @@ public interface IRoleService {
 
 	List<String> findByUserName(@NotEmpty String username);
 
+	String findAdminRoles();
+
 }

@@ -88,5 +88,10 @@ public class RoleDao implements IRoleDao {
 	public List<String> findNameByUserName(String username) {
 		return (List<String>) hibernateTemplate.find("select r.name from Role r join r.users us where us.username=?", username);
 	}
+	@Override
+	public List<String> findAdmin() {
+		 
+		return  (List<String>) hibernateTemplate.find("select r.name from Role r where r.isAdmin=?", true);
+	}
 	
 }

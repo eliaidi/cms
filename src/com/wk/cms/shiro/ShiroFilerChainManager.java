@@ -11,9 +11,11 @@ import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.NamedFilterList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.wk.cms.model.Resource;
 import com.wk.cms.service.IResourceService;
+import com.wk.cms.service.IRoleService;
 import com.wk.cms.utils.CommonUtils;
 
 @Service
@@ -23,7 +25,12 @@ public class ShiroFilerChainManager {
 	private Map<String, NamedFilterList> defaultFilterChains;
 	
 	private IResourceService resourceService;
+	private IRoleService roleService;
 	
+	@Autowired
+	public void setRoleService(IRoleService roleService) {
+		this.roleService = roleService;
+	}
 	@Autowired
 	public void setResourceService(IResourceService resourceService) {
 		this.resourceService = resourceService;
@@ -38,8 +45,11 @@ public class ShiroFilerChainManager {
 	public void initFilterChains(List<Resource> resources) {
 		// 1、首先删除以前老的filter chain并注册默认的
 		filterChainManager.getFilterChains().clear();
-		if (defaultFilterChains != null) {
-			filterChainManager.getFilterChains().putAll(defaultFilterChains);
+		
+		filterChainManager.addToChain("/**", "user", "admin");
+		String roleStr = roleService.findAdminRoles();
+		if(StringUtils.hasLength(roleStr)){
+			filterChainManager.addToChain("/**", "roles", roleStr);
 		}
 		
 		// 2、循环URL Filter 注册filter chain
@@ -50,6 +60,10 @@ public class ShiroFilerChainManager {
 			if(!CommonUtils.isEmpty(roles)){
 				filterChainManager.addToChain(url, "roles", CommonUtils.join(roles, ","));
 			}
+		}
+		
+		if (defaultFilterChains != null) {
+			filterChainManager.getFilterChains().putAll(defaultFilterChains);
 		}
 	}
 }

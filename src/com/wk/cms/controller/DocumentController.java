@@ -19,6 +19,7 @@ import com.wk.cms.service.IAppendixService;
 import com.wk.cms.service.IDocumentService;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.service.exception.ValidationException;
+import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 
@@ -61,7 +62,6 @@ public class DocumentController {
 	public @ResponseBody
 	PageInfo list(String channelId, PageInfo pageInfo, String query)
 			throws ServiceException {
-
 		return documentService.find(channelId, pageInfo, query);
 	}
 

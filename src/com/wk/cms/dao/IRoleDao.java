@@ -21,4 +21,6 @@ public interface IRoleDao {
 
 	List<String> findNameByUserName(String username);
 
+	List<String> findAdmin();
+
 }

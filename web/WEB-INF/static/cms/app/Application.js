@@ -34,6 +34,38 @@ Ext.define('MyCms.Application', {
     	    },
     	    customFieldText:'字段不合法！'
     	});
+    	
+    	Ext.apply(Ext.menu.Menu, {
+    		listeners:{
+    			'mouseleave' : function(){
+    				this.hide();
+    			}
+    		}
+    	});
+    	
+    	Ext.apply(Ext.Ajax,{
+    		listeners:{
+    			'requestcomplete':function(conn, response, options, eOpts){
+    				console.log(response);
+    			}
+    		}
+    	});
+    	
+    	Ext.apply(Ext.data.Store,{
+    		listeners:{
+    			'load':function(_this, records, successful, e){
+    				//console.log(_this,records,successful,eOpts);
+    				var result = Ext.JSON.decode(e._response.responseText);
+    				if(!result.success&&result.message==='unauthorized'){
+    					unauthorized(e.request._url);
+    				}
+    			}
+    		}
+    	});
+    	
+    	function unauthorized(addr){
+    		Ext.Msg.alert('error','抱歉，您没有【'+addr+'】的权限！请联系管理员~~');
+    	}
     },
     statics:{
     	copy:function(record){

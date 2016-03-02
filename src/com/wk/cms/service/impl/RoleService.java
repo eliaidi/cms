@@ -81,5 +81,13 @@ public class RoleService implements IRoleService {
 		
 		return roleDao.findNameByUserName(username);
 	}
+	@Override
+	public String findAdminRoles() {
+		List<String> roles = roleDao.findAdmin();
+		if(CommonUtils.isEmpty(roles)){
+			return null;
+		}
+		return CommonUtils.list2String(roles, ",");
+	}
 
 }

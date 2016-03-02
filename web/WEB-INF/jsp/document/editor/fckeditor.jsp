@@ -22,6 +22,20 @@
 <!--
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
+<style type="text/css">
+.finish-btn{
+	width: 105px;
+	height:25px;
+	margin: 5px 5px;
+	padding-top : 10px;
+	text-align: center;
+	border: 1px green solid;
+	background: rgb(200,188,122);
+}
+.finish-btn:hover{
+	background: rgb(200,111,200);
+}
+</style>
 <script type="text/javascript">
 var RootPath = '<%=request.getContextPath()%>';
 </script>
@@ -31,6 +45,9 @@ var RootPath = '<%=request.getContextPath()%>';
 
 <body>
 
+	<div id="btnDiv" class="finish-btn" onclick="doFinish()">
+		完成
+	</div>
 	<form action="" name="form1">
 		<textarea name="editor1" id="editor1" rows="10" cols="80">
                 
@@ -43,6 +60,19 @@ var RootPath = '<%=request.getContextPath()%>';
 			CKEDITOR.replace('editor1',{
 				height:'<%=request.getParameter("height")%>'
 			});
+			
+			var field = window.opener.Ext.getCmp(window.name);
+			var editor = CKEDITOR.instances.editor1;
+			
+			editor.setData(field.getValue());
+		}
+		
+		function doFinish(){
+			var ed = CKEDITOR.instances.editor1;
+			//console.log(ed.getData());
+			
+			window.opener.Ext.getCmp(window.name).setValue(ed.getData());
+			self.close();
 		}
 		
 				

@@ -93,7 +93,7 @@ public class ResourceDao implements IResourceDao {
 	@Override
 	public List<Resource> findAllWithRoles() {
 
-		List<Resource> resources = (List<Resource>) hibernateTemplate.find("select r from Resource r  where r.roles.size > 0");
+		List<Resource> resources = (List<Resource>) hibernateTemplate.find("select r from Resource r ");
 		return resources;
 	}
 	@Override

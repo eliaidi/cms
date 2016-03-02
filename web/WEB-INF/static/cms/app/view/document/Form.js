@@ -1,6 +1,6 @@
 Ext.define('MyCms.view.document.Form',{
 	extend : 'MyCms.view.ux.MyForm',
-	requires:['MyCms.view.ux.MyHtmlEditor','MyCms.view.ux.DatetimeField'],
+	requires:['MyCms.view.ux.MyHtmlEditor','MyCms.view.ux.DatetimeField','MyCms.view.ux.CmsHtmlEditor'],
 	bodyPadding: 5,
 	initComponent:function(){
 		
@@ -44,13 +44,13 @@ Ext.define('MyCms.view.document.Form',{
 			        }
 				}]
 			},{
-				xtype: 'fckeditor',
+				xtype: 'chtmleditor',
 				fieldLabel: '摘要',
 		        name: 'abst',
 		        height:150,
 		        allowBlank: true
 			},{
-				xtype:'fckeditor',
+				xtype:'chtmleditor',
 				fieldLabel: '内容',
 		        name: 'content',
 		        height:300,

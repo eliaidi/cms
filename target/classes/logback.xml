@@ -32,4 +32,5 @@
 	</root>
 	
 	<logger name="org.hibernate" level="INFO"/>
+	<logger name="org.apache.shiro" level="trace"/>
 </configuration>

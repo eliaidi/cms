@@ -17,6 +17,7 @@ import com.wk.cms.items.SiteItem;
 import com.wk.cms.model.Site;
 import com.wk.cms.service.ISiteService;
 import com.wk.cms.service.exception.ServiceException;
+import com.wk.cms.utils.BeanFactory;
 
 @Controller
 @RequestMapping("/site")

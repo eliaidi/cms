@@ -30,7 +30,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 			num = new AtomicInteger(0);
 		}
 		if(num.incrementAndGet()>5){
-			throw new ExcessiveAttemptsException("number of failure beyond 5!");
+			throw new ExcessiveAttemptsException("失败超过5次，账户将锁定10分钟！");
 		}
 		
 		boolean result = super.doCredentialsMatch(token, info);

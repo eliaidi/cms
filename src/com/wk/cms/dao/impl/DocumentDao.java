@@ -51,7 +51,8 @@ public class DocumentDao implements IDocumentDao {
 		}
 
 		Long count = (Long) cq.uniqueResult();
-		List<Document> documents = lq.list();
+		List<Document> documents = lq.setFirstResult(pageInfo.getStart())
+				.setMaxResults(pageInfo.getLimit()).list();
 
 		return new PageInfo(documents, count);
 	}

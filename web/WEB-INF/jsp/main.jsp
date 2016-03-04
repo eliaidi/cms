@@ -4,8 +4,8 @@
 	String path = request.getContextPath();
 	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 	
-	//String username = SecurityUtils.getSubject().getPrincipal().toString();
-	String username = "aa";
+	String username = SecurityUtils.getSubject().getPrincipal().toString();
+	//String username = "aa";
 %>
 
 <!DOCTYPE html>

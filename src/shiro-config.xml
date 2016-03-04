@@ -85,7 +85,7 @@
     </bean>
 
 	<!-- 安全管理器 -->
-    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+    <bean id="securityManager" class="com.wk.cms.shiro.security.MySecurityManager">
         <property name="realm" ref="userRealm"/>
         <property name="sessionManager" ref="sessionManager"/>
         <property name="cacheManager" ref="cacheManager"/>
@@ -111,7 +111,6 @@
                 /logout = logout
                 /authenticated = anon
                 /static/**=anon
-                /** = user
             </value>
         </property>
     </bean>

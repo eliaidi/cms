@@ -45,6 +45,7 @@ import com.wk.cms.utils.BeanFactory;
 import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 import com.wk.cms.utils.PublishUtils;
+import com.wk.cms.utils.URLPath;
 
 @Component
 @Transactional(readOnly = true)
@@ -217,7 +218,7 @@ public class PublishServer implements IPublishServer {
 	private String previewOrPublishDocument(Document obj) throws PublishException {
 
 		if(!StringUtils.hasLength(obj.getChannel().getDtempIds())){
-			throw new PublishException("该文档【"+obj.getId()+"】所在栏目【"+obj.getChannel().getId()+"】没有配置概览模板！");
+			throw new PublishException("该文档【"+obj.getId()+"】所在栏目【"+obj.getChannel().getId()+"】没有配置细览模板！");
 		}
 		IChannelService  channelService = BeanFactory.getBean(IChannelService.class);
 		List<Template> dTemps = channelService.findTemps(obj.getChannel(), Type.DETAIL);
@@ -232,7 +233,7 @@ public class PublishServer implements IPublishServer {
 			documentService.changeStatus(obj,Document.Status.PUBLISH);
 		}
 		
-		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+URLPath.separator+PublishUtils.getPubFileName(obj, tpl);
 	}
 
 	private String previewOrPublishChannel(Channel obj) throws PublishException {
@@ -248,7 +249,7 @@ public class PublishServer implements IPublishServer {
 		Template tpl = otemps.get(0);
 		publishInternal(obj, tpl);
 		
-		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, tpl);
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+URLPath.separator+PublishUtils.getPubFileName(obj, tpl);
 	}
 
 	private String previewOrPublishSite(final Site obj) throws PublishException {
@@ -262,7 +263,7 @@ public class PublishServer implements IPublishServer {
 		for (final Template template : templates) {
 			publishInternal(obj, template);
 		}
-		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+File.separator+PublishUtils.getPubFileName(obj, templates.get(0));
+		return (isPreview?ITemplateService.PREVIEW_FOLDER:ITemplateService.PUBLISH_FOLDER)+PublishUtils.getDir(obj)+URLPath.separator+PublishUtils.getPubFileName(obj, templates.get(0));
 	}
 
 	private void publishTempFile(Object obj) {
@@ -368,7 +369,7 @@ public class PublishServer implements IPublishServer {
 
 	public String updateContentTempFile(Object obj,String content) throws ServiceException {
 		
-		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+File.separator+"images");
+		String tfPath = PublishUtils.getPath2Path(PublishUtils.getDir(obj),PublishUtils.getDir(PublishUtils.getSite(obj))+URLPath.separator+"images");
 		Map<String, String> parseTags = SysCfg.getSupportParseTags();
 		String parseTagStr = CommonUtils.join(parseTags.keySet(), "|");
 		StringBuffer sb = new StringBuffer();

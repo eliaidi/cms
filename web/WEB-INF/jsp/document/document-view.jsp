@@ -41,7 +41,7 @@
 			<div class="col-md-3 text-right">
 				<strong>创建人：</strong>
 			</div>
-			<div class="col-md-3 text-left">${obj.crUser.name }</div>
+			<div class="col-md-3 text-left">${obj.crUser }</div>
 			<div class="col-md-3 text-right">
 				<strong>创建时间：</strong>
 			</div>

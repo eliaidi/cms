@@ -2,7 +2,6 @@ package com.wk.cms.service.impl;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.wk.cms.dao.IUserDao;
-import com.wk.cms.model.Role;
 import com.wk.cms.model.User;
 import com.wk.cms.service.IRoleService;
 import com.wk.cms.service.IUserService;
 import com.wk.cms.service.exception.ServiceException;
 import com.wk.cms.utils.BeanFactory;
-import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.PageInfo;
 import com.wk.cms.utils.PasswordHash;
 
@@ -26,6 +23,7 @@ public class UserService implements IUserService {
 	private static final String USER_DEFAULT_PASSWORD = "111111";
 	@Autowired
 	private IUserDao userDao;
+	
 	@Override
 	public User findByUserName(String username) {
 		return userDao.findByUserName(username);

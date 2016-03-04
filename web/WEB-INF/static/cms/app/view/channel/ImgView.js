@@ -8,7 +8,7 @@ Ext
 							'<div class="thumb-wrap">',
 							'<div class="thumb">',
 							'<img src="' + RootPath
-									+ '/resources/images/forms.png" />',
+									+ '/resources/images/forms.png" title="编号：{id}" />',
 							'</div>', '<span>{name}</span>', '</div>', '</tpl>' ],
 
 					itemSelector : 'div.thumb-wrap',

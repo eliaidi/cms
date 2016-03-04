@@ -37,6 +37,7 @@ import com.wk.cms.utils.CommonUtils;
 import com.wk.cms.utils.FileUtils;
 import com.wk.cms.utils.MyBlob;
 import com.wk.cms.utils.PageInfo;
+import com.wk.cms.utils.URLPath;
 
 @Repository
 public class TemplateDao implements ITemplateDao {
@@ -396,7 +397,7 @@ public class TemplateDao implements ITemplateDao {
 					// attribute value must not be null or blank
 					if (StringUtils.hasLength(attrValue)) {
 						String eFileFullName = tempfolder.getParent()
-								+ java.io.File.separator + attrValue;
+								+ URLPath.separator + attrValue;
 						java.io.File eFile = new java.io.File(eFileFullName);
 						// template file must exists
 						if (eFile.exists()) {

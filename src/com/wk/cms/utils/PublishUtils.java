@@ -32,7 +32,7 @@ public class PublishUtils {
 	public static String getDir(Object obj) {
 		Site currSite = PublishUtils.getSite(obj);
 		String dir = "";
-		String sep = File.separator;
+		String sep = URLPath.separator;
 		if (obj instanceof Site) {
 			
 			dir = sep + currSite.getFolder() + dir;
@@ -55,20 +55,20 @@ public class PublishUtils {
 	
 	public static String getPath2Path(String f, String t) {
 		
-		String[] fArr = f.split("\\"+File.separator);
-		String[] tArr = t.split("\\"+File.separator);
+		String[] fArr = f.split("\\"+URLPath.separator);
+		String[] tArr = t.split("\\"+URLPath.separator);
 		
 		String p = "";
 		for(int i=0;i<fArr.length;i++){
 			if(!StringUtils.hasLength(fArr[i])) continue;
 			if(tArr.length>=(i+1)&&fArr[i].equalsIgnoreCase(tArr[i])) continue;
-			p += ".."+File.separator;
+			p += ".."+URLPath.separator;
 		}
 		for(int i=0;i<tArr.length;i++){
 			if(!StringUtils.hasLength(tArr[i])) continue;
 			if(fArr.length>=(i+1)&&fArr[i].equalsIgnoreCase(tArr[i])) continue;
 			
-			p = p+tArr[i]+File.separator;
+			p = p+tArr[i]+URLPath.separator;
 		}
 		return "".equals(p)?"./":p;
 	}

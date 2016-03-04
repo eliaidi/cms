@@ -160,7 +160,7 @@ public class File {
 			Class<File> clazz = (Class<File>) this.getClass();
 			Field[] fields = this.getClass().getDeclaredFields();
 			BlobJsonSerializer blobJsonSerializer = new BlobJsonSerializer(this.encode);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			for(Field f: fields){
 				Object val = f.get(this);
 				String valStr = "";
@@ -170,8 +170,8 @@ public class File {
 							valStr = blobJsonSerializer.format((Blob) val);
 						}
 						
-					}else if(val.getClass().isAssignableFrom(Date.class)){
-						valStr = sdf.format(val);
+					}else if(Date.class.isAssignableFrom(val.getClass())){
+						valStr = String.valueOf(((Date)val).getTime());
 					}else{
 						valStr = val.toString();
 					}

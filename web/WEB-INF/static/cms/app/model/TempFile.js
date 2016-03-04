@@ -63,7 +63,7 @@ Ext.define('MyCms.model.TempFile', {
 		convert : function(v, r) {
 			var f = r.get('file');
 			if (f) {
-				v = Ext.Date.format(new Date(f.crTime), this.dateFormat);
+				v = Ext.Date.format(new Date(parseInt(f.crTime)), this.dateFormat);
 			}
 			return v;
 		}

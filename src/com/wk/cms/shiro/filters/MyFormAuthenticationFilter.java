@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.slf4j.Logger;
@@ -45,7 +46,13 @@ public class MyFormAuthenticationFilter extends FormAuthenticationFilter {
 		if(isAjax(request)){
 			setAjaxResponse(response);
 			try {
-				writeJSONObject(response,new Message(false, e.getMessage(), ""));
+				log.error("登陆失败", e);
+				
+				String msg = "用户名或者密码错误~~";
+				if(ExcessiveAttemptsException.class.isAssignableFrom(e.getClass()) ){
+					msg = e.getMessage();
+				}
+				writeJSONObject(response,new Message(false, "登陆失败，原因："+msg, ""));
 			} catch (Exception e1) {
 				log.error("返回登陆失败JSON数据失败！", e1);
 			}

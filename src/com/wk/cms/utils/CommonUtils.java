@@ -106,7 +106,7 @@ public class CommonUtils {
 		for(String f : fields){
 			sb.append(str+f);
 		}
-		sb.delete(0, str.length()-1);
+		sb.delete(0, str.length());
 		return sb.toString();
 	}
 

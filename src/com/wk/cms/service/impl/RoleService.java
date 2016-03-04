@@ -3,6 +3,8 @@ package com.wk.cms.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,8 +21,17 @@ import com.wk.cms.utils.PageInfo;
 @Service
 public class RoleService implements IRoleService {
 
+	private static final String ROLE_CACHE_NAME = "roleCache";
+
 	@Autowired
 	private IRoleDao roleDao;
+	
+	private CacheManager cacheManager;
+	
+	@Autowired
+	public void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
 	@Override
 	public PageInfo list(PageInfo info, String query,String userId) {
 		return roleDao.find(info,query,userId);
@@ -36,7 +47,7 @@ public class RoleService implements IRoleService {
 			r.setResources(role.getResources());
 			attachResource(r);
 			roleDao.save(r);
-			
+			refreshCache();
 			return r;
 		}else{
 			attachResource(role);
@@ -48,6 +59,11 @@ public class RoleService implements IRoleService {
 			return role; 
 		}
 		
+	}
+	private void refreshCache() {
+		
+		Cache<String, Object> cache = cacheManager.getCache(ROLE_CACHE_NAME);
+		cache.clear();
 	}
 	private void attachResource(Role role) {
 		List<Resource> resources = role.getResources();
@@ -71,15 +87,25 @@ public class RoleService implements IRoleService {
 	@Override
 	public void delete(String[] ids) {
 		roleDao.delete(ids);
+		
+		refreshCache();
 	}
 	@Override
 	public List<Role> find(String[] roleIds) {
 		return roleDao.find(roleIds);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> findByUserName(String username) {
 		
-		return roleDao.findNameByUserName(username);
+		Cache<String, Object> cache = cacheManager.getCache(ROLE_CACHE_NAME);
+		Object c = cache.get(username);
+		if(c!=null){
+			return (List<String>) c;
+		}
+		List<String> rs = roleDao.findNameByUserName(username);
+		cache.put(username, rs);
+		return rs;
 	}
 	@Override
 	public String findAdminRoles() {

@@ -1,6 +1,5 @@
 package com.wk.cms.shiro;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,25 +44,31 @@ public class ShiroFilerChainManager {
 	public void initFilterChains(List<Resource> resources) {
 		// 1、首先删除以前老的filter chain并注册默认的
 		filterChainManager.getFilterChains().clear();
-		
-		filterChainManager.addToChain("/**", "user", "admin");
-		String roleStr = roleService.findAdminRoles();
-		if(StringUtils.hasLength(roleStr)){
-			filterChainManager.addToChain("/**", "roles", roleStr);
+		//添加默认的filterChain
+		if (defaultFilterChains != null) {
+			filterChainManager.getFilterChains().putAll(defaultFilterChains);
 		}
+		
+		String roleStr = roleService.findAdminRoles();
 		
 		// 2、循环URL Filter 注册filter chain
 		for (Resource r : resources) {
 			String url = r.getValue();
+			String rStr = "";
 			// 注册roles filter
 			List<String> roles = resourceService.findRoleNames(r);
 			if(!CommonUtils.isEmpty(roles)){
-				filterChainManager.addToChain(url, "roles", CommonUtils.join(roles, ","));
+				rStr += CommonUtils.join(roles, ",");
+			}
+			if(StringUtils.hasLength(roleStr)){
+				rStr += ","+roleStr;
+			}
+			rStr = rStr.startsWith(",")?rStr.substring(1):rStr;
+			if(StringUtils.hasLength(rStr)){
+				filterChainManager.addToChain(url, "roles", rStr);
 			}
 		}
 		
-		if (defaultFilterChains != null) {
-			filterChainManager.getFilterChains().putAll(defaultFilterChains);
-		}
+		filterChainManager.addToChain("/**", "user","admin");
 	}
 }

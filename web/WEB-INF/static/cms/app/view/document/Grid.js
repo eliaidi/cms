@@ -70,10 +70,9 @@ Ext.define('MyCms.view.document.Grid', {
 			scope : me
 		} ];
 
-		var store = Ext.create('Ext.data.BufferedStore', {
+		var store = Ext.create('Ext.data.Store', {
 			model : 'MyCms.model.Document',
 			pageSize : 20,
-			leadingBufferZone : 200,
 			proxy : {
 				type : 'ajax',
 				url : document_list,
@@ -118,6 +117,11 @@ Ext.define('MyCms.view.document.Grid', {
 					tpl : '总记录: {count}',
 					style : 'margin-right:5px'
 				} ]
+			},{
+				xtype: 'pagingtoolbar',
+		        store: store,   
+		        dock: 'bottom',
+		        displayInfo: true
 			} ]
 		});
 		

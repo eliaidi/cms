@@ -165,6 +165,10 @@ Ext.define('MyCms.view.channel.View', {
 				text : '刷新',
 				handler : 'refresh',
 				scope : me
+			},{
+				text : '修改',
+				handler : 'modify',
+				scope : me
 			}, {
 				text : '添加栏目',
 				handler : 'addChannel',
@@ -189,6 +193,17 @@ Ext.define('MyCms.view.channel.View', {
 
 		view.getStore().load();
 		view.mixins.dragSelector.init(view);
+	},
+	modify:function(){
+		var me = this;
+		
+		if(me.site){
+			Ext.create('MyCms.view.site.Window',{modal:true,site:me.site}).show();
+		}else if(me.parent){
+			Ext.create('MyCms.view.channel.Window',{modal:true,channel:me.parent}).show();
+		}else{
+			Ext.Msg.alert('error','未知的栏目类型~~');
+		}
 	},
 	publish:function(r,t){
 		Ext.Ajax.request({
